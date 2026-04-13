@@ -211,7 +211,7 @@ export default function HotelDetail() {
   const totalPrice = hotel.price * nights;
 
   return (
-    <div className="min-h-screen bg-gray-950" ref={ref}>
+    <div className="min-h-screen bg-gray-50" ref={ref}>
       <div className="relative">
         <div className="grid grid-cols-4 grid-rows-2 gap-1.5 h-[55vh] max-h-[480px] overflow-hidden">
           {hotel.images.slice(0, 5).map((img, i) => (
@@ -278,7 +278,7 @@ export default function HotelDetail() {
                     <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide">{hotel.type}</span>
                     <span className="text-gray-500 text-xs flex items-center gap-1"><Clock size={11} />{hotel.views.toLocaleString()} lượt xem</span>
                   </div>
-                  <h1 className="font-serif text-3xl md:text-4xl font-bold text-white mb-2">{hotel.name}</h1>
+                  <h1 className="font-serif text-3xl md:text-4xl font-bold text-gray-900 mb-2">{hotel.name}</h1>
                   <div className="flex items-center gap-1 mb-2">
                     {[...Array(hotel.stars)].map((_, i) => <Star key={i} size={14} className="text-amber-400 fill-amber-400" />)}
                   </div>
@@ -289,7 +289,7 @@ export default function HotelDetail() {
                 </div>
                 <button
                   onClick={() => setLiked((p) => !p)}
-                  className="p-3 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors shrink-0"
+                  className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors shrink-0"
                 >
                   <Heart size={18} className={liked ? "text-rose-500 fill-rose-500" : "text-gray-400"} />
                 </button>
@@ -313,7 +313,7 @@ export default function HotelDetail() {
               </div>
             </motion.div>
 
-            <div className="flex gap-1 mb-6 bg-gray-900 rounded-xl p-1">
+            <div className="flex gap-1 mb-6 bg-gray-100 rounded-xl p-1">
               {tabs.map((tab, i) => (
                 <button
                   key={tab}
@@ -328,13 +328,13 @@ export default function HotelDetail() {
             <AnimatePresence mode="wait">
               {activeTab === 0 && (
                 <motion.div key="overview" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-                  <div className="bg-gray-900 rounded-2xl p-5 mb-5 border border-white/8">
-                    <h2 className="text-white font-bold text-lg mb-3">Giới thiệu</h2>
-                    <p className="text-gray-400 leading-relaxed">{hotel.description}</p>
+                  <div className="bg-white rounded-2xl p-5 mb-5 border border-gray-200 shadow-sm">
+                    <h2 className="text-gray-900 font-bold text-lg mb-3">Giới thiệu</h2>
+                    <p className="text-gray-600 leading-relaxed">{hotel.description}</p>
                   </div>
 
-                  <div className="bg-gray-900 rounded-2xl p-5 border border-white/8">
-                    <h2 className="text-white font-bold text-lg mb-4">Đặt phòng qua OTA</h2>
+                  <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
+                    <h2 className="text-gray-900 font-bold text-lg mb-4">Đặt phòng qua OTA</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       {[
                         { name: "Booking.com", color: "from-blue-600 to-blue-700", logo: "🏨", badge: "Ưu đãi hôm nay" },
@@ -362,18 +362,18 @@ export default function HotelDetail() {
 
               {activeTab === 1 && (
                 <motion.div key="amenities" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-                  <div className="bg-gray-900 rounded-2xl p-5 border border-white/8">
-                    <h2 className="text-white font-bold text-lg mb-4">Tiện nghi & Dịch vụ</h2>
+                  <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
+                    <h2 className="text-gray-900 font-bold text-lg mb-4">Tiện nghi & Dịch vụ</h2>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                       {hotel.amenities.map((a) => {
                         const detail = amenityDetails[a];
                         if (!detail) return null;
                         return (
-                          <div key={a} className="flex items-center gap-3 bg-gray-800 rounded-xl px-4 py-3">
+                          <div key={a} className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-xl px-4 py-3">
                             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center">
                               <detail.icon size={16} className="text-amber-400" />
                             </div>
-                            <span className="text-gray-300 text-sm font-medium">{detail.label}</span>
+                            <span className="text-gray-700 text-sm font-medium">{detail.label}</span>
                             <CheckCircle2 size={14} className="text-emerald-400 ml-auto shrink-0" />
                           </div>
                         );
@@ -385,11 +385,11 @@ export default function HotelDetail() {
 
               {activeTab === 2 && (
                 <motion.div key="policies" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-                  <div className="bg-gray-900 rounded-2xl p-5 border border-white/8">
-                    <h2 className="text-white font-bold text-lg mb-4">Chính sách khách sạn</h2>
+                  <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
+                    <h2 className="text-gray-900 font-bold text-lg mb-4">Chính sách khách sạn</h2>
                     <div className="space-y-3">
                       {hotel.policies.map((p, i) => (
-                        <div key={i} className="flex items-start gap-3 py-3 border-b border-white/8 last:border-0">
+                        <div key={i} className="flex items-start gap-3 py-3 border-b border-gray-100 last:border-0">
                           <Shield size={14} className="text-amber-400 shrink-0 mt-0.5" />
                           <span className="text-gray-300 text-sm">{p}</span>
                         </div>
@@ -400,13 +400,13 @@ export default function HotelDetail() {
               )}
             </AnimatePresence>
 
-            <div className="mt-6 bg-gray-900 rounded-2xl p-5 border border-white/8">
+            <div className="mt-6 bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
               <div className="flex items-center justify-between mb-5">
-                <h2 className="text-white font-bold text-lg">Đánh giá TripAdvisor</h2>
+                <h2 className="text-gray-900 font-bold text-lg">Đánh giá TripAdvisor</h2>
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl font-bold text-white">{hotel.rating}</span>
+                  <span className="text-2xl font-bold text-gray-900">{hotel.rating}</span>
                   <div>
-                    <div className="flex gap-0.5">{[...Array(5)].map((_, i) => <Star key={i} size={12} className={i < Math.round(hotel.rating) ? "text-amber-400 fill-amber-400" : "text-gray-700"} />)}</div>
+                    <div className="flex gap-0.5">{[...Array(5)].map((_, i) => <Star key={i} size={12} className={i < Math.round(hotel.rating) ? "text-amber-400 fill-amber-400" : "text-gray-500"} />)}</div>
                     <span className="text-gray-500 text-xs">{hotel.reviews.toLocaleString()} đánh giá</span>
                   </div>
                 </div>
@@ -416,7 +416,7 @@ export default function HotelDetail() {
                 {ratingBreakdown.map((r) => (
                   <div key={r.value} className="flex items-center gap-3 text-xs">
                     <span className="text-gray-400 w-16 shrink-0">{r.label}</span>
-                    <div className="flex-1 h-2 bg-gray-800 rounded-full overflow-hidden">
+                    <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={isInView ? { width: `${r.count}%` } : {}}
@@ -431,21 +431,21 @@ export default function HotelDetail() {
 
               <div className="space-y-4">
                 {tripadvisorReviews.map((review) => (
-                  <div key={review.id} className="bg-gray-800 rounded-xl p-4">
+                  <div key={review.id} className="bg-gray-50 border border-gray-100 rounded-xl p-4">
                     <div className="flex items-start gap-3 mb-2">
                       <img src={review.avatar} alt={review.name} className="w-9 h-9 rounded-full object-cover" />
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
-                          <span className="text-white font-semibold text-sm">{review.name}</span>
+                          <span className="text-gray-900 font-semibold text-sm">{review.name}</span>
                           <span className="text-gray-500 text-xs">{review.date}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <div className="flex gap-0.5">{[...Array(5)].map((_, i) => <Star key={i} size={10} className={i < review.rating ? "text-amber-400 fill-amber-400" : "text-gray-700"} />)}</div>
+                          <div className="flex gap-0.5">{[...Array(5)].map((_, i) => <Star key={i} size={10} className={i < review.rating ? "text-amber-400 fill-amber-400" : "text-gray-500"} />)}</div>
                           <span className="text-gray-500 text-xs">· {review.trip}</span>
                         </div>
                       </div>
                     </div>
-                    <p className="text-white font-medium text-sm mb-1">{review.title}</p>
+                    <p className="text-gray-800 font-semibold text-sm mb-1">{review.title}</p>
                     <p className="text-gray-400 text-xs leading-relaxed">{review.text}</p>
                   </div>
                 ))}
@@ -454,12 +454,12 @@ export default function HotelDetail() {
 
             <div className="mt-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-white font-bold text-lg">Khách sạn lân cận</h2>
+                <h2 className="text-gray-900 font-bold text-lg">Khách sạn lân cận</h2>
                 <div className="flex gap-2">
-                  <button onClick={scrollPrev} className="p-2 bg-gray-800 hover:bg-gray-700 rounded-xl transition-colors text-gray-400">
+                  <button onClick={scrollPrev} className="p-2 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors text-gray-600">
                     <ChevronLeft size={16} />
                   </button>
-                  <button onClick={scrollNext} className="p-2 bg-gray-800 hover:bg-gray-700 rounded-xl transition-colors text-gray-400">
+                  <button onClick={scrollNext} className="p-2 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors text-gray-600">
                     <ChevronRight size={16} />
                   </button>
                 </div>
@@ -470,7 +470,7 @@ export default function HotelDetail() {
                     <Link key={h.id} href={`/luu-tru-khach-san/${h.slug}`}>
                       <motion.div
                         whileHover={{ y: -4 }}
-                        className="shrink-0 w-56 bg-gray-900 rounded-xl overflow-hidden border border-white/8 cursor-pointer group"
+                        className="shrink-0 w-56 bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm cursor-pointer group"
                       >
                         <div className="relative h-32 overflow-hidden">
                           <img src={h.image} alt={h.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
@@ -480,7 +480,7 @@ export default function HotelDetail() {
                           </div>
                         </div>
                         <div className="p-3">
-                          <p className="text-white font-semibold text-xs leading-tight mb-1 line-clamp-2">{h.name}</p>
+                          <p className="text-gray-800 font-semibold text-xs leading-tight mb-1 line-clamp-2">{h.name}</p>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-0.5 text-amber-400 text-xs">
                               <Star size={10} className="fill-amber-400" />{h.rating}
@@ -503,11 +503,11 @@ export default function HotelDetail() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 }}
-                className="bg-gray-900 border border-white/10 rounded-2xl overflow-hidden shadow-2xl"
+                className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-xl"
               >
                 <div className="bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-transparent p-5 border-b border-white/8">
                   <div className="flex items-baseline gap-1 mb-1">
-                    <span className="text-3xl font-bold text-white">{hotel.price.toLocaleString("vi-VN")}₫</span>
+                    <span className="text-3xl font-bold text-gray-900">{hotel.price.toLocaleString("vi-VN")}₫</span>
                     <span className="text-gray-400 text-sm">/đêm</span>
                   </div>
                   <div className="flex items-center gap-1.5">
@@ -520,33 +520,33 @@ export default function HotelDetail() {
                 <div className="p-5 space-y-4">
                   <div>
                     <label className="text-gray-400 text-xs font-medium uppercase tracking-wider mb-2 block">Số đêm</label>
-                    <div className="flex items-center gap-3 bg-gray-800 rounded-xl px-4 py-3">
-                      <button onClick={() => setNights((n) => Math.max(1, n - 1))} className="text-white w-6 h-6 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center text-sm transition-colors">−</button>
-                      <span className="flex-1 text-center text-white font-bold">{nights}</span>
-                      <button onClick={() => setNights((n) => n + 1)} className="text-white w-6 h-6 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center text-sm transition-colors">+</button>
+                    <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-xl px-4 py-3">
+                      <button onClick={() => setNights((n) => Math.max(1, n - 1))} className="text-gray-700 w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm transition-colors">−</button>
+                      <span className="flex-1 text-center text-gray-900 font-bold">{nights}</span>
+                      <button onClick={() => setNights((n) => n + 1)} className="text-gray-700 w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm transition-colors">+</button>
                     </div>
                   </div>
                   <div>
                     <label className="text-gray-400 text-xs font-medium uppercase tracking-wider mb-2 block">Số khách</label>
-                    <div className="flex items-center gap-3 bg-gray-800 rounded-xl px-4 py-3">
+                    <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-xl px-4 py-3">
                       <Users size={15} className="text-gray-400" />
-                      <button onClick={() => setGuests((g) => Math.max(1, g - 1))} className="text-white w-6 h-6 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center text-sm transition-colors">−</button>
-                      <span className="flex-1 text-center text-white font-bold">{guests} khách</span>
-                      <button onClick={() => setGuests((g) => Math.min(10, g + 1))} className="text-white w-6 h-6 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center text-sm transition-colors">+</button>
+                      <button onClick={() => setGuests((g) => Math.max(1, g - 1))} className="text-gray-700 w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm transition-colors">−</button>
+                      <span className="flex-1 text-center text-gray-900 font-bold">{guests} khách</span>
+                      <button onClick={() => setGuests((g) => Math.min(10, g + 1))} className="text-gray-700 w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm transition-colors">+</button>
                     </div>
                   </div>
 
-                  <div className="border-t border-white/10 pt-4 space-y-2">
+                  <div className="border-t border-gray-200 pt-4 space-y-2">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-400">{hotel.price.toLocaleString("vi-VN")}₫ × {nights} đêm</span>
-                      <span className="text-white">{totalPrice.toLocaleString("vi-VN")}₫</span>
+                      <span className="text-gray-900">{totalPrice.toLocaleString("vi-VN")}₫</span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-400">Phí dịch vụ</span>
-                      <span className="text-white">{Math.round(totalPrice * 0.1).toLocaleString("vi-VN")}₫</span>
+                      <span className="text-gray-900">{Math.round(totalPrice * 0.1).toLocaleString("vi-VN")}₫</span>
                     </div>
                     <div className="flex items-center justify-between font-bold pt-2 border-t border-white/10">
-                      <span className="text-white">Tổng cộng</span>
+                      <span className="text-gray-900">Tổng cộng</span>
                       <span className="text-amber-400 text-lg">{Math.round(totalPrice * 1.1).toLocaleString("vi-VN")}₫</span>
                     </div>
                   </div>

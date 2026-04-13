@@ -31,65 +31,50 @@ export default function Destinations() {
   const toggleLike = (id: number) => setLiked((p) => p.includes(id) ? p.filter((x) => x !== id) : [...p, id]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-teal-950 via-gray-950 to-gray-950" ref={ref}>
-      <div className="relative h-64 overflow-hidden">
+    <div className="min-h-screen bg-gray-50" ref={ref}>
+      <div className="relative h-56 overflow-hidden">
         <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1400&auto=format&fit=crop" alt="Destinations" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-b from-teal-900/60 via-teal-950/50 to-gray-950" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-gray-50" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pb-6">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <div className="inline-flex items-center gap-2 bg-teal-400/20 border border-teal-400/30 text-teal-300 rounded-full px-4 py-1.5 text-sm mb-4">
+            <div className="inline-flex items-center gap-2 bg-teal-500 text-white rounded-full px-4 py-1.5 text-sm mb-3 shadow-md">
               <Camera size={14} />85 Địa điểm tham quan
             </div>
-            <h1 className="font-serif text-4xl md:text-5xl font-bold text-white mb-3">Khám Phá Đà Nẵng</h1>
-            <p className="text-white/60 text-base max-w-lg">Những điểm đến tuyệt vời nhất của thành phố biển miền Trung</p>
+            <h1 className="font-serif text-4xl md:text-5xl font-bold text-white drop-shadow-lg">Khám Phá Đà Nẵng</h1>
           </motion.div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex items-center gap-3 mb-8 flex-wrap">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex items-center gap-2.5 mb-8 flex-wrap bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
           {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setActiveCategory(cat.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${activeCategory === cat.id ? "bg-teal-500 text-white shadow-lg shadow-teal-500/25" : "bg-white/8 text-white/60 hover:bg-white/14 hover:text-white border border-white/10"}`}
-            >
+            <button key={cat.id} onClick={() => setActiveCategory(cat.id)} className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${activeCategory === cat.id ? "bg-teal-500 text-white shadow-md shadow-teal-100" : "bg-gray-100 text-gray-600 hover:bg-teal-50 hover:text-teal-700"}`}>
               <cat.icon size={14} />{cat.label}
             </button>
           ))}
-          <span className="ml-auto text-white/40 text-sm">{filtered.length} địa điểm</span>
+          <span className="ml-auto text-gray-400 text-sm">{filtered.length} địa điểm</span>
         </motion.div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-12">
           {filtered.map((place, i) => (
-            <motion.div
-              key={place.id}
-              layout
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={isInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ delay: i * 0.06, duration: 0.4 }}
-              whileHover={{ y: -8 }}
-              className="relative rounded-2xl overflow-hidden cursor-pointer group shadow-xl"
-              style={{ height: i % 5 === 0 ? "340px" : "280px" }}
-              data-testid={`card-destination-${place.id}`}
-            >
-              <img src={place.image} alt={place.name} className="w-full h-full object-cover transition-transform duration-600 group-hover:scale-108" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+            <motion.div key={place.id} layout initial={{ opacity: 0, scale: 0.95 }} animate={isInView ? { opacity: 1, scale: 1 } : {}} transition={{ delay: i * 0.06, duration: 0.4 }} whileHover={{ y: -8, boxShadow: "0 20px 40px rgba(0,0,0,0.15)" }} className="relative rounded-2xl overflow-hidden cursor-pointer group shadow-md" style={{ height: i % 5 === 0 ? "340px" : "280px" }} data-testid={`card-destination-${place.id}`}>
+              <img src={place.image} alt={place.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
               <div className={`absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-full text-white bg-gradient-to-r ${place.tagColor}`}>{place.tag}</div>
-              <button onClick={() => toggleLike(place.id)} className="absolute top-3 right-3 p-2 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors">
-                <Heart size={15} className={liked.includes(place.id) ? "text-rose-500 fill-rose-500" : "text-white"} />
+              <button onClick={() => toggleLike(place.id)} className="absolute top-3 right-3 p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-colors shadow-sm">
+                <Heart size={15} className={liked.includes(place.id) ? "text-rose-500 fill-rose-500" : "text-gray-500"} />
               </button>
               <div className="absolute bottom-0 left-0 right-0 p-4">
                 <div className="flex items-center gap-1 mb-1.5">
                   <Star size={11} className="text-amber-400 fill-amber-400" />
                   <span className="text-amber-300 text-xs font-bold">{place.rating}</span>
-                  <span className="text-white/40 text-xs">({place.reviews.toLocaleString()})</span>
+                  <span className="text-white/50 text-xs">({place.reviews.toLocaleString()})</span>
                 </div>
                 <h3 className="text-white font-bold text-sm leading-tight mb-1">{place.name}</h3>
-                <p className="text-white/55 text-xs line-clamp-2 leading-relaxed">{place.desc}</p>
+                <p className="text-white/65 text-xs line-clamp-2 leading-relaxed">{place.desc}</p>
                 <div className="flex items-center justify-between mt-2.5">
-                  <div className="flex items-center gap-1 text-white/40 text-xs"><MapPin size={10} />{place.distance} từ trung tâm</div>
-                  <div className="flex items-center gap-1 text-teal-400 text-xs font-medium group-hover:gap-1.5 transition-all">Khám phá<ChevronRight size={12} /></div>
+                  <div className="flex items-center gap-1 text-white/50 text-xs"><MapPin size={10} />{place.distance} từ TT</div>
+                  <div className="flex items-center gap-1 text-teal-300 text-xs font-medium group-hover:gap-1.5 transition-all">Khám phá<ChevronRight size={12} /></div>
                 </div>
               </div>
             </motion.div>

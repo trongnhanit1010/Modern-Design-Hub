@@ -51,24 +51,24 @@ export default function AIAssistant() {
     text.split("\n").map((line, i) => (
       <span key={i}>
         {line.split(/\*\*(.*?)\*\*/g).map((part, j) =>
-          j % 2 === 1 ? <strong key={j} className="font-semibold text-white">{part}</strong> : part
+          j % 2 === 1 ? <strong key={j} className="font-semibold">{part}</strong> : part
         )}
         {i < text.split("\n").length - 1 && <br />}
       </span>
     ));
 
   return (
-    <div className="h-screen bg-gray-950 flex flex-col overflow-hidden">
-      <div className="shrink-0 bg-gray-900 border-b border-white/10 px-5 py-3.5 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center shadow-lg">
+    <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
+      <div className="shrink-0 bg-white border-b border-gray-200 px-5 py-3.5 flex items-center gap-3 shadow-sm">
+        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center shadow-md">
           <Bot size={20} className="text-white" />
         </div>
         <div>
-          <h1 className="text-white font-bold text-base">AI Trợ Lý Du Lịch</h1>
-          <div className="flex items-center gap-1.5 text-xs text-green-400"><div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />Đang hoạt động · Đà Nẵng Expert</div>
+          <h1 className="text-gray-900 font-bold text-base">AI Trợ Lý Du Lịch</h1>
+          <div className="flex items-center gap-1.5 text-xs text-green-600"><div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />Đang hoạt động · Đà Nẵng Expert</div>
         </div>
-        <div className="ml-auto flex items-center gap-2">
-          <motion.button whileHover={{ rotate: 180 }} transition={{ duration: 0.4 }} onClick={() => setMessages(initMessages)} className="p-2 hover:bg-white/8 rounded-xl transition-colors text-white/40 hover:text-white">
+        <div className="ml-auto">
+          <motion.button whileHover={{ rotate: 180 }} transition={{ duration: 0.4 }} onClick={() => setMessages(initMessages)} className="p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-400 hover:text-gray-700">
             <RefreshCw size={16} />
           </motion.button>
         </div>
@@ -78,14 +78,14 @@ export default function AIAssistant() {
         <AnimatePresence initial={false}>
           {messages.map((msg, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className={`flex gap-3 ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
-              <div className={`shrink-0 w-8 h-8 rounded-xl flex items-center justify-center ${msg.role === "bot" ? "bg-gradient-to-br from-blue-500 to-violet-600" : "bg-gray-700"}`}>
-                {msg.role === "bot" ? <Bot size={16} className="text-white" /> : <User size={16} className="text-white" />}
+              <div className={`shrink-0 w-8 h-8 rounded-xl flex items-center justify-center shadow-sm ${msg.role === "bot" ? "bg-gradient-to-br from-blue-500 to-violet-600" : "bg-gray-200"}`}>
+                {msg.role === "bot" ? <Bot size={16} className="text-white" /> : <User size={16} className="text-gray-600" />}
               </div>
-              <div className={`max-w-[75%] ${msg.role === "user" ? "items-end" : "items-start"} flex flex-col gap-1`}>
-                <div className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === "bot" ? "bg-gray-800 text-white/80 rounded-tl-sm" : "bg-blue-500 text-white rounded-tr-sm"}`}>
+              <div className={`max-w-[75%] flex flex-col gap-1 ${msg.role === "user" ? "items-end" : "items-start"}`}>
+                <div className={`px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm ${msg.role === "bot" ? "bg-white border border-gray-200 text-gray-700 rounded-tl-sm" : "bg-blue-500 text-white rounded-tr-sm"}`}>
                   {renderText(msg.text)}
                 </div>
-                <span className="text-white/25 text-xs px-1">{msg.time}</span>
+                <span className="text-gray-400 text-xs px-1">{msg.time}</span>
               </div>
             </motion.div>
           ))}
@@ -94,10 +94,10 @@ export default function AIAssistant() {
         <AnimatePresence>
           {isTyping && (
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 12 }} className="flex gap-3">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center shrink-0 shadow-sm">
                 <Bot size={16} className="text-white" />
               </div>
-              <div className="bg-gray-800 rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1.5">
+              <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1.5 shadow-sm">
                 {[0, 1, 2].map((i) => (
                   <motion.div key={i} animate={{ y: [0, -4, 0] }} transition={{ duration: 0.6, delay: i * 0.15, repeat: Infinity }} className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
                 ))}
@@ -110,42 +110,36 @@ export default function AIAssistant() {
 
       {messages.length <= 1 && (
         <div className="shrink-0 px-4 pb-2">
-          <p className="text-white/30 text-xs mb-2 flex items-center gap-1.5"><Sparkles size={11} />Gợi ý câu hỏi</p>
+          <p className="text-gray-400 text-xs mb-2 flex items-center gap-1.5"><Sparkles size={11} />Gợi ý câu hỏi</p>
           <div className="grid grid-cols-2 gap-2">
             {suggestions.map((s, i) => (
-              <motion.button key={i} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => sendMessage(s.text)} className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 border border-white/8 hover:border-blue-500/40 text-white/60 hover:text-white text-xs text-left px-3 py-2.5 rounded-xl transition-all" data-testid={`suggestion-${i}`}>
-                <s.icon size={13} className="text-blue-400 shrink-0" />{s.text}
+              <motion.button key={i} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => sendMessage(s.text)} className="flex items-center gap-2 bg-white hover:bg-blue-50 border border-gray-200 hover:border-blue-300 text-gray-600 hover:text-blue-700 text-xs text-left px-3 py-2.5 rounded-xl transition-all shadow-sm" data-testid={`suggestion-${i}`}>
+                <s.icon size={13} className="text-blue-500 shrink-0" />{s.text}
               </motion.button>
             ))}
           </div>
         </div>
       )}
 
-      <div className="shrink-0 bg-gray-900 border-t border-white/10 px-4 py-3">
-        <div className="flex items-end gap-2 bg-gray-800 rounded-2xl border border-white/10 px-4 py-2.5">
+      <div className="shrink-0 bg-white border-t border-gray-200 px-4 py-3">
+        <div className="flex items-end gap-2 bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(input); } }}
             placeholder="Hỏi về địa điểm, ẩm thực, khách sạn..."
             rows={1}
-            className="flex-1 bg-transparent text-white text-sm placeholder:text-gray-500 focus:outline-none resize-none leading-5 max-h-24"
+            className="flex-1 bg-transparent text-gray-800 text-sm placeholder:text-gray-400 focus:outline-none resize-none leading-5 max-h-24"
             data-testid="ai-input"
           />
           {input && (
-            <button onClick={() => setInput("")} className="text-white/30 hover:text-white/60 transition-colors"><X size={14} /></button>
+            <button onClick={() => setInput("")} className="text-gray-300 hover:text-gray-500 transition-colors"><X size={14} /></button>
           )}
-          <motion.button
-            whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
-            onClick={() => sendMessage(input)}
-            disabled={!input.trim()}
-            className="shrink-0 w-8 h-8 bg-blue-500 disabled:bg-gray-700 disabled:text-gray-500 text-white rounded-xl flex items-center justify-center transition-colors"
-            data-testid="ai-send"
-          >
+          <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={() => sendMessage(input)} disabled={!input.trim()} className="shrink-0 w-8 h-8 bg-blue-500 disabled:bg-gray-200 disabled:text-gray-400 text-white rounded-xl flex items-center justify-center transition-colors shadow-sm" data-testid="ai-send">
             <Send size={14} />
           </motion.button>
         </div>
-        <p className="text-white/20 text-xs text-center mt-2">AI phản hồi dựa trên dữ liệu du lịch Đà Nẵng · Demo</p>
+        <p className="text-gray-400 text-xs text-center mt-2">AI phản hồi dựa trên dữ liệu du lịch Đà Nẵng · Demo</p>
       </div>
     </div>
   );

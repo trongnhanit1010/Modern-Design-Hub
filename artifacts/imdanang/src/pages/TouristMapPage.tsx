@@ -177,41 +177,41 @@ export default function TouristMapPage() {
   const selectedLocation = selectedPin !== null ? allListings.find((l) => l.id === selectedPin) : null;
 
   return (
-    <div className="flex h-[calc(100vh-56px)] bg-gray-950 overflow-hidden" ref={ref} data-testid="page-tourist-map">
+    <div className="flex h-[calc(100vh-56px)] bg-white overflow-hidden" ref={ref} data-testid="page-tourist-map">
       <motion.aside
         initial={{ opacity: 0, x: -24 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-80 shrink-0 flex flex-col bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950 border-r border-white/10 overflow-hidden"
+        className="w-80 shrink-0 flex flex-col bg-white border-r border-gray-200 overflow-hidden shadow-sm"
       >
-        <div className="p-4 border-b border-white/10 bg-gradient-to-br from-blue-600/20 via-cyan-600/10 to-transparent">
+        <div className="p-4 border-b border-gray-200 bg-blue-50">
           <div className="flex items-center gap-2 mb-1">
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
               <Map size={14} className="text-white" />
             </div>
-            <h1 className="text-white font-bold text-base">Tourist Map</h1>
+            <h1 className="text-gray-900 font-bold text-base">Tourist Map</h1>
           </div>
           <p className="text-gray-400 text-xs">Khám phá {filtered.length} địa điểm nổi bật</p>
         </div>
 
-        <div className="p-3 border-b border-white/8">
-          <div className="flex items-center gap-2 bg-gray-800/80 backdrop-blur-sm rounded-xl px-3 py-2.5 border border-white/8">
+        <div className="p-3 border-b border-gray-200">
+          <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5">
             <Search size={14} className="text-gray-400 shrink-0" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Tìm địa điểm..."
-              className="bg-transparent text-white text-sm placeholder:text-gray-500 focus:outline-none flex-1"
+              className="bg-transparent text-gray-800 text-sm placeholder:text-gray-400 focus:outline-none flex-1"
             />
             {search && (
-              <button onClick={() => setSearch("")} className="text-gray-500 hover:text-white transition-colors">
+              <button onClick={() => setSearch("")} className="text-gray-400 hover:text-gray-700 transition-colors">
                 <X size={12} />
               </button>
             )}
           </div>
         </div>
 
-        <div className="p-3 border-b border-white/8">
+        <div className="p-3 border-b border-gray-200">
           <div className="flex gap-1 overflow-x-auto scrollbar-none">
             {filterTabs.map((tab) => (
               <button
@@ -247,7 +247,7 @@ export default function TouristMapPage() {
                   className={`w-full flex items-start gap-3 p-3 rounded-xl text-left transition-all group ${
                     selectedPin === item.id
                       ? "bg-gradient-to-r from-blue-600/30 to-cyan-600/20 border border-blue-500/30"
-                      : "hover:bg-white/5 border border-transparent"
+                      : "hover:bg-gray-50 border border-transparent"
                   }`}
                   data-testid={`sidebar-listing-${item.id}`}
                 >
@@ -262,7 +262,7 @@ export default function TouristMapPage() {
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white font-semibold text-sm leading-tight mb-0.5 truncate">{item.name}</p>
+                    <p className="text-gray-900 font-semibold text-sm leading-tight mb-0.5 truncate">{item.name}</p>
                     <div className="flex items-center gap-1 mb-0.5">
                       <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-gradient-to-r ${item.gradientFrom} ${item.gradientTo} text-white`}>
                         {item.typeLabel}
