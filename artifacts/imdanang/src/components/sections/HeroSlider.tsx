@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 
 const slides = [
@@ -40,12 +40,14 @@ const slides = [
   },
 ];
 
-const textVariants = {
+const EASE_OUT = [0.25, 0.1, 0.25, 1] as const;
+
+const textVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.12, duration: 0.6, ease: "easeOut" },
+    transition: { delay: i * 0.12, duration: 0.6, ease: EASE_OUT },
   }),
   exit: { opacity: 0, y: -15, transition: { duration: 0.3 } },
 };
@@ -86,7 +88,7 @@ export default function HeroSlider() {
       onMouseLeave={() => setPaused(false)}
       data-testid="section-hero"
     >
-      <AnimatePresence initial={false} mode="crossfade">
+      <AnimatePresence initial={false} mode="sync">
         <motion.div
           key={current}
           initial={{ opacity: 0, scale: 1.05 }}

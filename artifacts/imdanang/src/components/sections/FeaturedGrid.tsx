@@ -1,5 +1,4 @@
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
+import { motion, useInView, type Variants } from "framer-motion";
 import { useRef } from "react";
 import { MapPin, Star } from "lucide-react";
 
@@ -63,14 +62,16 @@ const items = [
   },
 ];
 
-const containerVariants = {
+const EASE_OUT = [0.25, 0.1, 0.25, 1] as const;
+
+const containerVariants: Variants = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.08 } },
 };
 
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE_OUT } },
 };
 
 function FeatureCard({ item, className }: { item: (typeof items)[0]; className?: string }) {
