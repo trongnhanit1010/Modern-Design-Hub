@@ -28,54 +28,62 @@ function ClassicMap({ isInView }: { isInView: boolean }) {
   return (
     <motion.div initial={{ opacity: 0, y: 30 }} animate={isInView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6 }} className="relative rounded-3xl overflow-hidden shadow-2xl" style={{ minHeight: 520 }}>
       <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, #0a1628 0%, #0d2048 30%, #0a2a3a 60%, #08182e 100%)" }} />
-      <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "linear-gradient(rgba(59,130,246,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.3) 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
-      <div className="absolute inset-0">
-        {[...Array(8)].map((_, i) => (
-          <motion.div key={i} className="absolute rounded-full border border-blue-400/10" style={{ width: `${(i + 1) * 120}px`, height: `${(i + 1) * 120}px`, left: "50%", top: "50%", transform: "translate(-50%, -50%)" }} animate={{ opacity: [0.3, 0.1, 0.3] }} transition={{ duration: 3 + i * 0.5, repeat: Infinity, delay: i * 0.4 }} />
-        ))}
-      </div>
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/World_map_-_low_resolution.svg/1280px-World_map_-_low_resolution.svg.png"
+        alt="World map"
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{ filter: "grayscale(1) invert(1) brightness(0.12) sepia(0.5) hue-rotate(185deg)", opacity: 0.5, mixBlendMode: "screen" }}
+        draggable={false}
+      />
+      <div className="absolute inset-0 opacity-12" style={{ backgroundImage: "linear-gradient(rgba(59,130,246,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.2) 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
       {locations.map((loc, i) => (
-        <motion.div key={loc.id} initial={{ scale: 0, opacity: 0 }} animate={isInView ? { scale: 1, opacity: 1 } : {}} transition={{ delay: i * 0.12 + 0.3, type: "spring", stiffness: 300 }} className="absolute" style={{ left: `${loc.x}%`, top: `${loc.y}%`, transform: "translate(-50%, -50%)" }} onMouseEnter={() => setHovered(loc.id)} onMouseLeave={() => setHovered(null)} data-testid={`pin-location-${loc.id}`}>
+        <motion.div key={loc.id} initial={{ scale: 0, opacity: 0 }} animate={isInView ? { scale: 1, opacity: 1 } : {}} transition={{ delay: i * 0.12 + 0.3, type: "spring", stiffness: 300 }} className="absolute z-20" style={{ left: `${loc.x}%`, top: `${loc.y}%`, transform: "translate(-50%, -50%)" }} onMouseEnter={() => setHovered(loc.id)} onMouseLeave={() => setHovered(null)} data-testid={`pin-location-${loc.id}`}>
           <div className="relative cursor-pointer">
-            <motion.div className="absolute inset-0 rounded-full opacity-60" animate={{ scale: [1, 1.8, 1], opacity: [0.6, 0, 0.6] }} transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }} style={{ background: loc.accent }} />
-            <motion.div whileHover={{ scale: 1.15 }} className={`relative z-10 w-10 h-10 ${loc.color} rounded-full flex items-center justify-center shadow-lg border-2 border-white/30`}>
-              <loc.icon size={18} className="text-white" />
+            <motion.div className="absolute inset-0 rounded-full" animate={{ scale: [1, 2.2, 1], opacity: [0.55, 0, 0.55] }} transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }} style={{ background: loc.accent }} />
+            <motion.div whileHover={{ scale: 1.18 }} className={`relative w-10 h-10 ${loc.color} rounded-full flex items-center justify-center shadow-lg border-2 border-white/40`}>
+              <loc.icon size={17} className="text-white" />
             </motion.div>
           </div>
           <AnimatePresence>
             {hovered === loc.id && (
-              <motion.div initial={{ opacity: 0, y: 8, scale: 0.92 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 8, scale: 0.92 }} transition={{ duration: 0.2 }} className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-44 z-20">
-                <div className="bg-black/80 backdrop-blur-sm rounded-xl p-3 shadow-xl border border-white/10">
-                  <span className={`inline-block text-xs px-2 py-0.5 rounded-full mb-1.5 ${loc.color} text-white font-medium`}>{loc.type}</span>
-                  <h4 className="text-white text-sm font-semibold leading-tight">{loc.name}</h4>
-                  <p className="text-white/60 text-xs mt-0.5">{loc.desc}</p>
+              <motion.div initial={{ opacity: 0, y: 6, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 6, scale: 0.9 }} transition={{ duration: 0.18 }} className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-48 z-30">
+                <div className="bg-gray-900/95 backdrop-blur-md rounded-2xl p-3.5 shadow-2xl border border-white/15">
+                  <span className={`inline-block text-xs px-2.5 py-0.5 rounded-full mb-2 ${loc.color} text-white font-semibold`}>{loc.type}</span>
+                  <h4 className="text-white text-sm font-bold leading-snug">{loc.name}</h4>
+                  <p className="text-white/55 text-xs mt-1 leading-relaxed">{loc.desc}</p>
+                  <div className="flex items-center gap-1 mt-2">
+                    {[...Array(5)].map((_, s) => <span key={s} className={`text-xs ${s < Math.round(loc.rating) ? "text-yellow-400" : "text-white/20"}`}>★</span>)}
+                    <span className="text-white/50 text-xs ml-1">{loc.rating}</span>
+                  </div>
                 </div>
-                <div className="w-2.5 h-2.5 bg-black/80 rotate-45 mx-auto -mt-1.5" />
+                <div className="w-3 h-3 bg-gray-900/95 rotate-45 mx-auto -mt-1.5" />
               </motion.div>
             )}
           </AnimatePresence>
         </motion.div>
       ))}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-[520px] text-center px-4">
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-[520px] text-center px-4 pointer-events-none">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={isInView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.2, duration: 0.6 }}>
-          <div className="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 text-blue-300 rounded-full px-4 py-1.5 text-sm mb-6"><MapPin size={14} />Đà Nẵng, Việt Nam</div>
-          <h2 className="font-serif text-4xl md:text-5xl font-bold text-white mb-4">Tourist Map</h2>
-          <p className="text-white/60 text-lg mb-8 max-w-sm">Khám phá Đà Nẵng qua bản đồ tương tác</p>
-          <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} className="inline-flex items-center gap-2.5 bg-blue-500 hover:bg-blue-400 text-white px-8 py-3.5 rounded-2xl font-semibold text-base transition-colors shadow-lg" data-testid="button-explore-map">
-            <Compass size={18} />Khám phá bản đồ
-          </motion.button>
-          <div className="flex items-center justify-center gap-6 mt-10">
-            {[{ icon: Hotel, label: "Khách sạn", count: "128+" }, { icon: UtensilsCrossed, label: "Nhà hàng", count: "340+" }, { icon: Camera, label: "Địa điểm", count: "85+" }].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <stat.icon size={20} className="text-blue-400 mx-auto mb-1" />
-                <p className="text-white font-bold text-lg">{stat.count}</p>
-                <p className="text-white/50 text-xs">{stat.label}</p>
-              </div>
-            ))}
+          <div className="bg-black/55 backdrop-blur-md rounded-3xl px-8 py-7 inline-block shadow-2xl border border-white/10 pointer-events-auto">
+            <div className="inline-flex items-center gap-2 bg-blue-500/25 border border-blue-400/35 text-blue-300 rounded-full px-4 py-1.5 text-sm mb-5"><MapPin size={13} />Đà Nẵng, Việt Nam</div>
+            <h2 className="font-serif text-3xl md:text-4xl font-bold text-white mb-3">Tourist Map</h2>
+            <p className="text-white/60 text-base mb-6 max-w-xs">Khám phá Đà Nẵng qua bản đồ tương tác</p>
+            <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-400 text-white px-7 py-3 rounded-2xl font-semibold text-sm transition-colors shadow-lg" data-testid="button-explore-map">
+              <Compass size={17} />Khám phá bản đồ
+            </motion.button>
+            <div className="flex items-center justify-center gap-7 mt-7 pt-5 border-t border-white/15">
+              {[{ icon: Hotel, label: "Khách sạn", count: "128+" }, { icon: UtensilsCrossed, label: "Nhà hàng", count: "340+" }, { icon: Camera, label: "Địa điểm", count: "85+" }].map((stat) => (
+                <div key={stat.label} className="text-center">
+                  <stat.icon size={18} className="text-blue-400 mx-auto mb-1" />
+                  <p className="text-white font-bold text-base">{stat.count}</p>
+                  <p className="text-white/45 text-xs">{stat.label}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </motion.div>
       </div>
-      <div className="absolute bottom-4 left-4 bg-black/40 backdrop-blur-sm rounded-xl px-3 py-2 flex items-center gap-2">
+      <div className="absolute bottom-4 left-4 z-20 bg-black/50 backdrop-blur-sm rounded-xl px-3 py-2 flex items-center gap-2">
         <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
         <span className="text-white/70 text-xs">6 địa điểm trên bản đồ</span>
       </div>

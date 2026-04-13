@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { ChevronLeft, ChevronRight, Search, MapPin, Utensils, Hotel, X, Clock, TrendingUp, Trash2 } from "lucide-react";
 
@@ -220,14 +221,15 @@ export default function HeroSlider() {
             </button>
           </div>
 
-          <AnimatePresence>
-            {showSuggestions && (
+          {showSuggestions && dropdownStyle.width > 0 && createPortal(
+            <AnimatePresence>
               <motion.div
-                initial={{ opacity: 0, y: -8, scale: 0.97 }}
+                key="hero-search-dropdown"
+                initial={{ opacity: 0, y: -8, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -8, scale: 0.97 }}
-                transition={{ duration: 0.2 }}
-                style={{ position: "fixed", top: dropdownStyle.top, left: dropdownStyle.left, width: dropdownStyle.width, zIndex: 9999, backgroundColor: "#ffffff" }}
+                exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                transition={{ duration: 0.18 }}
+                style={{ position: "fixed", top: dropdownStyle.top, left: dropdownStyle.left, width: dropdownStyle.width, zIndex: 99999, background: "#ffffff" }}
                 className="rounded-2xl shadow-2xl overflow-hidden"
                 data-testid="search-suggestions"
               >
@@ -336,8 +338,9 @@ export default function HeroSlider() {
                   </div>
                 </div>
               </motion.div>
-            )}
-          </AnimatePresence>
+            </AnimatePresence>,
+            document.body
+          )}
         </motion.div>
       </div>
 

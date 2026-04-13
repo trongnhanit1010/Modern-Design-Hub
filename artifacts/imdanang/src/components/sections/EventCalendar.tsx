@@ -79,9 +79,18 @@ const events = [
 
 const eventDates = events.map((e) => e.date);
 
+const categoryDotColor: Record<string, string> = {
+  "Lễ hội": "bg-pink-500",
+  "Ẩm thực": "bg-orange-500",
+  "Thể thao": "bg-blue-500",
+  "Nghệ thuật": "bg-purple-500",
+  "Festival": "bg-teal-500",
+};
+
 function CalendarView() {
   const [currentMonth, setCurrentMonth] = useState(new Date(2026, 3, 1));
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [hoveredEvent, setHoveredEvent] = useState<number | null>(null);
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
@@ -89,72 +98,122 @@ function CalendarView() {
   const startDow = getDay(monthStart);
   const filteredEvents = selectedDate ? events.filter((e) => isSameDay(e.date, selectedDate)) : events;
   const hasEvent = (date: Date) => eventDates.some((ed) => isSameDay(ed, date));
+  const eventOnDay = (date: Date) => events.find((e) => isSameDay(e.date, date));
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="grid md:grid-cols-5 gap-6">
-      <div className="md:col-span-2 bg-card rounded-3xl border border-card-border p-5 shadow-sm">
-        <div className="flex items-center justify-between mb-5">
-          <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="p-2 rounded-full hover:bg-muted transition-colors" data-testid="button-calendar-prev">
-            <ChevronLeft size={18} />
-          </button>
-          <h3 className="font-semibold text-foreground capitalize">{format(currentMonth, "MMMM yyyy", { locale: vi })}</h3>
-          <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className="p-2 rounded-full hover:bg-muted transition-colors" data-testid="button-calendar-next">
-            <ChevronRight size={18} />
-          </button>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="grid md:grid-cols-5 gap-5">
+      <div className="md:col-span-2 rounded-3xl overflow-hidden shadow-lg border border-card-border">
+        <div className="bg-gradient-to-br from-primary to-blue-700 px-5 pt-5 pb-4">
+          <div className="flex items-center justify-between mb-1">
+            <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} className="p-2 rounded-full text-white/70 hover:text-white hover:bg-white/15 transition-all" data-testid="button-calendar-prev">
+              <ChevronLeft size={18} />
+            </button>
+            <div className="text-center">
+              <h3 className="text-white font-bold text-lg capitalize tracking-wide">{format(currentMonth, "MMMM", { locale: vi })}</h3>
+              <p className="text-white/60 text-xs font-medium">{format(currentMonth, "yyyy")}</p>
+            </div>
+            <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className="p-2 rounded-full text-white/70 hover:text-white hover:bg-white/15 transition-all" data-testid="button-calendar-next">
+              <ChevronRight size={18} />
+            </button>
+          </div>
+          <div className="grid grid-cols-7 mt-3">
+            {["CN", "T2", "T3", "T4", "T5", "T6", "T7"].map((d) => (
+              <div key={d} className="text-center text-xs text-white/50 font-semibold py-1">{d}</div>
+            ))}
+          </div>
         </div>
-        <div className="grid grid-cols-7 mb-2">
-          {["CN", "T2", "T3", "T4", "T5", "T6", "T7"].map((d) => (
-            <div key={d} className="text-center text-xs text-muted-foreground font-medium py-1">{d}</div>
-          ))}
+        <div className="bg-card p-3">
+          <div className="grid grid-cols-7 gap-y-1">
+            {Array.from({ length: startDow }).map((_, i) => <div key={`empty-${i}`} />)}
+            {days.map((day) => {
+              const hasEv = hasEvent(day);
+              const evOnDay = eventOnDay(day);
+              const isSelected = selectedDate ? isSameDay(day, selectedDate) : false;
+              const isTod = isToday(day);
+              const dotColor = evOnDay ? categoryDotColor[evOnDay.category] : "bg-amber-400";
+              return (
+                <button
+                  key={day.toISOString()}
+                  onClick={() => setSelectedDate(isSelected ? null : day)}
+                  className={`relative flex flex-col items-center justify-center h-9 rounded-xl text-sm font-medium transition-all ${isSelected ? "bg-primary text-white shadow-md" : isTod ? "bg-primary/12 text-primary font-bold" : hasEv ? "hover:bg-muted text-foreground" : "text-muted-foreground hover:bg-muted/60"}`}
+                  data-testid={`button-calendar-day-${format(day, "d")}`}
+                >
+                  {format(day, "d")}
+                  {hasEv && !isSelected && <span className={`absolute bottom-1 w-1.5 h-1.5 ${dotColor} rounded-full`} />}
+                </button>
+              );
+            })}
+          </div>
+          {selectedDate && (
+            <button onClick={() => setSelectedDate(null)} className="mt-3 w-full text-xs text-muted-foreground hover:text-primary transition-colors py-1.5 rounded-lg hover:bg-muted">
+              ← Xem tất cả sự kiện
+            </button>
+          )}
         </div>
-        <div className="grid grid-cols-7 gap-0.5">
-          {Array.from({ length: startDow }).map((_, i) => <div key={`empty-${i}`} />)}
-          {days.map((day) => {
-            const hasEv = hasEvent(day);
-            const isSelected = selectedDate ? isSameDay(day, selectedDate) : false;
-            const isTod = isToday(day);
-            return (
-              <button key={day.toISOString()} onClick={() => setSelectedDate(isSelected ? null : day)}
-                className={`relative flex flex-col items-center justify-center h-9 rounded-full text-sm font-medium transition-all ${isSelected ? "bg-primary text-white" : isTod ? "bg-primary/10 text-primary" : "hover:bg-muted text-foreground"}`}
-                data-testid={`button-calendar-day-${format(day, "d")}`}
-              >
-                {format(day, "d")}
-                {hasEv && !isSelected && <span className="absolute bottom-1 w-1 h-1 bg-amber-400 rounded-full" />}
-              </button>
-            );
-          })}
+        <div className="bg-card border-t border-card-border px-4 pb-4">
+          <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wide mb-2 pt-3">Danh mục</p>
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(categoryDotColor).map(([cat, color]) => (
+              <span key={cat} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <span className={`w-2 h-2 rounded-full ${color}`} />
+                {cat}
+              </span>
+            ))}
+          </div>
         </div>
-        {selectedDate && <button onClick={() => setSelectedDate(null)} className="mt-3 w-full text-xs text-muted-foreground hover:text-foreground transition-colors">Xem tất cả sự kiện</button>}
       </div>
-      <div className="md:col-span-3 space-y-3">
-        <div className="flex items-center gap-2 mb-2">
-          <CalendarDays size={16} className="text-primary" />
-          <span className="text-sm font-medium text-foreground">{selectedDate ? `Sự kiện ngày ${format(selectedDate, "d MMMM", { locale: vi })}` : "Sự kiện sắp diễn ra"}</span>
-          {!selectedDate && <span className="ml-auto bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full font-medium">{filteredEvents.length} sự kiện</span>}
+
+      <div className="md:col-span-3 flex flex-col gap-3">
+        <div className="flex items-center gap-2">
+          <CalendarDays size={15} className="text-primary" />
+          <span className="text-sm font-semibold text-foreground">
+            {selectedDate ? `Sự kiện ngày ${format(selectedDate, "d MMMM yyyy", { locale: vi })}` : "Sự kiện sắp diễn ra"}
+          </span>
+          {!selectedDate && (
+            <span className="ml-auto bg-primary/10 text-primary text-xs px-2.5 py-0.5 rounded-full font-semibold">{filteredEvents.length}</span>
+          )}
         </div>
         <AnimatePresence mode="popLayout">
           {filteredEvents.length === 0 ? (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-              <CalendarDays size={40} className="mb-3 opacity-30" />
-              <p className="text-sm">Không có sự kiện nào vào ngày này</p>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-16 text-muted-foreground rounded-3xl bg-muted/30">
+              <CalendarDays size={38} className="mb-3 opacity-25" />
+              <p className="text-sm">Không có sự kiện vào ngày này</p>
             </motion.div>
           ) : filteredEvents.map((event, i) => (
-            <motion.div key={event.id} layout initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ delay: i * 0.06, duration: 0.3 }} whileHover={{ x: 4 }} className="flex gap-4 p-4 bg-card rounded-2xl border border-card-border shadow-sm cursor-pointer group" data-testid={`card-event-${event.id}`}>
-              <div className="relative shrink-0 w-20 h-16 rounded-xl overflow-hidden">
-                <img src={event.thumb} alt={event.title} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black/20" />
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-white font-bold text-lg leading-none">{format(event.date, "d")}</span>
-                  <span className="text-white/80 text-xs">{format(event.date, "MMM", { locale: vi })}</span>
+            <motion.div
+              key={event.id}
+              layout
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.97 }}
+              transition={{ delay: i * 0.05, duration: 0.28 }}
+              whileHover={{ scale: 1.015 }}
+              onHoverStart={() => setHoveredEvent(event.id)}
+              onHoverEnd={() => setHoveredEvent(null)}
+              className="relative overflow-hidden rounded-2xl border border-card-border bg-card shadow-sm cursor-pointer"
+              data-testid={`card-event-${event.id}`}
+            >
+              <div className={`absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b ${event.accent}`} />
+              <div className="flex gap-0 pl-3">
+                <div className="relative shrink-0 w-24 h-24 overflow-hidden rounded-xl m-3 ml-0">
+                  <img src={event.thumb} alt={event.title} className="w-full h-full object-cover transition-transform duration-500" style={{ transform: hoveredEvent === event.id ? "scale(1.08)" : "scale(1)" }} />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute bottom-1.5 left-0 right-0 text-center">
+                    <span className="text-white font-bold text-xl leading-none block">{format(event.date, "d")}</span>
+                    <span className="text-white/80 text-xs capitalize">{format(event.date, "MMM", { locale: vi })}</span>
+                  </div>
                 </div>
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between gap-2">
-                  <h4 className="font-semibold text-sm text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors">{event.title}</h4>
-                  <span className={`shrink-0 text-xs px-2 py-0.5 rounded-full font-medium ${event.categoryColor}`}>{event.category}</span>
+                <div className="flex-1 min-w-0 py-3 pr-3">
+                  <div className="flex items-start justify-between gap-2 mb-1.5">
+                    <h4 className="font-bold text-sm text-foreground leading-snug line-clamp-2 flex-1">{event.title}</h4>
+                    <span className={`shrink-0 text-xs px-2 py-0.5 rounded-full font-semibold ${event.categoryColor}`}>{event.category}</span>
+                  </div>
+                  <p className="text-muted-foreground text-xs leading-relaxed line-clamp-2 mb-2">{event.desc}</p>
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1"><MapPin size={10} className="shrink-0" /><span className="line-clamp-1">{event.location}</span></span>
+                    <span className="flex items-center gap-1 shrink-0"><Clock size={10} />{format(event.date, "d/M")}{!isSameDay(event.date, event.endDate) && ` - ${format(event.endDate, "d/M")}`}</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1 mt-2 text-muted-foreground text-xs"><MapPin size={11} /><span className="line-clamp-1">{event.location}</span></div>
-                <div className="flex items-center gap-1 mt-1 text-muted-foreground text-xs"><Tag size={11} /><span>{format(event.date, "d MMM", { locale: vi })}{!isSameDay(event.date, event.endDate) && ` — ${format(event.endDate, "d MMM", { locale: vi })}`}</span></div>
               </div>
             </motion.div>
           ))}
