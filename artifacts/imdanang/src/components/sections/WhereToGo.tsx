@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
-import { MapPin, Eye, Star } from "lucide-react";
+import { MapPin, Eye, Star, ChevronLeft, ChevronRight } from "lucide-react";
 
 const destinations = [
   {
@@ -77,46 +77,87 @@ const accordionDestinations = [
   { id: 5, name: "Lăng Cô", listings: "29 Listing", image: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&auto=format&fit=crop" },
 ];
 
-function GridOption({ isInView }: { isInView: boolean }) {
+const VISIBLE = 4;
+
+function CarouselOption() {
+  const [current, setCurrent] = useState(0);
+  const maxIndex = destinations.length - VISIBLE;
+
+  const prev = () => setCurrent((c) => Math.max(0, c - 1));
+  const next = () => setCurrent((c) => Math.min(maxIndex, c + 1));
+
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {destinations.map((dest, i) => (
+    <div className="relative">
+      <div className="overflow-hidden rounded-2xl">
         <motion.div
-          key={dest.id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: i * 0.06, duration: 0.4 }}
-          whileHover={{ y: -6 }}
-          className="relative rounded-2xl overflow-hidden cursor-pointer group shadow-md"
-          data-testid={`card-destination-grid-${dest.id}`}
+          className="flex gap-4"
+          animate={{ x: `calc(-${current * (100 / VISIBLE)}% - ${current * 16 / VISIBLE}px)` }}
+          transition={{ type: "spring", stiffness: 300, damping: 35 }}
+          style={{ width: `${(destinations.length / VISIBLE) * 100}%` }}
         >
-          <div className="aspect-[3/4]">
-            <img
-              src={dest.image}
-              alt={dest.name}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 p-4">
-            <div className="flex items-center gap-1 mb-1.5">
-              <Star size={11} className="text-amber-400 fill-amber-400" />
-              <span className="text-white/90 text-xs font-semibold">{dest.rating}</span>
+          {destinations.map((dest) => (
+            <div
+              key={dest.id}
+              className="relative rounded-2xl overflow-hidden cursor-pointer group shadow-md shrink-0"
+              style={{ width: `${100 / destinations.length}%` }}
+              data-testid={`card-destination-carousel-${dest.id}`}
+            >
+              <div className="aspect-[3/4]">
+                <img
+                  src={dest.image}
+                  alt={dest.name}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-4">
+                <div className="flex items-center gap-1 mb-1.5">
+                  <Star size={11} className="text-amber-400 fill-amber-400" />
+                  <span className="text-white/90 text-xs font-semibold">{dest.rating}</span>
+                </div>
+                <h3 className="text-white font-semibold text-sm leading-tight mb-1">{dest.name}</h3>
+                <div className="flex items-center gap-1">
+                  <MapPin size={10} className="text-white/60" />
+                  <span className="text-white/60 text-xs">{dest.location}</span>
+                </div>
+                <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-white/15">
+                  <span className="text-amber-300 text-xs">{dest.listings}</span>
+                  <span className="text-xs bg-white/20 backdrop-blur-sm text-white font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Eye size={10} />Xem
+                  </span>
+                </div>
+              </div>
             </div>
-            <h3 className="text-white font-semibold text-sm leading-tight mb-1">{dest.name}</h3>
-            <div className="flex items-center gap-1">
-              <MapPin size={10} className="text-white/60" />
-              <span className="text-white/60 text-xs">{dest.location}</span>
-            </div>
-            <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-white/15">
-              <span className="text-amber-300 text-xs">{dest.listings}</span>
-              <span className="text-xs bg-white/20 backdrop-blur-sm text-white font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Eye size={10} />Xem
-              </span>
-            </div>
-          </div>
+          ))}
         </motion.div>
-      ))}
+      </div>
+
+      <button
+        onClick={prev}
+        disabled={current === 0}
+        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-9 h-9 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+        data-testid="button-carousel-prev"
+      >
+        <ChevronLeft size={18} />
+      </button>
+      <button
+        onClick={next}
+        disabled={current >= maxIndex}
+        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-9 h-9 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+        data-testid="button-carousel-next"
+      >
+        <ChevronRight size={18} />
+      </button>
+
+      <div className="flex justify-center gap-1.5 mt-4">
+        {Array.from({ length: maxIndex + 1 }).map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrent(i)}
+            className={`rounded-full transition-all ${i === current ? "w-5 h-1.5 bg-blue-500" : "w-1.5 h-1.5 bg-gray-300 hover:bg-gray-400"}`}
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -210,8 +251,8 @@ export default function WhereToGo() {
         >
           <AnimatePresence mode="wait">
             {option === "A" ? (
-              <motion.div key="grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <GridOption isInView={isInView} />
+              <motion.div key="carousel" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <CarouselOption />
               </motion.div>
             ) : (
               <motion.div key="accordion" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
