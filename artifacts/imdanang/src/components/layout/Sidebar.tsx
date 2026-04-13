@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
+import { Link, useLocation } from "wouter";
 import {
   Home, Hotel, MapPin, UtensilsCrossed, Bus, CalendarDays,
   ShoppingBag, Map, Bot, ChevronRight
@@ -6,19 +7,20 @@ import {
 import { useSidebar } from "@/context/SidebarContext";
 
 const navItems = [
-  { icon: Home, label: "Trang chủ", href: "#" },
-  { icon: Hotel, label: "Hotels", href: "#hotels" },
-  { icon: MapPin, label: "Địa điểm tham quan", href: "#destinations" },
-  { icon: UtensilsCrossed, label: "Restaurants", href: "#deals" },
-  { icon: Bus, label: "Giao thông / Di chuyển", href: "#" },
-  { icon: CalendarDays, label: "Sự kiện - Lễ hội", href: "#events" },
-  { icon: ShoppingBag, label: "Mua sắm", href: "#" },
-  { icon: Map, label: "Bản đồ", href: "#map" },
-  { icon: Bot, label: "AI Trợ lý", href: "#" },
+  { icon: Home, label: "Trang chủ", href: "/" },
+  { icon: Hotel, label: "Hotels", href: "/hotels" },
+  { icon: MapPin, label: "Địa điểm tham quan", href: "/destinations" },
+  { icon: UtensilsCrossed, label: "Restaurants", href: "/restaurants" },
+  { icon: Bus, label: "Giao thông / Di chuyển", href: "/transport" },
+  { icon: CalendarDays, label: "Sự kiện - Lễ hội", href: "/events" },
+  { icon: ShoppingBag, label: "Mua sắm", href: "/shopping" },
+  { icon: Map, label: "Bản đồ", href: "/map" },
+  { icon: Bot, label: "AI Trợ lý", href: "/ai" },
 ];
 
 export default function Sidebar() {
   const { isExpanded, toggle } = useSidebar();
+  const [location] = useLocation();
 
   return (
     <motion.aside
@@ -28,38 +30,49 @@ export default function Sidebar() {
       data-testid="sidebar"
     >
       <nav className="flex-1 py-4 overflow-hidden">
-        {navItems.map((item, i) => (
-          <motion.a
-            key={item.label}
-            href={item.href}
-            initial={false}
-            whileHover={{ backgroundColor: "hsl(var(--muted))" }}
-            className="flex items-center gap-3 px-3.5 py-2.5 text-muted-foreground hover:text-foreground transition-colors group relative"
-            data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z-]/g, "")}`}
-          >
-            <div className="shrink-0 w-[33px] flex items-center justify-center">
-              <item.icon size={18} />
-            </div>
-            <AnimatePresence initial={false}>
-              {isExpanded && (
-                <motion.span
-                  initial={{ opacity: 0, x: -8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -8 }}
-                  transition={{ delay: i * 0.03, duration: 0.18 }}
-                  className="text-sm font-medium whitespace-nowrap"
-                >
-                  {item.label}
-                </motion.span>
-              )}
-            </AnimatePresence>
-            {!isExpanded && (
-              <div className="absolute left-full ml-2 px-2 py-1 bg-card border border-border text-foreground text-xs rounded shadow-md opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-opacity">
-                {item.label}
-              </div>
-            )}
-          </motion.a>
-        ))}
+        {navItems.map((item, i) => {
+          const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
+          return (
+            <Link key={item.label} href={item.href}>
+              <motion.div
+                initial={false}
+                whileHover={{ backgroundColor: "hsl(var(--muted))" }}
+                animate={{ backgroundColor: isActive ? "hsl(var(--muted))" : "transparent" }}
+                className={`flex items-center gap-3 px-3.5 py-2.5 cursor-pointer transition-colors group relative ${isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z-]/g, "")}`}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="sidebar-active"
+                    className="absolute left-0 top-0 bottom-0 w-0.5 bg-blue-500 rounded-r"
+                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                  />
+                )}
+                <div className={`shrink-0 w-[33px] flex items-center justify-center ${isActive ? "text-blue-500" : ""}`}>
+                  <item.icon size={18} />
+                </div>
+                <AnimatePresence initial={false}>
+                  {isExpanded && (
+                    <motion.span
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -8 }}
+                      transition={{ delay: i * 0.03, duration: 0.18 }}
+                      className={`text-sm font-medium whitespace-nowrap ${isActive ? "text-foreground font-semibold" : ""}`}
+                    >
+                      {item.label}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+                {!isExpanded && (
+                  <div className="absolute left-full ml-2 px-2 py-1 bg-card border border-border text-foreground text-xs rounded shadow-md opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-opacity">
+                    {item.label}
+                  </div>
+                )}
+              </motion.div>
+            </Link>
+          );
+        })}
       </nav>
 
       <button
