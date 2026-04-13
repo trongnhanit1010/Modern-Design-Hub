@@ -11,18 +11,15 @@ const locations = [
   { id: 6, x: 60, y: 75, name: "Phố cổ Hội An", type: "Di sản", icon: Compass, color: "bg-rose-500", border: "border-rose-300", accent: "#f43f5e", desc: "Di sản văn hóa UNESCO, phố cổ đèn lồng rực rỡ", rating: 4.9, img: "https://images.unsplash.com/photo-1548013146-72479768bada?w=300&auto=format&fit=crop" },
 ];
 
-function WorldMapSvg() {
+function WorldMapBg() {
   return (
-    <svg className="absolute inset-0 w-full h-full opacity-10" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice" fill="none">
-      <path d="M50 200 Q80 180 120 195 Q150 185 170 200 Q200 190 230 200 Q250 195 260 210 Q280 215 300 205 Q320 195 340 205 Q360 200 370 215 L380 230 Q370 245 360 240 Q340 250 320 245 Q300 255 280 248 Q260 258 240 250 Q220 255 200 245 Q180 250 160 240 Q140 248 120 238 Q100 244 80 235 Q60 240 50 225 Z" fill="currentColor" className="text-blue-300" />
-      <path d="M400 100 Q430 90 460 100 Q490 95 510 108 Q530 102 550 112 Q570 108 590 120 Q610 115 630 128 L640 145 Q630 158 610 152 Q590 162 570 155 Q550 165 530 158 Q510 168 490 160 Q470 165 450 155 Q430 162 410 152 Q395 158 390 145 Q385 130 395 115 Z" fill="currentColor" className="text-blue-300" />
-      <path d="M500 200 Q520 188 545 195 Q565 185 585 198 Q600 192 615 205 Q628 200 635 215 L638 230 Q628 242 615 238 Q600 248 585 240 Q565 250 545 242 Q525 248 510 238 Q495 245 490 230 Q488 215 500 200 Z" fill="currentColor" className="text-blue-300" />
-      <path d="M50 300 Q75 285 100 295 Q125 285 150 295 Q170 288 190 300 Q205 295 215 310 L218 325 Q205 338 190 332 Q170 342 150 333 Q125 340 100 332 Q75 340 55 330 Q42 320 50 305 Z" fill="currentColor" className="text-blue-300" />
-      <path d="M680 180 Q700 170 720 180 Q738 172 750 185 Q762 178 770 192 L772 208 Q762 220 750 215 Q738 224 720 215 Q700 222 682 212 Q670 205 680 190 Z" fill="currentColor" className="text-blue-300" />
-      <path d="M660 280 Q680 270 700 278 Q718 268 730 278 Q742 272 750 284 L752 298 Q742 310 728 304 Q712 312 695 305 Q675 312 660 302 Q650 294 660 282 Z" fill="currentColor" className="text-blue-300" />
-      <ellipse cx="350" cy="375" rx="60" ry="35" fill="currentColor" className="text-blue-300" />
-      <ellipse cx="400" cy="420" rx="40" ry="22" fill="currentColor" className="text-blue-300" />
-    </svg>
+    <img
+      src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/World_map_-_low_resolution.svg/1280px-World_map_-_low_resolution.svg.png"
+      alt="World map"
+      className="absolute inset-0 w-full h-full object-cover"
+      style={{ filter: "grayscale(1) invert(1) brightness(0.18) sepia(0.4) hue-rotate(180deg)", opacity: 0.55, mixBlendMode: "screen" }}
+      draggable={false}
+    />
   );
 }
 
@@ -101,9 +98,7 @@ function ModernMap({ isInView }: { isInView: boolean }) {
     >
       <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, #0c4a6e 0%, #075985 20%, #0369a1 45%, #0891b2 70%, #06b6d4 90%, #22d3ee 100%)" }} />
       <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(circle at 1.5px 1.5px, rgba(255,255,255,0.8) 1.5px, transparent 0)", backgroundSize: "28px 28px" }} />
-      <div className="absolute inset-0 opacity-30">
-        <WorldMapSvg />
-      </div>
+      <WorldMapBg />
       <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 20% 70%, rgba(251,191,36,0.15) 0%, transparent 40%), radial-gradient(ellipse at 80% 20%, rgba(34,211,238,0.2) 0%, transparent 45%)" }} />
 
       <div className="relative z-10 grid md:grid-cols-5 min-h-[520px]">

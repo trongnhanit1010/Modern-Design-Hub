@@ -73,7 +73,7 @@ export default function FeaturedGrid() {
         </div>
 
         <motion.div variants={containerVariants} initial="hidden" animate={isInView ? "visible" : "hidden"} className="hidden md:flex flex-col gap-3">
-          <div className="grid gap-3" style={{ gridTemplateColumns: "2fr 1fr 1fr", gridTemplateRows: "280px 180px" }}>
+          <div className="grid gap-3" style={{ gridTemplateColumns: "2fr 1fr 1fr", gridTemplateRows: "230px 230px" }}>
             <FeatureCard item={featured.main} className="row-span-2" />
             {featured.topRight.map((item) => (
               <FeatureCard key={item.id} item={item} />

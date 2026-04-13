@@ -75,6 +75,14 @@ export default function HeroSlider() {
   const [searchVal, setSearchVal] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const [dropdownStyle, setDropdownStyle] = useState<{ top: number; left: number; width: number }>({ top: 0, left: 0, width: 0 });
+
+  const updateDropdownPosition = () => {
+    if (searchRef.current) {
+      const rect = searchRef.current.getBoundingClientRect();
+      setDropdownStyle({ top: rect.bottom + 8, left: rect.left, width: rect.width });
+    }
+  };
 
   const next = useCallback(() => {
     setCurrent((c) => (c + 1) % slides.length);
@@ -194,7 +202,7 @@ export default function HeroSlider() {
               type="search"
               value={searchVal}
               onChange={(e) => setSearchVal(e.target.value)}
-              onFocus={() => setShowSuggestions(true)}
+              onFocus={() => { updateDropdownPosition(); setShowSuggestions(true); }}
               placeholder="Find places, restaurants, hotels..."
               className="flex-1 bg-transparent text-white placeholder:text-white/50 text-sm py-1.5 px-2 focus:outline-none"
               data-testid="input-search-hero"
@@ -219,7 +227,8 @@ export default function HeroSlider() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -8, scale: 0.97 }}
                 transition={{ duration: 0.2 }}
-                className="absolute top-full mt-2 left-0 right-0 bg-white rounded-2xl shadow-2xl z-20 overflow-hidden"
+                style={{ position: "fixed", top: dropdownStyle.top, left: dropdownStyle.left, width: dropdownStyle.width, zIndex: 9999, backgroundColor: "#ffffff" }}
+                className="rounded-2xl shadow-2xl overflow-hidden"
                 data-testid="search-suggestions"
               >
                 <div className="p-4 space-y-4">

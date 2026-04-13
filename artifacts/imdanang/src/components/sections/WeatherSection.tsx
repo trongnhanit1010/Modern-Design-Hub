@@ -144,6 +144,7 @@ function AnimatedWeatherBg({ type }: { type: WeatherType }) {
           <RainEffect />
         </>
       )}
+      <div className="absolute inset-0 bg-black/45" />
     </div>
   );
 }
@@ -165,7 +166,7 @@ function LocationWeatherCard({ loc, subMode, isInView, index }: { loc: typeof lo
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
         </>
       ) : (
-        <AnimatedWeatherBg type={loc.type} />
+        <div className={`absolute inset-0 bg-gradient-to-br ${loc.gradient}`} />
       )}
       <div className="relative z-10 p-5">
         <div className="flex items-start justify-between mb-3">
