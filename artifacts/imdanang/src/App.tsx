@@ -9,12 +9,13 @@ import { motion } from "framer-motion";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Hotels from "@/pages/Hotels";
+import HotelDetail from "@/pages/HotelDetail";
+import TouristMapPage from "@/pages/TouristMapPage";
 import Destinations from "@/pages/Destinations";
 import Restaurants from "@/pages/Restaurants";
 import Transport from "@/pages/Transport";
 import Events from "@/pages/Events";
 import Shopping from "@/pages/Shopping";
-import MapPage from "@/pages/MapPage";
 import AIAssistant from "@/pages/AIAssistant";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
@@ -48,13 +49,14 @@ function Layout() {
       >
         <Switch>
           <Route path="/" component={Home} />
-          <Route path="/hotels" component={Hotels} />
+          <Route path="/luu-tru-khach-san" component={Hotels} />
+          <Route path="/luu-tru-khach-san/:slug" component={HotelDetail} />
+          <Route path="/ban-do" component={TouristMapPage} />
           <Route path="/destinations" component={Destinations} />
           <Route path="/restaurants" component={Restaurants} />
           <Route path="/transport" component={Transport} />
           <Route path="/events" component={Events} />
           <Route path="/shopping" component={Shopping} />
-          <Route path="/map" component={MapPage} />
           <Route path="/ai" component={AIAssistant} />
           <Route component={NotFound} />
         </Switch>

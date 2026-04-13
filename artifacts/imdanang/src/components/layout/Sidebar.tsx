@@ -8,13 +8,13 @@ import { useSidebar } from "@/context/SidebarContext";
 
 const navItems = [
   { icon: Home, label: "Trang chủ", href: "/" },
-  { icon: Hotel, label: "Hotels", href: "/hotels" },
+  { icon: Hotel, label: "Hotels", href: "/luu-tru-khach-san" },
   { icon: MapPin, label: "Địa điểm tham quan", href: "/destinations" },
   { icon: UtensilsCrossed, label: "Restaurants", href: "/restaurants" },
   { icon: Bus, label: "Giao thông / Di chuyển", href: "/transport" },
   { icon: CalendarDays, label: "Sự kiện - Lễ hội", href: "/events" },
   { icon: ShoppingBag, label: "Mua sắm", href: "/shopping" },
-  { icon: Map, label: "Bản đồ", href: "/map" },
+  { icon: Map, label: "Bản đồ", href: "/ban-do" },
   { icon: Bot, label: "AI Trợ lý", href: "/ai" },
 ];
 
@@ -32,6 +32,7 @@ export default function Sidebar() {
       <nav className="flex-1 py-4 overflow-hidden">
         {navItems.map((item, i) => {
           const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
+
           return (
             <Link key={item.label} href={item.href}>
               <motion.div
@@ -44,11 +45,11 @@ export default function Sidebar() {
                 {isActive && (
                   <motion.div
                     layoutId="sidebar-active"
-                    className="absolute left-0 top-0 bottom-0 w-0.5 bg-blue-500 rounded-r"
+                    className="absolute left-0 top-0 bottom-0 w-0.5 bg-primary rounded-r"
                     transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
                 )}
-                <div className={`shrink-0 w-[33px] flex items-center justify-center ${isActive ? "text-blue-500" : ""}`}>
+                <div className={`shrink-0 w-[33px] flex items-center justify-center ${isActive ? "text-primary" : ""}`}>
                   <item.icon size={18} />
                 </div>
                 <AnimatePresence initial={false}>
