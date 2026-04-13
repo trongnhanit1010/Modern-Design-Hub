@@ -1,7 +1,6 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
-import { ChevronLeft, ChevronRight, MapPin, Eye } from "lucide-react";
-import useEmblaCarousel from "embla-carousel-react";
+import { MapPin, Eye, Star } from "lucide-react";
 
 const destinations = [
   {
@@ -60,6 +59,14 @@ const destinations = [
     rating: 4.8,
     image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&auto=format&fit=crop",
   },
+  {
+    id: 8,
+    name: "Vinpearl Resort",
+    location: "Non Nước Beach",
+    listings: "52 Listing",
+    rating: 4.9,
+    image: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=600&auto=format&fit=crop",
+  },
 ];
 
 const accordionDestinations = [
@@ -70,91 +77,52 @@ const accordionDestinations = [
   { id: 5, name: "Lăng Cô", listings: "29 Listing", image: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&auto=format&fit=crop" },
 ];
 
-const INITIAL_INDEX = 2;
-
-function CarouselOption() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: "center", containScroll: "trimSnaps", startIndex: INITIAL_INDEX });
-  const [activeIdx, setActiveIdx] = useState(INITIAL_INDEX);
-  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
-  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
-
-  useEffect(() => {
-    if (!emblaApi) return;
-    const onSelect = () => setActiveIdx(emblaApi.selectedScrollSnap());
-    emblaApi.on("select", onSelect);
-    return () => { emblaApi.off("select", onSelect); };
-  }, [emblaApi]);
-
+function GridOption({ isInView }: { isInView: boolean }) {
   return (
-    <div className="relative">
-      <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex gap-3 md:gap-4 py-4">
-          {destinations.map((dest, i) => {
-            const isActive = i === activeIdx;
-            return (
-              <motion.div
-                key={dest.id}
-                animate={{ scale: isActive ? 1 : 0.92, opacity: isActive ? 1 : 0.72 }}
-                transition={{ type: "spring", stiffness: 300, damping: 28 }}
-                onClick={() => emblaApi?.scrollTo(i)}
-                className="relative shrink-0 rounded-2xl overflow-hidden cursor-pointer group shadow-md"
-                style={{ width: isActive ? "17rem" : "13rem" }}
-                data-testid={`card-destination-carousel-${dest.id}`}
-              >
-                <div className="h-[26rem]">
-                  <img
-                    src={dest.image}
-                    alt={dest.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-                {isActive && (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute inset-0 ring-2 ring-white/40 rounded-2xl pointer-events-none" />
-                )}
-                <div className="absolute bottom-0 left-0 right-0 p-4">
-                  {isActive && (
-                    <motion.span initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="inline-block text-xs bg-white/20 backdrop-blur-sm text-white px-2 py-0.5 rounded-full mb-2 font-medium">
-                      ★ {dest.rating}
-                    </motion.span>
-                  )}
-                  <h3 className={`text-white font-semibold leading-tight transition-all ${isActive ? "text-base" : "text-sm"}`}>{dest.name}</h3>
-                  <div className="flex items-center gap-1 mt-1">
-                    <MapPin size={10} className="text-white/60" />
-                    <span className="text-white/60 text-xs">{dest.location}</span>
-                  </div>
-                  {isActive && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-between mt-2">
-                      <span className="text-amber-300 text-xs">{dest.listings}</span>
-                      <span className="text-xs bg-white text-gray-900 font-semibold px-3 py-1 rounded-full flex items-center gap-1"><Eye size={10} />Xem</span>
-                    </motion.div>
-                  )}
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      </div>
-      <button
-        onClick={scrollPrev}
-        className="absolute -left-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white shadow-lg border border-border hover:bg-muted transition-colors z-10"
-        data-testid="button-carousel-prev"
-      >
-        <ChevronLeft size={18} />
-      </button>
-      <button
-        onClick={scrollNext}
-        className="absolute -right-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white shadow-lg border border-border hover:bg-muted transition-colors z-10"
-        data-testid="button-carousel-next"
-      >
-        <ChevronRight size={18} />
-      </button>
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {destinations.map((dest, i) => (
+        <motion.div
+          key={dest.id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: i * 0.06, duration: 0.4 }}
+          whileHover={{ y: -6 }}
+          className="relative rounded-2xl overflow-hidden cursor-pointer group shadow-md"
+          data-testid={`card-destination-grid-${dest.id}`}
+        >
+          <div className="aspect-[3/4]">
+            <img
+              src={dest.image}
+              alt={dest.name}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-4">
+            <div className="flex items-center gap-1 mb-1.5">
+              <Star size={11} className="text-amber-400 fill-amber-400" />
+              <span className="text-white/90 text-xs font-semibold">{dest.rating}</span>
+            </div>
+            <h3 className="text-white font-semibold text-sm leading-tight mb-1">{dest.name}</h3>
+            <div className="flex items-center gap-1">
+              <MapPin size={10} className="text-white/60" />
+              <span className="text-white/60 text-xs">{dest.location}</span>
+            </div>
+            <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-white/15">
+              <span className="text-amber-300 text-xs">{dest.listings}</span>
+              <span className="text-xs bg-white/20 backdrop-blur-sm text-white font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Eye size={10} />Xem
+              </span>
+            </div>
+          </div>
+        </motion.div>
+      ))}
     </div>
   );
 }
 
 function AccordionOption() {
-  const [active, setActive] = useState<number>(accordionDestinations.length - 1);
+  const [active, setActive] = useState<number>(3);
 
   return (
     <div className="flex gap-2 h-[480px]">
@@ -242,8 +210,8 @@ export default function WhereToGo() {
         >
           <AnimatePresence mode="wait">
             {option === "A" ? (
-              <motion.div key="carousel" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <CarouselOption />
+              <motion.div key="grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <GridOption isInView={isInView} />
               </motion.div>
             ) : (
               <motion.div key="accordion" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>

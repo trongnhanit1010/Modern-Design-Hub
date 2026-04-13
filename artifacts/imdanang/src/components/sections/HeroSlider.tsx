@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { createPortal } from "react-dom";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { ChevronLeft, ChevronRight, Search, MapPin, Utensils, Hotel, X, Clock, TrendingUp, Trash2 } from "lucide-react";
 
@@ -76,14 +75,6 @@ export default function HeroSlider() {
   const [searchVal, setSearchVal] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
-  const [dropdownStyle, setDropdownStyle] = useState<{ top: number; left: number; width: number }>({ top: 0, left: 0, width: 0 });
-
-  const updateDropdownPosition = () => {
-    if (searchRef.current) {
-      const rect = searchRef.current.getBoundingClientRect();
-      setDropdownStyle({ top: rect.bottom + 8, left: rect.left, width: rect.width });
-    }
-  };
 
   const next = useCallback(() => {
     setCurrent((c) => (c + 1) % slides.length);
@@ -108,19 +99,13 @@ export default function HeroSlider() {
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      const target = e.target as Node;
-      if (searchRef.current && !searchRef.current.contains(target)) {
-        const dropdown = document.querySelector('[data-testid="search-suggestions"]');
-        if (dropdown && dropdown.contains(target)) return;
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
         setShowSuggestions(false);
       }
     };
-    const handleResize = () => updateDropdownPosition();
     document.addEventListener("mousedown", handleClick);
-    window.addEventListener("resize", handleResize, { passive: true });
     return () => {
       document.removeEventListener("mousedown", handleClick);
-      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -211,7 +196,7 @@ export default function HeroSlider() {
               type="search"
               value={searchVal}
               onChange={(e) => setSearchVal(e.target.value)}
-              onFocus={() => { updateDropdownPosition(); setShowSuggestions(true); }}
+              onFocus={() => setShowSuggestions(true)}
               placeholder="Find places, restaurants, hotels..."
               className="flex-1 bg-transparent text-white placeholder:text-white/50 text-sm py-1.5 px-2 focus:outline-none"
               data-testid="input-search-hero"
@@ -229,16 +214,16 @@ export default function HeroSlider() {
             </button>
           </div>
 
-          {showSuggestions && dropdownStyle.width > 0 && createPortal(
-            <AnimatePresence>
+          <AnimatePresence>
+            {showSuggestions && (
               <motion.div
                 key="hero-search-dropdown"
                 initial={{ opacity: 0, y: -8, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -8, scale: 0.98 }}
                 transition={{ duration: 0.18 }}
-                style={{ position: "fixed", top: dropdownStyle.top, left: dropdownStyle.left, width: dropdownStyle.width, zIndex: 99999, background: "#ffffff", maxHeight: "min(75vh, 480px)", overflowY: "auto" }}
-                className="rounded-2xl shadow-2xl"
+                className="absolute left-0 right-0 top-full mt-2 rounded-2xl shadow-2xl"
+                style={{ zIndex: 99999, background: "#ffffff", maxHeight: "min(75vh, 480px)", overflowY: "auto" }}
                 data-testid="search-suggestions"
               >
                 <div className="p-4 space-y-4">
@@ -346,9 +331,8 @@ export default function HeroSlider() {
                   </div>
                 </div>
               </motion.div>
-            </AnimatePresence>,
-            document.body
-          )}
+            )}
+          </AnimatePresence>
         </motion.div>
       </div>
 
