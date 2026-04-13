@@ -4,46 +4,40 @@ import { Shield, Banknote, PhoneCall, Plane, ArrowRight } from "lucide-react";
 
 const mainTip = {
   title: "Visa & Nhập cảnh",
-  subtitle: "Mọi điều bạn cần biết trước khi đến Đà Nẵng",
-  desc: "Công dân từ hơn 45 quốc gia được miễn thị thực khi đến Việt Nam. E-visa có thể xin online trong 3 ngày làm việc với chi phí 25 USD. Hộ chiếu cần còn hiệu lực ít nhất 6 tháng.",
-  image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&auto=format&fit=crop",
   badge: "Cần biết",
   badgeColor: "bg-blue-500",
-  icon: Plane,
+  desc: "Công dân từ hơn 45 quốc gia được miễn thị thực khi đến Việt Nam. E-visa có thể xin online trong 3 ngày làm việc với chi phí 25 USD. Hộ chiếu cần còn hiệu lực ít nhất 6 tháng.",
+  image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&auto=format&fit=crop",
 };
 
 const tips = [
   {
     id: 1,
     title: "Tiền tệ & Thanh toán",
-    desc: "Đồng Việt Nam (VND) là tiền tệ chính thức. Tỷ giá: 1 USD ≈ 24,000–25,000 VND. ATM có sẵn khắp nơi. Thẻ tín dụng được chấp nhận tại hầu hết khách sạn và nhà hàng.",
-    image: "https://images.unsplash.com/photo-1580519542036-c47de6196ba5?w=400&auto=format&fit=crop",
+    desc: "Đồng Việt Nam (VND). Tỷ giá: 1 USD ≈ 25,000 VND. ATM có sẵn khắp nơi. Thẻ tín dụng được chấp nhận tại hầu hết khách sạn.",
+    image: "https://images.unsplash.com/photo-1580519542036-c47de6196ba5?w=500&auto=format&fit=crop",
     icon: Banknote,
-    color: "from-emerald-500 to-teal-600",
   },
   {
     id: 2,
     title: "An toàn & Sức khỏe",
-    desc: "Đà Nẵng là thành phố an toàn cho du khách. Nên có bảo hiểm du lịch. Uống nước đóng chai. Thoa kem chống nắng SPF 50+ khi ra biển.",
-    image: "https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?w=400&auto=format&fit=crop",
+    desc: "Đà Nẵng rất an toàn. Nên có bảo hiểm du lịch. Uống nước đóng chai. Thoa kem chống nắng SPF 50+ khi ra biển.",
+    image: "https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?w=500&auto=format&fit=crop",
     icon: Shield,
-    color: "from-blue-500 to-indigo-600",
   },
   {
     id: 3,
     title: "Liên lạc khẩn cấp",
-    desc: "Cảnh sát: 113 · Cứu hỏa: 114 · Cấp cứu: 115. Đường dây hỗ trợ du lịch: 1800 599 954 (miễn phí). Đại sứ quán nhiều nước tại Hà Nội, lãnh sự quán tại TP.HCM.",
-    image: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=400&auto=format&fit=crop",
+    desc: "Cảnh sát: 113 · Cứu hỏa: 114 · Cấp cứu: 115. Đường dây hỗ trợ du lịch: 1800 599 954 (miễn phí).",
+    image: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=500&auto=format&fit=crop",
     icon: PhoneCall,
-    color: "from-orange-500 to-red-500",
   },
   {
     id: 4,
     title: "Di chuyển & Giao thông",
-    desc: "Grab là ứng dụng gọi xe phổ biến nhất. Xe buýt công cộng có sẵn nhưng ít tiện lợi. Thuê xe máy khoảng 150,000–200,000 VND/ngày. Sân bay cách trung tâm 3km.",
-    image: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=400&auto=format&fit=crop",
+    desc: "Grab là ứng dụng gọi xe phổ biến nhất. Thuê xe máy ~150K VND/ngày. Sân bay cách trung tâm chỉ 3km.",
+    image: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=500&auto=format&fit=crop",
     icon: Plane,
-    color: "from-violet-500 to-purple-600",
   },
 ];
 
@@ -64,12 +58,15 @@ export default function NeedToKnow() {
           </a>
         </div>
 
-        <div className="hidden md:grid grid-cols-3 gap-4" style={{ gridTemplateRows: "480px" }}>
+        <div
+          className="hidden md:grid gap-3"
+          style={{ gridTemplateColumns: "2fr 1fr 1fr", gridTemplateRows: "280px 180px" }}
+        >
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6 }}
-            className="relative col-span-1 row-span-1 rounded-3xl overflow-hidden group cursor-pointer shadow-lg"
+            className="relative col-span-1 row-span-2 rounded-2xl overflow-hidden group cursor-pointer shadow-md"
             data-testid="card-needtoknow-main"
           >
             <img src={mainTip.image} alt={mainTip.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
@@ -88,31 +85,29 @@ export default function NeedToKnow() {
             </div>
           </motion.div>
 
-          <div className="col-span-2 grid grid-cols-2 gap-4" style={{ gridTemplateRows: "repeat(2, 1fr)" }}>
-            {tips.map((tip, i) => (
-              <motion.div
-                key={tip.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: i * 0.1 + 0.2, duration: 0.5 }}
-                whileHover={{ scale: 1.02, y: -4 }}
-                className="relative rounded-2xl overflow-hidden group cursor-pointer shadow-md"
-                data-testid={`card-needtoknow-${tip.id}`}
-              >
-                <img src={tip.image} alt={tip.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                <div className={`absolute inset-0 bg-gradient-to-br ${tip.color} opacity-75`} />
-                <div className="absolute inset-0 p-4 flex flex-col justify-between">
-                  <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                    <tip.icon size={20} className="text-white" />
+          {tips.map((tip, i) => (
+            <motion.div
+              key={tip.id}
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: i * 0.1 + 0.2, duration: 0.5 }}
+              whileHover={{ scale: 1.02, y: -4 }}
+              className="relative rounded-2xl overflow-hidden group cursor-pointer shadow-md"
+              data-testid={`card-needtoknow-${tip.id}`}
+            >
+              <img src={tip.image} alt={tip.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-4">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <div className="w-7 h-7 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                    <tip.icon size={14} className="text-white" />
                   </div>
-                  <div>
-                    <h4 className="text-white font-bold text-base mb-1">{tip.title}</h4>
-                    <p className="text-white/80 text-xs leading-relaxed line-clamp-3">{tip.desc}</p>
-                  </div>
+                  <h4 className="text-white font-bold text-sm">{tip.title}</h4>
                 </div>
-              </motion.div>
-            ))}
-          </div>
+                <p className="text-white/70 text-xs leading-relaxed line-clamp-3">{tip.desc}</p>
+              </div>
+            </motion.div>
+          ))}
         </div>
 
         <div className="md:hidden space-y-4">
@@ -120,7 +115,7 @@ export default function NeedToKnow() {
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5 }}
-            className="relative rounded-3xl overflow-hidden group cursor-pointer shadow-lg h-64"
+            className="relative rounded-2xl overflow-hidden group cursor-pointer shadow-md h-64"
           >
             <img src={mainTip.image} alt={mainTip.title} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
@@ -144,13 +139,13 @@ export default function NeedToKnow() {
                   className="relative w-52 h-52 rounded-2xl overflow-hidden shrink-0 cursor-pointer shadow-md"
                 >
                   <img src={tip.image} alt={tip.title} className="w-full h-full object-cover" />
-                  <div className={`absolute inset-0 bg-gradient-to-br ${tip.color} opacity-75`} />
-                  <div className="absolute inset-0 p-4 flex flex-col justify-between">
-                    <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center"><tip.icon size={18} className="text-white" /></div>
-                    <div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-3">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center"><tip.icon size={12} className="text-white" /></div>
                       <h4 className="text-white font-bold text-sm">{tip.title}</h4>
-                      <p className="text-white/75 text-xs mt-1 line-clamp-2">{tip.desc}</p>
                     </div>
+                    <p className="text-white/70 text-xs mt-1 line-clamp-2">{tip.desc}</p>
                   </div>
                 </motion.div>
               ))}

@@ -24,7 +24,7 @@ export default function Sidebar() {
     <motion.aside
       animate={{ width: isExpanded ? 224 : 60 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="fixed left-0 top-14 bottom-0 z-40 bg-[hsl(220_40%_12%)] border-r border-white/8 flex flex-col overflow-hidden"
+      className="fixed left-0 top-14 bottom-0 z-40 bg-background border-r border-border flex flex-col overflow-hidden"
       data-testid="sidebar"
     >
       <nav className="flex-1 py-4 overflow-hidden">
@@ -33,8 +33,8 @@ export default function Sidebar() {
             key={item.label}
             href={item.href}
             initial={false}
-            whileHover={{ backgroundColor: "rgba(255,255,255,0.08)" }}
-            className="flex items-center gap-3 px-3.5 py-2.5 text-white/60 hover:text-white transition-colors group relative"
+            whileHover={{ backgroundColor: "hsl(var(--muted))" }}
+            className="flex items-center gap-3 px-3.5 py-2.5 text-muted-foreground hover:text-foreground transition-colors group relative"
             data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z-]/g, "")}`}
           >
             <div className="shrink-0 w-[33px] flex items-center justify-center">
@@ -54,7 +54,7 @@ export default function Sidebar() {
               )}
             </AnimatePresence>
             {!isExpanded && (
-              <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-opacity">
+              <div className="absolute left-full ml-2 px-2 py-1 bg-card border border-border text-foreground text-xs rounded shadow-md opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-opacity">
                 {item.label}
               </div>
             )}
@@ -64,7 +64,7 @@ export default function Sidebar() {
 
       <button
         onClick={toggle}
-        className="m-3 flex items-center justify-center p-2 rounded-lg bg-white/8 text-white/50 hover:text-white hover:bg-white/15 transition-colors"
+        className="m-3 flex items-center justify-center p-2 rounded-lg bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors border border-border"
         data-testid="button-sidebar-expand"
         aria-label={isExpanded ? "Collapse sidebar" : "Expand sidebar"}
       >

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
-import { ChevronLeft, ChevronRight, Search, MapPin, Utensils, Hotel, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, MapPin, Utensils, Hotel, X, Clock, TrendingUp, Trash2 } from "lucide-react";
 
 const slides = [
   {
@@ -40,13 +40,20 @@ const slides = [
   },
 ];
 
-const suggestions = [
-  { icon: MapPin, label: "Bà Nà Hills", sub: "Địa điểm tham quan · Đà Nẵng", type: "place" },
-  { icon: MapPin, label: "Bãi biển Mỹ Khê", sub: "Bãi biển · Đà Nẵng", type: "place" },
-  { icon: Hotel, label: "Crowne Plaza Danang", sub: "Resort 5 sao · Sơn Trà", type: "hotel" },
-  { icon: Utensils, label: "Nhà hàng Trần", sub: "Hải sản tươi sống · Hải Châu", type: "restaurant" },
-  { icon: MapPin, label: "Phố cổ Hội An", sub: "Di sản UNESCO · Quảng Nam", type: "place" },
-  { icon: Hotel, label: "La Siesta Hoi An Resort", sub: "Resort 5 sao · Hội An", type: "hotel" },
+const recentSearches = ["Bà Nà Hills", "Nhà hàng hải sản"];
+
+const trending = ["Pháo hoa Đà Nẵng", "Cầu Vàng", "Hội An đêm", "Cù Lao Chàm", "Bà Nà Hills", "Resort Mỹ Khê"];
+
+const topSearches = [
+  { rank: 1, title: "Cầu Vàng Bà Nà Hills", sub: "Đà Nẵng", price: "Từ $45", img: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=100&auto=format&fit=crop" },
+  { rank: 2, title: "Tour Phố cổ Hội An", sub: "Hội An, Quảng Nam", price: "Từ $30", img: "https://images.unsplash.com/photo-1548013146-72479768bada?w=100&auto=format&fit=crop" },
+  { rank: 3, title: "Lặn biển Cù Lao Chàm", sub: "Quảng Nam", price: "Từ $60", img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=100&auto=format&fit=crop" },
+];
+
+const trendingDest = [
+  { rank: 1, title: "Đà Nẵng", sub: "Nghỉ dưỡng & Biển đẹp", img: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=100&auto=format&fit=crop" },
+  { rank: 2, title: "Hội An", sub: "Di sản & Ẩm thực", img: "https://images.unsplash.com/photo-1548013146-72479768bada?w=100&auto=format&fit=crop" },
+  { rank: 3, title: "Bà Nà Hills", sub: "Tham quan & Giải trí", img: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=100&auto=format&fit=crop" },
 ];
 
 const EASE_OUT = [0.25, 0.1, 0.25, 1] as const;
@@ -100,9 +107,12 @@ export default function HeroSlider() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  const filtered = searchVal
-    ? suggestions.filter((s) => s.label.toLowerCase().includes(searchVal.toLowerCase()))
-    : suggestions;
+  const filteredTop = searchVal
+    ? topSearches.filter((s) => s.title.toLowerCase().includes(searchVal.toLowerCase()))
+    : topSearches;
+  const filteredDest = searchVal
+    ? trendingDest.filter((s) => s.title.toLowerCase().includes(searchVal.toLowerCase()))
+    : trendingDest;
 
   return (
     <section
@@ -172,11 +182,11 @@ export default function HeroSlider() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.5 }}
-          className="mt-8 max-w-2xl"
+          className="mt-8 max-w-2xl relative"
           ref={searchRef}
         >
           <div className="flex items-center gap-2 bg-white/15 backdrop-blur-xl border border-white/25 rounded-2xl p-2 shadow-2xl">
-            <Search className="ml-2 text-white/60" size={18} />
+            <Search className="ml-2 text-white/60 shrink-0" size={18} />
             <input
               type="search"
               value={searchVal}
@@ -187,12 +197,12 @@ export default function HeroSlider() {
               data-testid="input-search-hero"
             />
             {searchVal && (
-              <button onClick={() => { setSearchVal(""); setShowSuggestions(true); }} className="text-white/50 hover:text-white transition-colors">
+              <button onClick={() => { setSearchVal(""); }} className="text-white/50 hover:text-white transition-colors">
                 <X size={15} />
               </button>
             )}
             <button
-              className="bg-blue-500 hover:bg-blue-400 text-white px-5 py-2 rounded-xl text-sm font-medium transition-colors"
+              className="bg-blue-500 hover:bg-blue-400 text-white px-5 py-2 rounded-xl text-sm font-medium transition-colors shrink-0"
               data-testid="button-search-hero"
             >
               Explore
@@ -200,35 +210,118 @@ export default function HeroSlider() {
           </div>
 
           <AnimatePresence>
-            {showSuggestions && filtered.length > 0 && (
+            {showSuggestions && (
               <motion.div
                 initial={{ opacity: 0, y: -8, scale: 0.97 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -8, scale: 0.97 }}
                 transition={{ duration: 0.2 }}
-                className="absolute mt-2 left-0 right-0 bg-white/10 backdrop-blur-2xl border border-white/20 rounded-2xl overflow-hidden shadow-2xl z-20 max-w-2xl"
+                className="absolute top-full mt-2 left-0 right-0 bg-white rounded-2xl shadow-2xl z-20 overflow-hidden"
                 data-testid="search-suggestions"
               >
-                <div className="p-1.5">
-                  <p className="text-white/40 text-xs px-3 py-1.5 font-medium uppercase tracking-wide">Gợi ý tìm kiếm</p>
-                  {filtered.map((item, i) => (
-                    <motion.button
-                      key={i}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.04 }}
-                      onClick={() => { setSearchVal(item.label); setShowSuggestions(false); }}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/15 transition-colors text-left"
-                    >
-                      <div className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
-                        <item.icon size={15} className="text-white" />
+                <div className="p-4 space-y-4">
+                  {!searchVal && (
+                    <>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-gray-700">
+                          <Clock size={14} className="text-gray-400" />
+                          <span className="text-sm font-semibold">Lịch sử tìm kiếm</span>
+                        </div>
+                        <button className="text-gray-400 hover:text-gray-600">
+                          <Trash2 size={14} />
+                        </button>
                       </div>
+                      <div className="flex flex-wrap gap-2">
+                        {recentSearches.map((s) => (
+                          <button
+                            key={s}
+                            onClick={() => setSearchVal(s)}
+                            className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm rounded-full transition-colors"
+                          >
+                            {s}
+                          </button>
+                        ))}
+                      </div>
+
                       <div>
-                        <p className="text-white text-sm font-medium">{item.label}</p>
-                        <p className="text-white/50 text-xs">{item.sub}</p>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2 text-gray-700">
+                            <TrendingUp size={14} className="text-gray-400" />
+                            <span className="text-sm font-semibold">Mọi người đang tìm kiếm</span>
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {trending.map((t) => (
+                            <button
+                              key={t}
+                              onClick={() => setSearchVal(t)}
+                              className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-sm rounded-full transition-colors"
+                            >
+                              {t}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                    </motion.button>
-                  ))}
+                    </>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                        {searchVal ? "Địa điểm phù hợp" : "Top tìm kiếm"}
+                      </p>
+                      <div className="space-y-2">
+                        {filteredTop.map((item) => (
+                          <button
+                            key={item.rank}
+                            onClick={() => { setSearchVal(item.title); setShowSuggestions(false); }}
+                            className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-gray-50 transition-colors text-left"
+                          >
+                            <span className="w-5 h-5 rounded-full bg-blue-500 text-white text-xs font-bold flex items-center justify-center shrink-0">
+                              {item.rank}
+                            </span>
+                            <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0">
+                              <img src={item.img} alt={item.title} className="w-full h-full object-cover" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium text-gray-800 line-clamp-1">{item.title}</p>
+                              <div className="flex items-center gap-1">
+                                <MapPin size={9} className="text-gray-400" />
+                                <p className="text-xs text-gray-400 line-clamp-1">{item.sub}</p>
+                              </div>
+                            </div>
+                            <p className="text-xs text-blue-600 font-medium shrink-0 ml-auto">{item.price}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                        {searchVal ? "Điểm đến" : "Điểm đến theo xu hướng"}
+                      </p>
+                      <div className="space-y-2">
+                        {filteredDest.map((item) => (
+                          <button
+                            key={item.rank}
+                            onClick={() => { setSearchVal(item.title); setShowSuggestions(false); }}
+                            className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-gray-50 transition-colors text-left"
+                          >
+                            <span className="w-5 h-5 rounded-full bg-amber-500 text-white text-xs font-bold flex items-center justify-center shrink-0">
+                              {item.rank}
+                            </span>
+                            <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0">
+                              <img src={item.img} alt={item.title} className="w-full h-full object-cover" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium text-gray-800 line-clamp-1">{item.title}</p>
+                              <p className="text-xs text-gray-400 line-clamp-1">{item.sub}</p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             )}

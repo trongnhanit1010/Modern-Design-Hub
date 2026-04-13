@@ -118,9 +118,9 @@ export default function CategoriesSection() {
                     data-testid={`button-category-img-${i}`}
                   >
                     <img src={cat.img} alt={cat.label} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                    <div className={`absolute inset-0 bg-gradient-to-t ${cat.color} opacity-65`} />
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 p-2">
-                      <cat.icon size={22} className="text-white drop-shadow" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+                    <div className="absolute inset-0 flex flex-col items-center justify-end gap-1.5 p-3">
+                      <cat.icon size={20} className="text-white drop-shadow" />
                       <span className="text-white text-xs font-semibold text-center leading-tight drop-shadow">{cat.label}</span>
                     </div>
                   </motion.button>
@@ -132,11 +132,15 @@ export default function CategoriesSection() {
                   transition={{ delay: categories.length * 0.07, duration: 0.4 }}
                   whileHover={{ scale: 1.04, y: -3 }}
                   onClick={() => setShowAll(true)}
-                  className="relative group h-32 rounded-2xl overflow-hidden shadow-sm bg-gradient-to-br from-slate-600 to-slate-900 flex flex-col items-center justify-center gap-1.5"
+                  className="relative group h-32 rounded-2xl overflow-hidden shadow-sm"
                   data-testid="button-category-img-all"
                 >
-                  <LayoutGrid size={22} className="text-white" />
-                  <span className="text-white text-xs font-semibold">Tất cả</span>
+                  <img src="https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=400&auto=format&fit=crop" alt="Tất cả" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-end gap-1.5 p-3">
+                    <LayoutGrid size={20} className="text-white" />
+                    <span className="text-white text-xs font-semibold">Tất cả</span>
+                  </div>
                 </motion.button>
               </div>
             </motion.div>
@@ -157,7 +161,7 @@ export default function CategoriesSection() {
                 initial={{ scale: 0.9, y: 20 }}
                 animate={{ scale: 1, y: 0 }}
                 exit={{ scale: 0.9, y: 20 }}
-                className="bg-white rounded-3xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl"
+                className="bg-white rounded-3xl p-6 max-w-3xl w-full max-h-[85vh] overflow-y-auto shadow-2xl"
               >
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="font-serif text-xl font-bold">Tất cả danh mục</h3>
@@ -169,23 +173,45 @@ export default function CategoriesSection() {
                     <X size={18} />
                   </button>
                 </div>
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                  {allCategories.map((cat, i) => (
-                    <motion.button
-                      key={`${cat.label}-${i}`}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: i * 0.04 }}
-                      whileHover={{ scale: 1.04 }}
-                      className="flex flex-col items-center gap-2.5 p-4 rounded-2xl hover:bg-muted transition-colors"
-                    >
-                      <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${cat.color} flex items-center justify-center shadow-md`}>
-                        <cat.icon size={24} className="text-white" />
-                      </div>
-                      <span className="text-xs text-center font-medium leading-tight">{cat.label}</span>
-                    </motion.button>
-                  ))}
-                </div>
+                {option === "A" ? (
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                    {allCategories.map((cat, i) => (
+                      <motion.button
+                        key={`${cat.label}-${i}`}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: i * 0.04 }}
+                        whileHover={{ scale: 1.04 }}
+                        className="flex flex-col items-center gap-2.5 p-4 rounded-2xl hover:bg-muted transition-colors"
+                      >
+                        <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${cat.color} flex items-center justify-center shadow-md`}>
+                          <cat.icon size={24} className="text-white" />
+                        </div>
+                        <span className="text-xs text-center font-medium leading-tight">{cat.label}</span>
+                      </motion.button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                    {allCategories.map((cat, i) => (
+                      <motion.button
+                        key={`${cat.label}-img-${i}`}
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.04 }}
+                        whileHover={{ scale: 1.03 }}
+                        className="relative group h-28 rounded-2xl overflow-hidden shadow-sm"
+                      >
+                        <img src={cat.img} alt={cat.label} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+                        <div className="absolute inset-0 flex flex-col items-center justify-end gap-1.5 p-3">
+                          <cat.icon size={18} className="text-white" />
+                          <span className="text-white text-xs font-semibold text-center leading-tight">{cat.label}</span>
+                        </div>
+                      </motion.button>
+                    ))}
+                  </div>
+                )}
               </motion.div>
             </motion.div>
           )}
