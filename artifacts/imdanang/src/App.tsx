@@ -1,5 +1,8 @@
+import { useEffect } from "react";
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import NProgress from "nprogress";
+import "nprogress/nprogress.css";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { motion } from "framer-motion";
@@ -8,8 +11,20 @@ import Home from "@/pages/Home";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
+import { DarkModeProvider } from "@/context/DarkModeContext";
+
+NProgress.configure({ showSpinner: false, speed: 400, minimum: 0.2 });
 
 const queryClient = new QueryClient();
+
+function PageLoader() {
+  useEffect(() => {
+    NProgress.start();
+    const t = setTimeout(() => NProgress.done(), 600);
+    return () => clearTimeout(t);
+  }, []);
+  return null;
+}
 
 function Layout() {
   const { isExpanded } = useSidebar();
@@ -36,11 +51,14 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <SidebarProvider>
-          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-            <Layout />
-          </WouterRouter>
-        </SidebarProvider>
+        <DarkModeProvider>
+          <SidebarProvider>
+            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+              <PageLoader />
+              <Layout />
+            </WouterRouter>
+          </SidebarProvider>
+        </DarkModeProvider>
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>

@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
-import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, MapPin, Utensils, Hotel, X } from "lucide-react";
 
 const slides = [
   {
@@ -40,6 +40,15 @@ const slides = [
   },
 ];
 
+const suggestions = [
+  { icon: MapPin, label: "Bà Nà Hills", sub: "Địa điểm tham quan · Đà Nẵng", type: "place" },
+  { icon: MapPin, label: "Bãi biển Mỹ Khê", sub: "Bãi biển · Đà Nẵng", type: "place" },
+  { icon: Hotel, label: "Crowne Plaza Danang", sub: "Resort 5 sao · Sơn Trà", type: "hotel" },
+  { icon: Utensils, label: "Nhà hàng Trần", sub: "Hải sản tươi sống · Hải Châu", type: "restaurant" },
+  { icon: MapPin, label: "Phố cổ Hội An", sub: "Di sản UNESCO · Quảng Nam", type: "place" },
+  { icon: Hotel, label: "La Siesta Hoi An Resort", sub: "Resort 5 sao · Hội An", type: "hotel" },
+];
+
 const EASE_OUT = [0.25, 0.1, 0.25, 1] as const;
 
 const textVariants: Variants = {
@@ -56,6 +65,9 @@ export default function HeroSlider() {
   const [current, setCurrent] = useState(0);
   const [progress, setProgress] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [searchVal, setSearchVal] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
 
   const next = useCallback(() => {
     setCurrent((c) => (c + 1) % slides.length);
@@ -71,15 +83,26 @@ export default function HeroSlider() {
     if (paused) return;
     const interval = setInterval(() => {
       setProgress((p) => {
-        if (p >= 100) {
-          next();
-          return 0;
-        }
+        if (p >= 100) { next(); return 0; }
         return p + 0.5;
       });
     }, 25);
     return () => clearInterval(interval);
   }, [paused, next]);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const filtered = searchVal
+    ? suggestions.filter((s) => s.label.toLowerCase().includes(searchVal.toLowerCase()))
+    : suggestions;
 
   return (
     <section
@@ -150,15 +173,24 @@ export default function HeroSlider() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.5 }}
           className="mt-8 max-w-2xl"
+          ref={searchRef}
         >
           <div className="flex items-center gap-2 bg-white/15 backdrop-blur-xl border border-white/25 rounded-2xl p-2 shadow-2xl">
             <Search className="ml-2 text-white/60" size={18} />
             <input
               type="search"
+              value={searchVal}
+              onChange={(e) => setSearchVal(e.target.value)}
+              onFocus={() => setShowSuggestions(true)}
               placeholder="Find places, restaurants, hotels..."
               className="flex-1 bg-transparent text-white placeholder:text-white/50 text-sm py-1.5 px-2 focus:outline-none"
               data-testid="input-search-hero"
             />
+            {searchVal && (
+              <button onClick={() => { setSearchVal(""); setShowSuggestions(true); }} className="text-white/50 hover:text-white transition-colors">
+                <X size={15} />
+              </button>
+            )}
             <button
               className="bg-blue-500 hover:bg-blue-400 text-white px-5 py-2 rounded-xl text-sm font-medium transition-colors"
               data-testid="button-search-hero"
@@ -166,6 +198,41 @@ export default function HeroSlider() {
               Explore
             </button>
           </div>
+
+          <AnimatePresence>
+            {showSuggestions && filtered.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -8, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.97 }}
+                transition={{ duration: 0.2 }}
+                className="absolute mt-2 left-0 right-0 bg-white/10 backdrop-blur-2xl border border-white/20 rounded-2xl overflow-hidden shadow-2xl z-20 max-w-2xl"
+                data-testid="search-suggestions"
+              >
+                <div className="p-1.5">
+                  <p className="text-white/40 text-xs px-3 py-1.5 font-medium uppercase tracking-wide">Gợi ý tìm kiếm</p>
+                  {filtered.map((item, i) => (
+                    <motion.button
+                      key={i}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.04 }}
+                      onClick={() => { setSearchVal(item.label); setShowSuggestions(false); }}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/15 transition-colors text-left"
+                    >
+                      <div className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
+                        <item.icon size={15} className="text-white" />
+                      </div>
+                      <div>
+                        <p className="text-white text-sm font-medium">{item.label}</p>
+                        <p className="text-white/50 text-xs">{item.sub}</p>
+                      </div>
+                    </motion.button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       </div>
 

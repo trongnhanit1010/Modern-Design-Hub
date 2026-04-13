@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Search, Bell, User, Globe, Menu } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, Bell, User, Globe, Menu, Moon, Sun } from "lucide-react";
 import { useSidebar } from "@/context/SidebarContext";
+import { useDarkMode } from "@/context/DarkModeContext";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [searchVal, setSearchVal] = useState("");
   const { toggle } = useSidebar();
+  const { isDark, toggle: toggleDark } = useDarkMode();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -18,7 +20,7 @@ export default function Header() {
     <motion.header
       initial={{ y: -60, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
+      transition={{ duration: 0.5 }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
           ? "backdrop-blur-xl bg-[hsl(220_40%_12%/0.92)] shadow-lg"
@@ -69,6 +71,26 @@ export default function Header() {
             <Globe size={15} />
             <span className="hidden sm:inline">VI</span>
           </button>
+
+          <button
+            onClick={toggleDark}
+            className="p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+            data-testid="button-darkmode"
+            aria-label="Toggle dark mode"
+          >
+            <AnimatePresence mode="wait">
+              {isDark ? (
+                <motion.span key="sun" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                  <Sun size={17} />
+                </motion.span>
+              ) : (
+                <motion.span key="moon" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                  <Moon size={17} />
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </button>
+
           <button
             className="relative p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors"
             data-testid="button-notifications"

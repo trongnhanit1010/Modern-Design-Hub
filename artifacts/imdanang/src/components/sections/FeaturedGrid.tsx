@@ -1,64 +1,63 @@
 import { motion, useInView, type Variants } from "framer-motion";
 import { useRef } from "react";
-import { MapPin, Star } from "lucide-react";
+import { MapPin, Star, ArrowRight } from "lucide-react";
 
 const items = [
   {
     id: 1,
     title: "Crowne Plaza Danang Hotel & Resort",
-    subtitle: "2 Phan Đình Phùng, Mân Thái, Sơn Trà",
+    subtitle: "Sơn Trà, Đà Nẵng",
     rating: 4.9,
+    reviews: 1240,
     category: "Resort 5 sao",
     image: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=800&auto=format&fit=crop",
     large: true,
   },
   {
     id: 2,
-    title: "Grand Tourane Hotel Da Nang",
-    subtitle: "252 Võ Nguyên Giáp, Mỹ An, Ngũ Hành Sơn",
-    rating: 4.7,
-    category: "Khách sạn",
-    image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800&auto=format&fit=crop",
+    title: "Bà Nà Hills – Cầu Vàng",
+    subtitle: "Bà Nà Hills, Đà Nẵng",
+    rating: 4.9,
+    reviews: 3580,
+    category: "Địa điểm",
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&auto=format&fit=crop",
   },
   {
     id: 3,
-    title: "Happy Day Riverside Hotel & Spa Danang",
-    subtitle: "75 Bạch Đằng, Hải Châu",
+    title: "Phố Cổ Hội An",
+    subtitle: "Hội An, Quảng Nam",
+    rating: 4.8,
+    reviews: 2100,
+    category: "Di sản UNESCO",
+    image: "https://images.unsplash.com/photo-1548013146-72479768bada?w=800&auto=format&fit=crop",
+  },
+  {
+    id: 4,
+    title: "Happy Day Riverside Hotel",
+    subtitle: "Sông Hàn, Đà Nẵng",
     rating: 4.6,
+    reviews: 870,
     category: "Spa Resort",
     image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&auto=format&fit=crop",
   },
   {
-    id: 4,
-    title: "Moonlight Hotel & Suites - City Center Views",
-    subtitle: "Hàn River & Dragon Bridge Views",
-    rating: 4.8,
-    category: "Khách sạn cao cấp",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&auto=format&fit=crop",
-  },
-  {
     id: 5,
-    title: "La Siesta Hoi An Resort & Spa",
-    subtitle: "132 Hùng Vương, Hội An",
-    rating: 4.9,
-    category: "Resort",
-    image: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=800&auto=format&fit=crop",
+    title: "Bãi Biển Mỹ Khê",
+    subtitle: "Mỹ Khê, Đà Nẵng",
+    rating: 4.8,
+    reviews: 4200,
+    category: "Bãi biển",
+    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop",
+    wide: true,
   },
   {
     id: 6,
-    title: "Brilliant Hotel - Afternoon Tea Inclusive",
-    subtitle: "162 Bạch Đằng, Hải Châu, Đà Nẵng",
-    rating: 4.5,
-    category: "Khách sạn",
-    image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800&auto=format&fit=crop",
-  },
-  {
-    id: 7,
-    title: "KOI Resort & Residence Da Nang",
-    subtitle: "Inclusive Spa access, Ngũ Hành Sơn",
-    rating: 4.8,
-    category: "Luxury Resort",
-    image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&auto=format&fit=crop",
+    title: "La Siesta Hoi An Resort",
+    subtitle: "Hội An, Quảng Nam",
+    rating: 4.9,
+    reviews: 990,
+    category: "Resort",
+    image: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&auto=format&fit=crop",
   },
 ];
 
@@ -66,21 +65,29 @@ const EASE_OUT = [0.25, 0.1, 0.25, 1] as const;
 
 const containerVariants: Variants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.08 } },
+  visible: { transition: { staggerChildren: 0.07 } },
 };
 
 const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 24 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE_OUT } },
 };
 
-function FeatureCard({ item, className }: { item: (typeof items)[0]; className?: string }) {
+function FeatureCard({
+  item,
+  className = "",
+  showInfo = true,
+}: {
+  item: (typeof items)[0];
+  className?: string;
+  showInfo?: boolean;
+}) {
   return (
     <motion.div
       variants={cardVariants}
-      className={`relative group overflow-hidden rounded-2xl cursor-pointer ${className}`}
       whileHover={{ scale: 1.015 }}
-      transition={{ duration: 0.25 }}
+      transition={{ duration: 0.22 }}
+      className={`relative group overflow-hidden rounded-2xl cursor-pointer ${className}`}
       data-testid={`card-featured-${item.id}`}
     >
       <img
@@ -89,60 +96,85 @@ function FeatureCard({ item, className }: { item: (typeof items)[0]; className?:
         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         loading="lazy"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 p-4">
-        <span className="inline-block bg-blue-500/80 backdrop-blur-sm text-white text-xs px-2 py-0.5 rounded-full mb-2">
-          {item.category}
-        </span>
-        <h3 className="text-white font-semibold text-sm leading-snug line-clamp-2">{item.title}</h3>
-        <div className="flex items-center gap-1 mt-1">
-          <MapPin size={11} className="text-white/60" />
-          <span className="text-white/60 text-xs line-clamp-1">{item.subtitle}</span>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+      {showInfo && (
+        <div className="absolute bottom-0 left-0 right-0 p-4">
+          <span className="inline-block bg-blue-500/80 backdrop-blur-sm text-white text-[11px] px-2.5 py-0.5 rounded-full mb-1.5">
+            {item.category}
+          </span>
+          <h3 className="text-white font-semibold text-sm leading-snug line-clamp-1">{item.title}</h3>
+          <div className="flex items-center justify-between mt-1.5">
+            <div className="flex items-center gap-1 text-white/60 text-xs">
+              <MapPin size={10} />
+              <span className="line-clamp-1">{item.subtitle}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Star size={10} className="text-amber-400 fill-amber-400" />
+              <span className="text-amber-400 text-xs font-semibold">{item.rating}</span>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-1 mt-1.5">
-          <Star size={11} className="text-amber-400 fill-amber-400" />
-          <span className="text-amber-400 text-xs font-medium">{item.rating}</span>
-        </div>
-      </div>
+      )}
     </motion.div>
   );
 }
 
 export default function FeaturedGrid() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section className="py-12 px-4" ref={ref} data-testid="section-featured-grid">
+    <section className="py-12 px-4 md:px-6" ref={ref} data-testid="section-featured-grid">
       <div className="max-w-7xl mx-auto">
-        <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground mb-1">
-          Nội dung nổi bật tại đây
-        </h2>
-        <p className="text-muted-foreground text-sm mb-8">Khám phá những địa điểm tuyệt vời nhất tại Đà Nẵng</p>
+        <div className="flex items-end justify-between mb-6">
+          <div>
+            <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground">
+              Nội dung nổi bật tại đây
+            </h2>
+            <p className="text-muted-foreground text-sm mt-1">Khám phá những địa điểm tuyệt vời nhất tại Đà Nẵng</p>
+          </div>
+          <a href="#" className="flex items-center gap-1 text-primary text-sm font-medium hover:underline shrink-0">
+            Xem tất cả <ArrowRight size={14} />
+          </a>
+        </div>
 
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
-          className="grid grid-cols-3 gap-4"
-          style={{ gridTemplateRows: "240px 240px" }}
+          className="hidden md:grid grid-cols-12 grid-rows-[280px_180px] gap-3"
         >
-          <FeatureCard item={items[0]} className="row-span-2 col-span-1" />
-          <FeatureCard item={items[1]} className="col-span-1" />
-          <FeatureCard item={items[2]} className="col-span-1" />
-          <FeatureCard item={items[3]} className="col-span-1" />
-          <FeatureCard item={items[4]} className="col-span-1" />
+          <FeatureCard item={items[0]} className="col-span-5 row-span-2" />
+          <FeatureCard item={items[1]} className="col-span-4 row-span-1" />
+          <FeatureCard item={items[2]} className="col-span-3 row-span-1" />
+          <FeatureCard item={items[3]} className="col-span-3 row-span-1" />
+          <FeatureCard item={items[4]} className="col-span-4 row-span-1" />
         </motion.div>
 
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
-          className="grid grid-cols-2 gap-4 mt-4"
-          style={{ gridTemplateRows: "220px" }}
+          className="hidden md:grid grid-cols-3 gap-3 mt-3"
+          style={{ gridTemplateRows: "200px" }}
         >
-          <FeatureCard item={items[5]} className="col-span-1" />
-          <FeatureCard item={items[6]} className="col-span-1" />
+          {[items[5], items[4], items[2]].map((item) => (
+            <FeatureCard key={item.id + "-b"} item={item} />
+          ))}
+        </motion.div>
+
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          className="md:hidden grid grid-cols-2 gap-3"
+          style={{ gridTemplateRows: "220px 220px 220px" }}
+        >
+          <FeatureCard item={items[0]} className="col-span-2 row-span-1" />
+          <FeatureCard item={items[1]} />
+          <FeatureCard item={items[2]} />
+          <FeatureCard item={items[4]} />
+          <FeatureCard item={items[5]} />
         </motion.div>
       </div>
     </section>

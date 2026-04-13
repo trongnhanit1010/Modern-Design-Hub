@@ -6,7 +6,7 @@ import useEmblaCarousel from "embla-carousel-react";
 const destinations = [
   {
     id: 1,
-    name: "Crowne Plaza Danang Hotel & Resort",
+    name: "Crowne Plaza Danang",
     location: "Mỹ Khê Beach",
     listings: "41 Listing",
     rating: 4.9,
@@ -14,7 +14,7 @@ const destinations = [
   },
   {
     id: 2,
-    name: "Grand Tourane Hotel Da Nang",
+    name: "Grand Tourane Hotel",
     location: "City Center",
     listings: "35 Listing",
     rating: 4.7,
@@ -22,7 +22,7 @@ const destinations = [
   },
   {
     id: 3,
-    name: "Happy Day Riverside Hotel & Spa",
+    name: "Happy Day Riverside",
     location: "Hàn River",
     listings: "27 Listing",
     rating: 4.6,
@@ -30,7 +30,7 @@ const destinations = [
   },
   {
     id: 4,
-    name: "Moonlight Hotel & Suites",
+    name: "Moonlight Hotel",
     location: "Dragon Bridge",
     listings: "19 Listing",
     rating: 4.8,
@@ -38,7 +38,7 @@ const destinations = [
   },
   {
     id: 5,
-    name: "La Siesta Hoi An Resort & Spa",
+    name: "La Siesta Hoi An",
     location: "Hội An Ancient Town",
     listings: "42 Listing",
     rating: 4.9,
@@ -46,50 +46,32 @@ const destinations = [
   },
   {
     id: 6,
-    name: "Brilliant Hotel Da Nang",
+    name: "Brilliant Hotel",
     location: "Bạch Đằng Street",
     listings: "33 Listing",
     rating: 4.5,
     image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&auto=format&fit=crop",
   },
+  {
+    id: 7,
+    name: "KOI Resort Da Nang",
+    location: "Ngũ Hành Sơn",
+    listings: "28 Listing",
+    rating: 4.8,
+    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&auto=format&fit=crop",
+  },
 ];
 
 const accordionDestinations = [
-  {
-    id: 1,
-    name: "Đà Nẵng",
-    listings: "128 Listing",
-    image: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=800&auto=format&fit=crop",
-  },
-  {
-    id: 2,
-    name: "Hội An",
-    listings: "85 Listing",
-    image: "https://images.unsplash.com/photo-1548013146-72479768bada?w=800&auto=format&fit=crop",
-  },
-  {
-    id: 3,
-    name: "Bà Nà Hills",
-    listings: "42 Listing",
-    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&auto=format&fit=crop",
-  },
-  {
-    id: 4,
-    name: "Non Nước",
-    listings: "56 Listing",
-    image: "https://images.unsplash.com/photo-1591017403997-bdf27de5700a?w=800&auto=format&fit=crop",
-  },
-  {
-    id: 5,
-    name: "Lăng Cô",
-    listings: "29 Listing",
-    image: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&auto=format&fit=crop",
-  },
+  { id: 1, name: "Đà Nẵng", listings: "128 Listing", image: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=800&auto=format&fit=crop" },
+  { id: 2, name: "Hội An", listings: "85 Listing", image: "https://images.unsplash.com/photo-1548013146-72479768bada?w=800&auto=format&fit=crop" },
+  { id: 3, name: "Bà Nà Hills", listings: "42 Listing", image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&auto=format&fit=crop" },
+  { id: 4, name: "Non Nước", listings: "56 Listing", image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop" },
+  { id: 5, name: "Lăng Cô", listings: "29 Listing", image: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&auto=format&fit=crop" },
 ];
 
 function CarouselOption() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: "start" });
-
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
@@ -101,18 +83,18 @@ function CarouselOption() {
             <motion.div
               key={dest.id}
               whileHover={{ y: -4 }}
-              className="relative shrink-0 w-56 rounded-2xl overflow-hidden cursor-pointer group shadow-md"
+              className="relative shrink-0 w-52 md:w-60 rounded-2xl overflow-hidden cursor-pointer group shadow-md"
               data-testid={`card-destination-carousel-${dest.id}`}
             >
-              <div className="h-52">
+              <div className="h-80 md:h-96">
                 <img
                   src={dest.image}
                   alt={dest.name}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-108"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-3">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-4">
                 <h3 className="text-white font-semibold text-sm leading-tight">{dest.name}</h3>
                 <div className="flex items-center gap-1 mt-1">
                   <MapPin size={10} className="text-white/60" />
@@ -146,7 +128,7 @@ function AccordionOption() {
   const [active, setActive] = useState<number>(accordionDestinations.length - 1);
 
   return (
-    <div className="flex gap-2 h-96">
+    <div className="flex gap-2 h-[480px]">
       {accordionDestinations.map((dest) => {
         const isActive = active === dest.id;
         return (
@@ -159,13 +141,8 @@ function AccordionOption() {
             className="relative rounded-2xl overflow-hidden cursor-pointer group"
             data-testid={`card-destination-accordion-${dest.id}`}
           >
-            <img
-              src={dest.image}
-              alt={dest.name}
-              className="w-full h-full object-cover"
-            />
+            <img src={dest.image} alt={dest.name} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-
             {isActive ? (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -175,8 +152,7 @@ function AccordionOption() {
                 <h3 className="text-white font-serif font-bold text-3xl mb-1">{dest.name}</h3>
                 <p className="text-white/70 text-sm mb-4">{dest.listings}</p>
                 <button className="flex items-center gap-2 bg-white text-foreground px-5 py-2 rounded-full text-sm font-semibold hover:bg-blue-50 transition-colors">
-                  <Eye size={14} />
-                  Book Now
+                  <Eye size={14} /> Book Now
                 </button>
               </motion.div>
             ) : (
@@ -202,7 +178,7 @@ export default function WhereToGo() {
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section className="py-12 px-4 bg-white" ref={ref} data-testid="section-where-to-go">
+    <section className="py-12 px-4 bg-white dark:bg-card" ref={ref} data-testid="section-where-to-go">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>

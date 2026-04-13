@@ -317,3 +317,12 @@
     border: 1px solid rgba(255,255,255,0.1);
   }
 }
+
+#nprogress .bar {
+  background: #3b82f6 !important;
+  height: 3px !important;
+  box-shadow: 0 0 8px #3b82f6, 0 0 4px #93c5fd !important;
+}
+#nprogress .peg {
+  box-shadow: 0 0 10px #3b82f6, 0 0 5px #3b82f6 !important;
+}

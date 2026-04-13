@@ -8,6 +8,7 @@ import WeatherSection from "@/components/sections/WeatherSection";
 import HotelsCarousel from "@/components/sections/HotelsCarousel";
 import EventCalendar from "@/components/sections/EventCalendar";
 import TouristMap from "@/components/sections/TouristMap";
+import NeedToKnow from "@/components/sections/NeedToKnow";
 import Footer from "@/components/sections/Footer";
 
 export default function Home() {
@@ -23,6 +24,7 @@ export default function Home() {
       <HotelsCarousel />
       <EventCalendar />
       <TouristMap />
+      <NeedToKnow />
       <Footer />
     </main>
   );
