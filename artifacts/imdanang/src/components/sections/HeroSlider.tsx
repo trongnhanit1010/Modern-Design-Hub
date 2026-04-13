@@ -116,28 +116,31 @@ export default function HeroSlider() {
 
   return (
     <section
-      className="relative h-[88vh] min-h-[560px] overflow-hidden"
+      className="relative h-[88vh] min-h-[560px]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       data-testid="section-hero"
+      style={{ zIndex: 1 }}
     >
-      <AnimatePresence initial={false} mode="sync">
-        <motion.div
-          key={current}
-          initial={{ opacity: 0, scale: 1.05 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.9, ease: "easeInOut" }}
-          className="absolute inset-0"
-        >
-          <img
-            src={slides[current].image}
-            alt={slides[current].title}
-            className="w-full h-full object-cover ken-burns"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/75" />
-        </motion.div>
-      </AnimatePresence>
+      <div className="absolute inset-0 overflow-hidden">
+        <AnimatePresence initial={false} mode="sync">
+          <motion.div
+            key={current}
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.9, ease: "easeInOut" }}
+            className="absolute inset-0"
+          >
+            <img
+              src={slides[current].image}
+              alt={slides[current].title}
+              className="w-full h-full object-cover ken-burns"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/75" />
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
       <div className="absolute inset-0 flex flex-col justify-end pb-28 px-6 md:px-20 lg:px-28">
         <AnimatePresence mode="wait">
