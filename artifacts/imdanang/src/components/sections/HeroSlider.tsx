@@ -112,8 +112,13 @@ export default function HeroSlider() {
         setShowSuggestions(false);
       }
     };
+    const handleScroll = () => setShowSuggestions(false);
     document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   const filteredTop = searchVal
@@ -229,8 +234,8 @@ export default function HeroSlider() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -8, scale: 0.98 }}
                 transition={{ duration: 0.18 }}
-                style={{ position: "fixed", top: dropdownStyle.top, left: dropdownStyle.left, width: dropdownStyle.width, zIndex: 99999, background: "#ffffff" }}
-                className="rounded-2xl shadow-2xl overflow-hidden"
+                style={{ position: "fixed", top: dropdownStyle.top, left: dropdownStyle.left, width: dropdownStyle.width, zIndex: 99999, background: "#ffffff", maxHeight: "min(75vh, 480px)", overflowY: "auto" }}
+                className="rounded-2xl shadow-2xl"
                 data-testid="search-suggestions"
               >
                 <div className="p-4 space-y-4">

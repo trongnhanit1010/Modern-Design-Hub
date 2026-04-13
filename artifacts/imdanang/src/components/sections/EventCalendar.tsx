@@ -150,17 +150,6 @@ function CalendarView() {
             </button>
           )}
         </div>
-        <div className="bg-card border-t border-card-border px-4 pb-4">
-          <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wide mb-2 pt-3">Danh mục</p>
-          <div className="flex flex-wrap gap-2">
-            {Object.entries(categoryDotColor).map(([cat, color]) => (
-              <span key={cat} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <span className={`w-2 h-2 rounded-full ${color}`} />
-                {cat}
-              </span>
-            ))}
-          </div>
-        </div>
       </div>
 
       <div className="md:col-span-3 flex flex-col gap-3">

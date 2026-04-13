@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import { ChevronLeft, ChevronRight, MapPin, Eye } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
@@ -71,39 +71,66 @@ const accordionDestinations = [
 ];
 
 function CarouselOption() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: "start" });
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: "center", containScroll: "trimSnaps" });
+  const [activeIdx, setActiveIdx] = useState(0);
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    const onSelect = () => setActiveIdx(emblaApi.selectedScrollSnap());
+    emblaApi.on("select", onSelect);
+    return () => { emblaApi.off("select", onSelect); };
+  }, [emblaApi]);
 
   return (
     <div className="relative">
       <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex gap-4">
-          {destinations.map((dest) => (
-            <motion.div
-              key={dest.id}
-              whileHover={{ y: -4 }}
-              className="relative shrink-0 w-52 md:w-60 rounded-2xl overflow-hidden cursor-pointer group shadow-md"
-              data-testid={`card-destination-carousel-${dest.id}`}
-            >
-              <div className="h-80 md:h-96">
-                <img
-                  src={dest.image}
-                  alt={dest.name}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-4">
-                <h3 className="text-white font-semibold text-sm leading-tight">{dest.name}</h3>
-                <div className="flex items-center gap-1 mt-1">
-                  <MapPin size={10} className="text-white/60" />
-                  <span className="text-white/60 text-xs">{dest.location}</span>
+        <div className="flex gap-3 md:gap-4 py-4">
+          {destinations.map((dest, i) => {
+            const isActive = i === activeIdx;
+            return (
+              <motion.div
+                key={dest.id}
+                animate={{ scale: isActive ? 1 : 0.92, opacity: isActive ? 1 : 0.72 }}
+                transition={{ type: "spring", stiffness: 300, damping: 28 }}
+                onClick={() => emblaApi?.scrollTo(i)}
+                className="relative shrink-0 rounded-2xl overflow-hidden cursor-pointer group shadow-md"
+                style={{ width: isActive ? "17rem" : "13rem" }}
+                data-testid={`card-destination-carousel-${dest.id}`}
+              >
+                <div className="h-[26rem]">
+                  <img
+                    src={dest.image}
+                    alt={dest.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
                 </div>
-                <span className="text-amber-300 text-xs mt-0.5 block">{dest.listings}</span>
-              </div>
-            </motion.div>
-          ))}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+                {isActive && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute inset-0 ring-2 ring-white/40 rounded-2xl pointer-events-none" />
+                )}
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  {isActive && (
+                    <motion.span initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="inline-block text-xs bg-white/20 backdrop-blur-sm text-white px-2 py-0.5 rounded-full mb-2 font-medium">
+                      ★ {dest.rating}
+                    </motion.span>
+                  )}
+                  <h3 className={`text-white font-semibold leading-tight transition-all ${isActive ? "text-base" : "text-sm"}`}>{dest.name}</h3>
+                  <div className="flex items-center gap-1 mt-1">
+                    <MapPin size={10} className="text-white/60" />
+                    <span className="text-white/60 text-xs">{dest.location}</span>
+                  </div>
+                  {isActive && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-between mt-2">
+                      <span className="text-amber-300 text-xs">{dest.listings}</span>
+                      <span className="text-xs bg-white text-gray-900 font-semibold px-3 py-1 rounded-full flex items-center gap-1"><Eye size={10} />Xem</span>
+                    </motion.div>
+                  )}
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
       <button

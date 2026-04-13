@@ -47,6 +47,35 @@ const weatherConfig: Record<WeatherType, { bg: string }> = {
   rainy: { bg: "linear-gradient(180deg, #0c1a2e 0%, #1e3a5f 30%, #1e40af 70%, #1d4ed8 100%)" },
 };
 
+const sparklePositions = [
+  { x: 72, y: 8, s: 1.2, d: 0 }, { x: 88, y: 22, s: 0.8, d: 0.4 },
+  { x: 60, y: 18, s: 1.0, d: 0.8 }, { x: 78, y: 35, s: 0.7, d: 0.3 },
+  { x: 92, y: 12, s: 0.9, d: 1.1 }, { x: 66, y: 30, s: 1.3, d: 0.6 },
+  { x: 82, y: 48, s: 0.6, d: 1.4 }, { x: 55, y: 10, s: 1.1, d: 0.9 },
+  { x: 95, y: 38, s: 0.8, d: 0.2 }, { x: 75, y: 55, s: 0.7, d: 1.7 },
+  { x: 50, y: 25, s: 0.9, d: 0.5 }, { x: 88, y: 60, s: 1.0, d: 1.0 },
+];
+
+function SunSparkle() {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {sparklePositions.map((sp, i) => (
+        <motion.div
+          key={i}
+          className="absolute"
+          style={{ left: `${sp.x}%`, top: `${sp.y}%` }}
+          animate={{ opacity: [0, 1, 0], scale: [0, sp.s, 0] }}
+          transition={{ duration: 1.8 + (i % 4) * 0.3, repeat: Infinity, delay: sp.d, ease: "easeInOut" }}
+        >
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M7 0L7.8 5.8L13.5 7L7.8 8.2L7 14L6.2 8.2L0.5 7L6.2 5.8Z" fill="#fef08a" />
+          </svg>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
 function SunFlare() {
   return (
     <div className="absolute top-0 right-0 w-full h-full pointer-events-none overflow-hidden">
@@ -93,6 +122,7 @@ function SunFlare() {
         ))}
       </div>
       <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 88% 10%, rgba(253,224,71,0.18) 0%, transparent 55%)" }} />
+      <SunSparkle />
     </div>
   );
 }
@@ -316,33 +346,61 @@ export default function WeatherSection() {
           )}
 
           {option === "B" && (
-            <motion.div key="B" initial={{ opacity: 0, y: 15 }} animate={isInView ? { opacity: 1, y: 0 } : {}} exit={{ opacity: 0, y: -15 }} transition={{ duration: 0.4 }} className="relative rounded-3xl overflow-hidden shadow-xl h-72">
-              <img src={weatherData.image} alt="Weather background" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/20" />
-              <div className="absolute inset-0 p-8 flex items-center gap-8">
-                <div>
-                  <p className="text-white/70 text-sm mb-2">{weatherData.city}, {weatherData.country}</p>
-                  <div className="flex items-center gap-4">
-                    <motion.div animate={{ rotate: [0, 10, 0, -10, 0] }} transition={{ duration: 5, repeat: Infinity }}>
-                      <Sun size={64} className="text-yellow-300" />
-                    </motion.div>
-                    <div>
-                      <span className="text-white font-bold" style={{ fontSize: "4rem", lineHeight: 1 }}>{weatherData.temp}°C</span>
-                      <p className="text-white/80 text-lg mt-1">{weatherData.conditionVi}</p>
+            <motion.div key="B" initial={{ opacity: 0, y: 15 }} animate={isInView ? { opacity: 1, y: 0 } : {}} exit={{ opacity: 0, y: -15 }} transition={{ duration: 0.4 }} className="relative rounded-3xl overflow-hidden shadow-xl">
+              <div className="absolute inset-0">
+                <img src={weatherData.image} alt="Weather background" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/30" />
+              </div>
+              <div className="relative z-10 p-6 md:p-8">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <p className="text-white/60 text-sm font-medium mb-4">{weatherData.city}, {weatherData.country}</p>
+                    <div className="flex items-center gap-5 mb-4">
+                      <motion.div animate={{ rotate: [0, 12, 0, -12, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}>
+                        <Sun size={72} className="text-yellow-300 drop-shadow-lg" />
+                      </motion.div>
+                      <div>
+                        <div className="flex items-start gap-1">
+                          <span className="text-white font-bold" style={{ fontSize: "4.5rem", lineHeight: 1 }}>{weatherData.temp}</span>
+                          <span className="text-white/70 text-2xl mt-3">°C</span>
+                        </div>
+                        <p className="text-white text-lg font-medium">{weatherData.conditionVi}</p>
+                        <p className="text-white/50 text-sm mt-0.5">Cảm giác như {weatherData.feelsLike}°C</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2.5">
+                      {[
+                        { icon: Droplets, label: "Độ ẩm", value: `${weatherData.humidity}%` },
+                        { icon: Wind, label: "Gió", value: `${weatherData.wind} km/h` },
+                        { icon: Sun, label: "UV Index", value: `${weatherData.uvIndex} (${uv.label})` },
+                        { icon: Eye, label: "Tầm nhìn", value: `${weatherData.visibility} km` },
+                        { icon: Thermometer, label: "Áp suất", value: `${weatherData.pressure} hPa` },
+                        { icon: Cloud, label: "Điều kiện", value: weatherData.conditionVi },
+                      ].map((stat) => (
+                        <div key={stat.label} className="bg-white/10 backdrop-blur-sm rounded-xl p-2.5 flex items-center gap-2">
+                          <stat.icon size={14} className="text-white/70 shrink-0" />
+                          <div><p className="text-white/50 text-xs">{stat.label}</p><p className="text-white text-xs font-semibold">{stat.value}</p></div>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-white/30 text-xs mt-3">Powered by AccuWeather • Cập nhật lúc 14:30</p>
+                  </div>
+                  <div className="flex flex-col">
+                    <p className="text-white/50 text-xs uppercase tracking-wide font-semibold mb-3">Dự báo 5 ngày</p>
+                    <div className="flex flex-col gap-2">
+                      {weatherData.forecast.map((day, i) => (
+                        <motion.div key={day.day} initial={{ opacity: 0, x: 20 }} animate={isInView ? { opacity: 1, x: 0 } : {}} transition={{ delay: i * 0.08 + 0.3 }} className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2.5">
+                          <span className="text-white/60 text-sm font-medium w-6">{day.day}</span>
+                          <day.icon size={22} className={`shrink-0 ${day.type === "sunny" ? "text-yellow-300" : day.type === "rainy" ? "text-blue-200" : "text-white/80"}`} />
+                          <span className="text-white/60 text-xs flex-1">{day.condition}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-white font-bold text-sm">{day.high}°</span>
+                            <span className="text-white/40 text-xs">{day.low}°</span>
+                          </div>
+                        </motion.div>
+                      ))}
                     </div>
                   </div>
-                  <p className="text-white/50 text-xs mt-3">Cảm giác như {weatherData.feelsLike}°C • Gió {weatherData.wind} km/h • Độ ẩm {weatherData.humidity}%</p>
-                  <p className="text-white/40 text-xs mt-1">Powered by AccuWeather</p>
-                </div>
-                <div className="ml-auto grid grid-cols-3 gap-3">
-                  {weatherData.forecast.slice(0, 3).map((day) => (
-                    <div key={day.day} className="glass rounded-xl p-3 text-center min-w-[72px]">
-                      <p className="text-white/70 text-xs">{day.day}</p>
-                      <day.icon size={22} className="mx-auto my-1.5 text-yellow-300" />
-                      <p className="text-white font-bold text-sm">{day.high}°</p>
-                      <p className="text-white/50 text-xs">{day.low}°</p>
-                    </div>
-                  ))}
                 </div>
               </div>
             </motion.div>
