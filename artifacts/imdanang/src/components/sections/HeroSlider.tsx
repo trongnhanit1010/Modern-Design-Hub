@@ -108,16 +108,19 @@ export default function HeroSlider() {
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (searchRef.current && !searchRef.current.contains(target)) {
+        const dropdown = document.querySelector('[data-testid="search-suggestions"]');
+        if (dropdown && dropdown.contains(target)) return;
         setShowSuggestions(false);
       }
     };
-    const handleScroll = () => setShowSuggestions(false);
+    const handleResize = () => updateDropdownPosition();
     document.addEventListener("mousedown", handleClick);
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleResize, { passive: true });
     return () => {
       document.removeEventListener("mousedown", handleClick);
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 

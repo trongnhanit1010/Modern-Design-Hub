@@ -47,182 +47,76 @@ const weatherConfig: Record<WeatherType, { bg: string }> = {
   rainy: { bg: "linear-gradient(180deg, #0c1a2e 0%, #1e3a5f 30%, #1e40af 70%, #1d4ed8 100%)" },
 };
 
-const sparklePositions = [
-  { x: 72, y: 8, s: 1.2, d: 0 }, { x: 88, y: 22, s: 0.8, d: 0.4 },
-  { x: 60, y: 18, s: 1.0, d: 0.8 }, { x: 78, y: 35, s: 0.7, d: 0.3 },
-  { x: 92, y: 12, s: 0.9, d: 1.1 }, { x: 66, y: 30, s: 1.3, d: 0.6 },
-  { x: 82, y: 48, s: 0.6, d: 1.4 }, { x: 55, y: 10, s: 1.1, d: 0.9 },
-  { x: 95, y: 38, s: 0.8, d: 0.2 }, { x: 75, y: 55, s: 0.7, d: 1.7 },
-  { x: 50, y: 25, s: 0.9, d: 0.5 }, { x: 88, y: 60, s: 1.0, d: 1.0 },
-];
-
-function SunSparkle() {
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {sparklePositions.map((sp, i) => (
-        <motion.div
-          key={i}
-          className="absolute"
-          style={{ left: `${sp.x}%`, top: `${sp.y}%` }}
-          animate={{ opacity: [0, 1, 0], scale: [0, sp.s, 0] }}
-          transition={{ duration: 1.8 + (i % 4) * 0.3, repeat: Infinity, delay: sp.d, ease: "easeInOut" }}
-        >
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M7 0L7.8 5.8L13.5 7L7.8 8.2L7 14L6.2 8.2L0.5 7L6.2 5.8Z" fill="#fef08a" />
-          </svg>
-        </motion.div>
-      ))}
-    </div>
-  );
-}
-
-function SunFlare() {
-  return (
-    <div className="absolute top-0 right-0 w-full h-full pointer-events-none overflow-hidden">
-      <div className="absolute" style={{ top: "6%", right: "12%", width: 220, height: 220 }}>
-        <motion.div
-          animate={{ scale: [1, 1.12, 1], opacity: [0.85, 1, 0.85] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute inset-0 rounded-full"
-          style={{ background: "radial-gradient(circle, #fff7c2 0%, #fde047 20%, #f59e0b 45%, #d97706 65%, transparent 100%)", filter: "blur(2px)" }}
-        />
-        <motion.div
-          animate={{ scale: [1.15, 1.4, 1.15], opacity: [0.25, 0.45, 0.25] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute inset-0 rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(253,224,71,0.7) 0%, transparent 70%)", filter: "blur(8px)" }}
-        />
-        <motion.div
-          animate={{ scale: [1.6, 2.2, 1.6], opacity: [0.12, 0.22, 0.12] }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute inset-0 rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(253,224,71,0.5) 0%, transparent 70%)", filter: "blur(20px)" }}
-        />
-        {[...Array(16)].map((_, i) => {
-          const angle = (i / 16) * 360;
-          const len = i % 2 === 0 ? 90 : 55;
-          return (
-            <motion.div
-              key={i}
-              animate={{ opacity: [0.35, 0.75, 0.35], scaleY: [0.85, 1.1, 0.85] }}
-              transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.1, ease: "easeInOut" }}
-              className="absolute top-1/2 left-1/2 origin-bottom"
-              style={{ width: 2.5, height: len, background: "linear-gradient(to top, rgba(253,224,71,0.9), transparent)", transform: `rotate(${angle}deg) translateX(-50%)`, transformOrigin: "50% 100%", borderRadius: 2 }}
-            />
-          );
-        })}
-        {[{ x: 60, y: -15, w: 180, h: 10, a: 22 }, { x: -30, y: 50, w: 120, h: 6, a: -15 }, { x: 80, y: 30, w: 80, h: 5, a: 10 }].map((f, i) => (
-          <motion.div
-            key={`flare-${i}`}
-            animate={{ opacity: [0.3, 0.65, 0.3] }}
-            transition={{ duration: 3 + i, repeat: Infinity, delay: i * 0.8 }}
-            className="absolute"
-            style={{ top: "50%", left: "50%", width: f.w, height: f.h, background: "linear-gradient(to right, transparent, rgba(255,255,240,0.85), transparent)", transform: `translate(${f.x}px, ${f.y}px) rotate(${f.a}deg)`, borderRadius: 4, filter: "blur(2px)" }}
-          />
-        ))}
-      </div>
-      <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 88% 10%, rgba(253,224,71,0.18) 0%, transparent 55%)" }} />
-      <SunSparkle />
-    </div>
-  );
-}
-
-function StormClouds() {
-  const clouds = [
-    { top: "2%", left: "-5%", w: 340, delay: 0, speed: 32 },
-    { top: "0%", left: "30%", w: 280, delay: -10, speed: 42 },
-    { top: "5%", left: "60%", w: 320, delay: -20, speed: 36 },
-    { top: "14%", left: "10%", w: 220, delay: -5, speed: 48 },
-    { top: "12%", left: "55%", w: 200, delay: -15, speed: 50 },
-  ];
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {clouds.map((c, i) => (
-        <motion.div key={i} className="absolute" style={{ top: c.top, left: c.left }} initial={{ x: 0 }} animate={{ x: [0, 20, 0] }} transition={{ duration: c.speed, repeat: Infinity, delay: c.delay, ease: "easeInOut" }}>
-          <svg width={c.w} height={Math.round(c.w * 0.45)} viewBox="0 0 340 150" fill="none">
-            <ellipse cx="170" cy="130" rx="165" ry="45" fill="#1f2937" fillOpacity="0.97" />
-            <ellipse cx="100" cy="100" rx="80" ry="58" fill="#1f2937" fillOpacity="0.97" />
-            <ellipse cx="220" cy="90" rx="75" ry="60" fill="#374151" fillOpacity="0.97" />
-            <ellipse cx="160" cy="70" rx="65" ry="52" fill="#374151" />
-            <ellipse cx="240" cy="105" rx="55" ry="42" fill="#1f2937" fillOpacity="0.9" />
-          </svg>
-        </motion.div>
-      ))}
-    </div>
-  );
-}
-
-function FairClouds({ count = 2 }: { count?: number }) {
-  const clouds = [
-    { top: "8%", size: 1.3, speed: 35, delay: 0, from: "105%", to: "-25%" },
-    { top: "18%", size: 0.95, speed: 50, delay: -18, from: "108%", to: "-20%" },
-    { top: "4%", size: 0.75, speed: 62, delay: -30, from: "110%", to: "-18%" },
-  ].slice(0, count);
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {clouds.map((c, i) => (
-        <motion.div key={i} className="absolute" style={{ top: c.top }} initial={{ x: c.from }} animate={{ x: c.to }} transition={{ duration: c.speed, repeat: Infinity, delay: c.delay, ease: "linear" }}>
-          <svg width={160 * c.size} height={72 * c.size} viewBox="0 0 160 72" fill="none">
-            <ellipse cx="80" cy="56" rx="72" ry="24" fill="white" fillOpacity="0.88" />
-            <ellipse cx="52" cy="44" rx="36" ry="26" fill="white" fillOpacity="0.9" />
-            <ellipse cx="105" cy="40" rx="30" ry="22" fill="white" fillOpacity="0.85" />
-            <ellipse cx="78" cy="34" rx="26" ry="20" fill="white" />
-          </svg>
-        </motion.div>
-      ))}
-    </div>
-  );
-}
-
-function FogDrift() {
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {[{ top: "55%", opacity: 0.55, speed: 18 }, { top: "70%", opacity: 0.45, speed: 24 }, { top: "82%", opacity: 0.38, speed: 30 }].map((f, i) => (
-        <motion.div key={i} className="absolute w-[200%]" style={{ top: f.top, height: "20%", background: "linear-gradient(to right, transparent, rgba(200,200,220,0.6), rgba(200,200,220,0.5), transparent)", opacity: f.opacity, filter: "blur(12px)" }} animate={{ x: ["-50%", "0%", "-50%"] }} transition={{ duration: f.speed, repeat: Infinity, ease: "easeInOut", delay: i * 2 }} />
-      ))}
-    </div>
-  );
-}
-
-function HeavyRain() {
-  const drops = Array.from({ length: 70 }, (_, i) => ({
-    left: `${(i * 1.43) % 100}%`,
-    delay: (i * 0.07) % 1.8,
-    duration: 0.45 + (i % 5) * 0.08,
-    height: 16 + (i % 8) * 2,
-    width: i % 3 === 0 ? 2.5 : 1.5,
-    opacity: 0.5 + (i % 4) * 0.1,
-  }));
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      <StormClouds />
-      {drops.map((d, i) => (
-        <motion.div key={i} className="absolute rounded-full" style={{ left: d.left, height: d.height, width: d.width, top: "18%", background: `rgba(147,197,253,${d.opacity})`, transform: "rotate(10deg)" }} animate={{ y: ["0%", "580%"], opacity: [0, d.opacity, d.opacity, 0] }} transition={{ duration: d.duration, repeat: Infinity, delay: d.delay, ease: "linear" }} />
-      ))}
-      <motion.div animate={{ opacity: [0, 0, 0, 0.25, 0, 0] }} transition={{ duration: 6, repeat: Infinity, delay: 2 }} className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 60% 20%, rgba(200,220,255,0.6), transparent 60%)" }} />
-    </div>
-  );
-}
-
 function AnimatedWeatherBg({ type }: { type: WeatherType }) {
   const cfg = weatherConfig[type];
   return (
-    <div className="absolute inset-0" style={{ background: cfg.bg }}>
-      {type === "sunny" && <SunFlare />}
+    <div className="absolute inset-0 overflow-hidden" style={{ background: cfg.bg }}>
+      {type === "sunny" && (
+        <>
+          <motion.div
+            animate={{ scale: [1, 1.08, 1], opacity: [0.7, 0.9, 0.7] }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute rounded-full"
+            style={{ top: "-5%", right: "5%", width: 280, height: 280, background: "radial-gradient(circle, rgba(253,224,71,0.6) 0%, rgba(251,191,36,0.3) 40%, transparent 70%)", filter: "blur(20px)" }}
+          />
+          <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 85% 15%, rgba(253,224,71,0.15) 0%, transparent 50%)" }} />
+        </>
+      )}
       {type === "partly-cloudy" && (
         <>
-          <SunFlare />
-          <FairClouds count={2} />
+          <motion.div
+            animate={{ scale: [1, 1.06, 1], opacity: [0.5, 0.7, 0.5] }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute rounded-full"
+            style={{ top: "-5%", right: "8%", width: 240, height: 240, background: "radial-gradient(circle, rgba(253,224,71,0.5) 0%, rgba(251,191,36,0.2) 40%, transparent 70%)", filter: "blur(20px)" }}
+          />
+          <motion.div
+            animate={{ x: [0, 30, 0] }}
+            transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute"
+            style={{ top: "8%", right: "15%", width: 200, height: 80, background: "rgba(255,255,255,0.12)", borderRadius: "50%", filter: "blur(16px)" }}
+          />
         </>
       )}
       {type === "cloudy" && (
         <>
-          <StormClouds />
-          <FogDrift />
+          {[{ top: "5%", left: "10%", w: 280 }, { top: "0%", left: "45%", w: 240 }, { top: "12%", left: "70%", w: 200 }].map((c, i) => (
+            <motion.div
+              key={i}
+              animate={{ x: [0, 15, 0] }}
+              transition={{ duration: 20 + i * 8, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute"
+              style={{ top: c.top, left: c.left, width: c.w, height: c.w * 0.35, background: "rgba(55,65,81,0.5)", borderRadius: "50%", filter: "blur(20px)" }}
+            />
+          ))}
+          {[{ top: "60%", speed: 22 }, { top: "75%", speed: 28 }].map((f, i) => (
+            <motion.div key={`fog-${i}`} className="absolute w-[200%]" style={{ top: f.top, height: "15%", background: "linear-gradient(to right, transparent, rgba(200,200,220,0.3), transparent)", filter: "blur(16px)" }} animate={{ x: ["-50%", "0%", "-50%"] }} transition={{ duration: f.speed, repeat: Infinity, ease: "easeInOut", delay: i * 3 }} />
+          ))}
         </>
       )}
-      {type === "rainy" && <HeavyRain />}
-      <div className="absolute inset-0 bg-black/40" />
+      {type === "rainy" && (
+        <>
+          {[{ top: "2%", left: "5%", w: 300 }, { top: "0%", left: "40%", w: 260 }, { top: "8%", left: "65%", w: 220 }].map((c, i) => (
+            <motion.div
+              key={i}
+              animate={{ x: [0, 12, 0] }}
+              transition={{ duration: 18 + i * 6, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute"
+              style={{ top: c.top, left: c.left, width: c.w, height: c.w * 0.35, background: "rgba(30,58,95,0.6)", borderRadius: "50%", filter: "blur(18px)" }}
+            />
+          ))}
+          {Array.from({ length: 30 }, (_, i) => (
+            <motion.div
+              key={`rain-${i}`}
+              className="absolute rounded-full"
+              style={{ left: `${(i * 3.33) % 100}%`, width: 1.5, height: 12, top: "20%", background: `rgba(147,197,253,${0.25 + (i % 3) * 0.1})`, transform: "rotate(10deg)" }}
+              animate={{ y: ["0%", "500%"], opacity: [0, 0.4, 0.4, 0] }}
+              transition={{ duration: 0.6 + (i % 4) * 0.1, repeat: Infinity, delay: (i * 0.1) % 2, ease: "linear" }}
+            />
+          ))}
+        </>
+      )}
+      <div className="absolute inset-0 bg-black/35" />
     </div>
   );
 }

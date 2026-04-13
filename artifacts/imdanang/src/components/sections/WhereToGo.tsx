@@ -70,9 +70,11 @@ const accordionDestinations = [
   { id: 5, name: "Lăng Cô", listings: "29 Listing", image: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&auto=format&fit=crop" },
 ];
 
+const INITIAL_INDEX = 2;
+
 function CarouselOption() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: "center", containScroll: "trimSnaps" });
-  const [activeIdx, setActiveIdx] = useState(0);
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: "center", containScroll: "trimSnaps", startIndex: INITIAL_INDEX });
+  const [activeIdx, setActiveIdx] = useState(INITIAL_INDEX);
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
