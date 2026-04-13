@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { ChevronLeft, ChevronRight, Search, MapPin, Utensils, Hotel, X, Clock, TrendingUp, Trash2 } from "lucide-react";
 
@@ -74,7 +75,15 @@ export default function HeroSlider() {
   const [paused, setPaused] = useState(false);
   const [searchVal, setSearchVal] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [dropdownRect, setDropdownRect] = useState({ top: 0, left: 0, width: 0 });
   const searchRef = useRef<HTMLDivElement>(null);
+
+  const updateDropdownRect = useCallback(() => {
+    if (searchRef.current) {
+      const r = searchRef.current.getBoundingClientRect();
+      setDropdownRect({ top: r.bottom + 8, left: r.left, width: r.width });
+    }
+  }, []);
 
   const next = useCallback(() => {
     setCurrent((c) => (c + 1) % slides.length);
@@ -104,10 +113,19 @@ export default function HeroSlider() {
       }
     };
     document.addEventListener("mousedown", handleClick);
-    return () => {
-      document.removeEventListener("mousedown", handleClick);
-    };
+    return () => document.removeEventListener("mousedown", handleClick);
   }, []);
+
+  useEffect(() => {
+    if (!showSuggestions) return;
+    const update = () => updateDropdownRect();
+    window.addEventListener("scroll", update, true);
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update, true);
+      window.removeEventListener("resize", update);
+    };
+  }, [showSuggestions, updateDropdownRect]);
 
   const filteredTop = searchVal
     ? topSearches.filter((s) => s.title.toLowerCase().includes(searchVal.toLowerCase()))
@@ -196,7 +214,7 @@ export default function HeroSlider() {
               type="search"
               value={searchVal}
               onChange={(e) => setSearchVal(e.target.value)}
-              onFocus={() => setShowSuggestions(true)}
+              onFocus={() => { updateDropdownRect(); setShowSuggestions(true); }}
               placeholder="Find places, restaurants, hotels..."
               className="flex-1 bg-transparent text-white placeholder:text-white/50 text-sm py-1.5 px-2 focus:outline-none"
               data-testid="input-search-hero"
@@ -215,26 +233,35 @@ export default function HeroSlider() {
           </div>
 
           <AnimatePresence>
-            {showSuggestions && (
+            {showSuggestions && dropdownRect.width > 0 && createPortal(
               <motion.div
                 key="hero-search-dropdown"
                 initial={{ opacity: 0, y: -8, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -8, scale: 0.98 }}
                 transition={{ duration: 0.18 }}
-                className="absolute left-0 right-0 top-full mt-2 rounded-2xl shadow-2xl"
-                style={{ zIndex: 99999, background: "#0f172a", maxHeight: "min(75vh, 480px)", overflowY: "auto" }}
+                style={{
+                  position: "fixed",
+                  top: dropdownRect.top,
+                  left: dropdownRect.left,
+                  width: dropdownRect.width,
+                  zIndex: 99999,
+                  background: "#ffffff",
+                  maxHeight: "min(75vh, 480px)",
+                  overflowY: "auto",
+                }}
+                className="rounded-2xl shadow-2xl"
                 data-testid="search-suggestions"
               >
                 <div className="p-4 space-y-4">
                   {!searchVal && (
                     <>
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-gray-200">
+                        <div className="flex items-center gap-2 text-gray-700">
                           <Clock size={14} className="text-gray-400" />
                           <span className="text-sm font-semibold">Lịch sử tìm kiếm</span>
                         </div>
-                        <button className="text-gray-500 hover:text-gray-300">
+                        <button className="text-gray-400 hover:text-gray-600">
                           <Trash2 size={14} />
                         </button>
                       </div>
@@ -243,7 +270,7 @@ export default function HeroSlider() {
                           <button
                             key={s}
                             onClick={() => setSearchVal(s)}
-                            className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-gray-200 text-sm rounded-full transition-colors"
+                            className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm rounded-full transition-colors"
                           >
                             {s}
                           </button>
@@ -252,7 +279,7 @@ export default function HeroSlider() {
 
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2 text-gray-200">
+                          <div className="flex items-center gap-2 text-gray-700">
                             <TrendingUp size={14} className="text-gray-400" />
                             <span className="text-sm font-semibold">Mọi người đang tìm kiếm</span>
                           </div>
@@ -262,7 +289,7 @@ export default function HeroSlider() {
                             <button
                               key={t}
                               onClick={() => setSearchVal(t)}
-                              className="px-3 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 text-sm rounded-full transition-colors"
+                              className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-sm rounded-full transition-colors"
                             >
                               {t}
                             </button>
@@ -272,10 +299,10 @@ export default function HeroSlider() {
                     </>
                   )}
 
-                  <div className="border-t border-white/10 my-1" />
+                  <div className="border-t border-gray-100 my-1" />
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
                         {searchVal ? "Địa điểm phù hợp" : "Top tìm kiếm"}
                       </p>
                       <div className="space-y-1">
@@ -283,7 +310,7 @@ export default function HeroSlider() {
                           <button
                             key={item.rank}
                             onClick={() => { setSearchVal(item.title); setShowSuggestions(false); }}
-                            className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors text-left"
+                            className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-gray-50 transition-colors text-left"
                           >
                             <span className="w-5 h-5 rounded-full bg-blue-500 text-white text-xs font-bold flex items-center justify-center shrink-0">
                               {item.rank}
@@ -292,20 +319,20 @@ export default function HeroSlider() {
                               <img src={item.img} alt={item.title} className="w-full h-full object-cover" />
                             </div>
                             <div className="min-w-0">
-                              <p className="text-sm font-medium text-gray-100 line-clamp-1">{item.title}</p>
+                              <p className="text-sm font-medium text-gray-800 line-clamp-1">{item.title}</p>
                               <div className="flex items-center gap-1">
-                                <MapPin size={9} className="text-slate-400" />
-                                <p className="text-xs text-slate-400 line-clamp-1">{item.sub}</p>
+                                <MapPin size={9} className="text-gray-400" />
+                                <p className="text-xs text-gray-400 line-clamp-1">{item.sub}</p>
                               </div>
                             </div>
-                            <p className="text-xs text-blue-400 font-medium shrink-0 ml-auto">{item.price}</p>
+                            <p className="text-xs text-blue-600 font-medium shrink-0 ml-auto">{item.price}</p>
                           </button>
                         ))}
                       </div>
                     </div>
 
                     <div>
-                      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
                         {searchVal ? "Điểm đến" : "Điểm đến theo xu hướng"}
                       </p>
                       <div className="space-y-1">
@@ -313,7 +340,7 @@ export default function HeroSlider() {
                           <button
                             key={item.rank}
                             onClick={() => { setSearchVal(item.title); setShowSuggestions(false); }}
-                            className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors text-left"
+                            className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-gray-50 transition-colors text-left"
                           >
                             <span className="w-5 h-5 rounded-full bg-amber-500 text-white text-xs font-bold flex items-center justify-center shrink-0">
                               {item.rank}
@@ -322,8 +349,8 @@ export default function HeroSlider() {
                               <img src={item.img} alt={item.title} className="w-full h-full object-cover" />
                             </div>
                             <div className="min-w-0">
-                              <p className="text-sm font-medium text-gray-100 line-clamp-1">{item.title}</p>
-                              <p className="text-xs text-slate-400 line-clamp-1">{item.sub}</p>
+                              <p className="text-sm font-medium text-gray-800 line-clamp-1">{item.title}</p>
+                              <p className="text-xs text-gray-400 line-clamp-1">{item.sub}</p>
                             </div>
                           </button>
                         ))}
@@ -331,7 +358,8 @@ export default function HeroSlider() {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </motion.div>,
+              document.body
             )}
           </AnimatePresence>
         </motion.div>
