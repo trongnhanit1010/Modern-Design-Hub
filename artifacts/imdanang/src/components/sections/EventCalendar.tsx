@@ -102,7 +102,7 @@ export default function EventCalendar() {
 
   useEffect(() => {
     if (paused) return;
-    const timer = setInterval(goNext, 4000);
+    const timer = setInterval(goNext, 8000);
     return () => clearInterval(timer);
   }, [paused, goNext]);
 
@@ -114,14 +114,19 @@ export default function EventCalendar() {
             <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground">Lịch sự kiện</h2>
             <p className="text-muted-foreground text-sm mt-1">Các sự kiện nổi bật tại Đà Nẵng</p>
           </div>
-          <div className="flex items-center gap-2">
-            <button onClick={goPrev} className="p-2 rounded-full bg-muted hover:bg-gray-200 transition-colors" data-testid="button-events-prev">
-              <ChevronLeft size={18} className="text-foreground" />
-            </button>
-            <span className="text-sm text-muted-foreground font-medium tabular-nums">{activeIndex + 1} / {events.length}</span>
-            <button onClick={goNext} className="p-2 rounded-full bg-muted hover:bg-gray-200 transition-colors" data-testid="button-events-next">
-              <ChevronRight size={18} className="text-foreground" />
-            </button>
+          <div className="flex items-center gap-3">
+            <a href="#" className="text-primary text-sm font-medium hover:underline flex items-center gap-1">
+              Xem tất cả lịch <ArrowRight size={14} />
+            </a>
+            <div className="flex items-center gap-2 bg-muted rounded-full p-1">
+              <button onClick={goPrev} className="p-1.5 rounded-full hover:bg-gray-200 transition-colors" data-testid="button-events-prev">
+                <ChevronLeft size={16} className="text-foreground" />
+              </button>
+              <span className="text-sm text-muted-foreground font-medium tabular-nums px-1">{activeIndex + 1} / {events.length}</span>
+              <button onClick={goNext} className="p-1.5 rounded-full hover:bg-gray-200 transition-colors" data-testid="button-events-next">
+                <ChevronRight size={16} className="text-foreground" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -154,15 +159,6 @@ export default function EventCalendar() {
               );
             })}
 
-            <div className="flex gap-1 mt-4 ml-14">
-              {events.map((event) => (
-                <button
-                  key={event.id}
-                  onClick={() => setSelected(event.id)}
-                  className={`h-1 rounded-full transition-all duration-300 ${selected === event.id ? "w-6 bg-primary" : "w-2 bg-gray-300"}`}
-                />
-              ))}
-            </div>
           </div>
 
           <div className="md:col-span-3">

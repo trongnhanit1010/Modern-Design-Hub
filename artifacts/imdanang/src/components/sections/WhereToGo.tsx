@@ -77,7 +77,7 @@ const accordionDestinations = [
   { id: 5, name: "Lăng Cô", listings: "29 Listing", image: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&auto=format&fit=crop" },
 ];
 
-const VISIBLE = 4;
+const VISIBLE = 3;
 
 function CarouselOption() {
   const [current, setCurrent] = useState(0);
@@ -87,47 +87,59 @@ function CarouselOption() {
   const next = () => setCurrent((c) => Math.min(maxIndex, c + 1));
 
   return (
-    <div className="relative">
-      <div className="overflow-hidden rounded-2xl">
+    <div className="relative px-2">
+      <div className="overflow-hidden">
         <motion.div
-          className="flex gap-4"
-          animate={{ x: `calc(-${current * (100 / VISIBLE)}% - ${current * 16 / VISIBLE}px)` }}
-          transition={{ type: "spring", stiffness: 300, damping: 35 }}
+          className="flex gap-5"
+          animate={{ x: `calc(-${current * (100 / VISIBLE)}% - ${current * 20 / VISIBLE}px)` }}
+          transition={{ type: "spring", stiffness: 300, damping: 36 }}
           style={{ width: `${(destinations.length / VISIBLE) * 100}%` }}
         >
           {destinations.map((dest) => (
-            <div
+            <motion.div
               key={dest.id}
-              className="relative rounded-2xl overflow-hidden cursor-pointer group shadow-md shrink-0"
+              whileHover={{ y: -6 }}
+              transition={{ duration: 0.25 }}
+              className="group cursor-pointer shrink-0 rounded-3xl overflow-hidden shadow-md bg-white border border-gray-100"
               style={{ width: `${100 / destinations.length}%` }}
               data-testid={`card-destination-carousel-${dest.id}`}
             >
-              <div className="aspect-[3/4]">
+              <div className="relative aspect-[4/3] overflow-hidden">
                 <img
                   src={dest.image}
                   alt={dest.name}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-4">
-                <div className="flex items-center gap-1 mb-1.5">
-                  <Star size={11} className="text-amber-400 fill-amber-400" />
-                  <span className="text-white/90 text-xs font-semibold">{dest.rating}</span>
-                </div>
-                <h3 className="text-white font-semibold text-sm leading-tight mb-1">{dest.name}</h3>
-                <div className="flex items-center gap-1">
-                  <MapPin size={10} className="text-white/60" />
-                  <span className="text-white/60 text-xs">{dest.location}</span>
-                </div>
-                <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-white/15">
-                  <span className="text-amber-300 text-xs">{dest.listings}</span>
-                  <span className="text-xs bg-white/20 backdrop-blur-sm text-white font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Eye size={10} />Xem
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute top-3 right-3">
+                  <span className="flex items-center gap-1 bg-white/90 backdrop-blur-sm text-gray-800 text-xs font-bold px-2 py-1 rounded-full shadow-sm">
+                    <Star size={10} className="text-amber-400 fill-amber-400" />
+                    {dest.rating}
                   </span>
                 </div>
+                <motion.div
+                  className="absolute bottom-3 left-0 right-0 flex justify-center"
+                  initial={{ opacity: 0, y: 8 }}
+                  whileHover={{ opacity: 1, y: 0 }}
+                >
+                  <span className="bg-blue-500 text-white text-xs font-semibold px-4 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    <Eye size={11} /> Xem ngay
+                  </span>
+                </motion.div>
               </div>
-            </div>
+
+              <div className="p-4">
+                <h3 className="font-semibold text-gray-900 text-sm leading-snug mb-1.5 line-clamp-1">{dest.name}</h3>
+                <div className="flex items-center gap-1 mb-3">
+                  <MapPin size={11} className="text-blue-400 shrink-0" />
+                  <span className="text-xs text-gray-500 line-clamp-1">{dest.location}</span>
+                </div>
+                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                  <span className="text-xs text-gray-400">{dest.listings}</span>
+                  <span className="text-xs font-semibold text-blue-500 group-hover:text-blue-600 transition-colors">Đặt ngay →</span>
+                </div>
+              </div>
+            </motion.div>
           ))}
         </motion.div>
       </div>
@@ -135,29 +147,19 @@ function CarouselOption() {
       <button
         onClick={prev}
         disabled={current === 0}
-        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-9 h-9 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+        className="absolute left-0 top-[40%] -translate-y-1/2 -translate-x-1 z-10 w-9 h-9 rounded-full bg-white shadow-lg border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all disabled:opacity-25 disabled:cursor-not-allowed"
         data-testid="button-carousel-prev"
       >
-        <ChevronLeft size={18} />
+        <ChevronLeft size={17} />
       </button>
       <button
         onClick={next}
         disabled={current >= maxIndex}
-        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-9 h-9 rounded-full bg-white shadow-lg flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+        className="absolute right-0 top-[40%] -translate-y-1/2 translate-x-1 z-10 w-9 h-9 rounded-full bg-white shadow-lg border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all disabled:opacity-25 disabled:cursor-not-allowed"
         data-testid="button-carousel-next"
       >
-        <ChevronRight size={18} />
+        <ChevronRight size={17} />
       </button>
-
-      <div className="flex justify-center gap-1.5 mt-4">
-        {Array.from({ length: maxIndex + 1 }).map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrent(i)}
-            className={`rounded-full transition-all ${i === current ? "w-5 h-1.5 bg-blue-500" : "w-1.5 h-1.5 bg-gray-300 hover:bg-gray-400"}`}
-          />
-        ))}
-      </div>
     </div>
   );
 }
