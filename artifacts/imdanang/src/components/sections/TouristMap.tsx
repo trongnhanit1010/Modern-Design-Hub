@@ -23,126 +23,6 @@ function WorldMapBg() {
   );
 }
 
-function ClassicMap({ isInView }: { isInView: boolean }) {
-  const [selected, setSelected] = useState<number | null>(null);
-  const selectedLoc = selected !== null ? locations.find((l) => l.id === selected) : null;
-
-  return (
-    <motion.div initial={{ opacity: 0, y: 30 }} animate={isInView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6 }} className="relative rounded-3xl overflow-hidden shadow-xl border border-gray-200" style={{ minHeight: 520 }}>
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-sky-50 to-cyan-50" />
-      <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle at 1.5px 1.5px, rgba(59,130,246,0.5) 1.5px, transparent 0)", backgroundSize: "32px 32px" }} />
-      <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "linear-gradient(rgba(59,130,246,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.15) 1px, transparent 1px)", backgroundSize: "80px 80px" }} />
-
-      <div className="relative z-10 grid md:grid-cols-5 min-h-[520px]">
-        <div className="md:col-span-2 flex flex-col justify-center p-8 md:pr-4">
-          <motion.div initial={{ opacity: 0, x: -30 }} animate={isInView ? { opacity: 1, x: 0 } : {}} transition={{ delay: 0.3, duration: 0.6 }}>
-            <div className="inline-flex items-center gap-2 bg-blue-100 border border-blue-200 text-blue-700 rounded-full px-4 py-1.5 text-sm mb-5 font-medium">
-              <MapPin size={13} />Đà Nẵng, Việt Nam
-            </div>
-            <h2 className="font-serif text-4xl md:text-5xl font-bold text-gray-900 mb-3 leading-tight">Tourist<br />Map</h2>
-            <p className="text-gray-500 text-sm leading-relaxed mb-6 max-w-xs">Khám phá các địa điểm du lịch nổi bật tại Đà Nẵng và khu vực miền Trung</p>
-            <div className="flex items-center gap-5 mb-7">
-              {[{ count: "128+", label: "Khách sạn" }, { count: "85+", label: "Địa điểm" }, { count: "340+", label: "Nhà hàng" }].map((s) => (
-                <div key={s.label} className="text-center">
-                  <p className="text-gray-900 font-bold text-xl">{s.count}</p>
-                  <p className="text-gray-400 text-xs">{s.label}</p>
-                </div>
-              ))}
-            </div>
-            <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-2xl font-semibold text-sm shadow-lg transition-colors w-fit" data-testid="button-explore-map">
-              <Compass size={16} />Khám phá bản đồ
-            </motion.button>
-          </motion.div>
-        </div>
-
-        <div className="md:col-span-3 relative flex items-center justify-center p-6">
-          <div className="relative w-full h-full" style={{ minHeight: 380 }}>
-            {locations.map((loc, i) => (
-              <motion.div
-                key={loc.id}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={isInView ? { scale: 1, opacity: 1 } : {}}
-                transition={{ delay: i * 0.12 + 0.4, type: "spring", stiffness: 280 }}
-                className="absolute cursor-pointer"
-                style={{ left: `${loc.x}%`, top: `${loc.y}%`, transform: "translate(-50%, -50%)" }}
-                onClick={() => setSelected(selected === loc.id ? null : loc.id)}
-                data-testid={`pin-location-${loc.id}`}
-              >
-                <div className="relative group">
-                  <motion.div
-                    className="absolute inset-0 rounded-full"
-                    style={{ background: `radial-gradient(circle, ${loc.accent}30, transparent)`, margin: -8 }}
-                    animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0.15, 0.5] }}
-                    transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.4 }}
-                  />
-                  <motion.div
-                    whileHover={{ scale: 1.2 }}
-                    whileTap={{ scale: 0.9 }}
-                    className={`relative z-10 w-11 h-11 ${loc.color} rounded-2xl flex items-center justify-center shadow-lg border-2 ${selected === loc.id ? "border-blue-600 scale-110 ring-2 ring-blue-200" : "border-white"} transition-all`}
-                  >
-                    <loc.icon size={18} className="text-white" />
-                  </motion.div>
-                  <div className={`absolute top-full left-1/2 -translate-x-1/2 mt-1.5 whitespace-nowrap transition-all duration-200 ${selected === loc.id ? "opacity-0" : "opacity-100"}`}>
-                    <span className="text-gray-700 text-[10px] font-semibold bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded-full shadow-sm border border-gray-100">
-                      {loc.name}
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-
-            <AnimatePresence>
-              {selectedLoc && (
-                <motion.div
-                  key={selectedLoc.id}
-                  initial={{ opacity: 0, scale: 0.85, y: 10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.85, y: 10 }}
-                  transition={{ duration: 0.25 }}
-                  className="absolute z-30 w-64"
-                  style={{
-                    left: selectedLoc.x > 60 ? "auto" : `${Math.min(selectedLoc.x + 10, 45)}%`,
-                    right: selectedLoc.x > 60 ? "5%" : "auto",
-                    top: selectedLoc.y > 55 ? "auto" : `${Math.min(selectedLoc.y + 8, 40)}%`,
-                    bottom: selectedLoc.y > 55 ? "5%" : "auto",
-                  }}
-                >
-                  <div className="bg-white rounded-2xl overflow-hidden shadow-2xl border border-gray-100">
-                    <div className="relative h-32">
-                      <img src={selectedLoc.img} alt={selectedLoc.name} className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                      <button onClick={() => setSelected(null)} className="absolute top-2 right-2 w-6 h-6 bg-white/90 rounded-full flex items-center justify-center text-gray-600 hover:bg-white text-xs transition-colors">
-                        <X size={12} />
-                      </button>
-                      <span className={`absolute bottom-2 left-2 inline-block ${selectedLoc.color} text-white text-[10px] px-2 py-0.5 rounded-full font-medium`}>{selectedLoc.type}</span>
-                    </div>
-                    <div className="p-3">
-                      <div className="flex items-start justify-between mb-1">
-                        <h3 className="font-bold text-gray-900 text-sm leading-tight">{selectedLoc.name}</h3>
-                        <div className="flex items-center gap-0.5 shrink-0 ml-1"><Star size={11} className="text-amber-400 fill-amber-400" /><span className="text-amber-600 text-xs font-bold">{selectedLoc.rating}</span></div>
-                      </div>
-                      <p className="text-gray-500 text-xs mb-2 line-clamp-2">{selectedLoc.desc}</p>
-                      <div className="flex items-center gap-1 text-gray-400 text-xs mb-2"><Clock size={10} /><span>6:00 – 22:00</span></div>
-                      <button className="w-full bg-blue-600 hover:bg-blue-500 text-white py-1.5 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5">
-                        <Navigation size={12} />Chỉ đường
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-      </div>
-
-      <div className="absolute bottom-4 left-4 bg-white/80 backdrop-blur-sm rounded-xl px-3 py-2 flex items-center gap-2 z-10 border border-gray-200 shadow-sm">
-        <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-        <span className="text-gray-600 text-xs font-medium">Nhấn vào địa điểm để xem chi tiết</span>
-      </div>
-    </motion.div>
-  );
-}
-
 function ModernMap({ isInView }: { isInView: boolean }) {
   const [active, setActive] = useState<number | null>(null);
   const activeLocation = active !== null ? locations.find((l) => l.id === active) : null;
@@ -272,30 +152,17 @@ function ModernMap({ isInView }: { isInView: boolean }) {
 }
 
 export default function TouristMap() {
-  const [option, setOption] = useState<"A" | "B">("A");
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
     <section className="py-16 px-4" id="map" ref={ref} data-testid="section-tourist-map">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground">Tourist Map</h2>
-            <p className="text-muted-foreground text-sm mt-1">Khám phá bản đồ du lịch Đà Nẵng</p>
-          </div>
-          <div className="flex items-center gap-2 bg-muted rounded-full p-1">
-            <button onClick={() => setOption("A")} className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${option === "A" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`} data-testid="button-map-option-a">Classic</button>
-            <button onClick={() => setOption("B")} className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${option === "B" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`} data-testid="button-map-option-b">Modern</button>
-          </div>
+        <div className="mb-8">
+          <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground">Tourist Map</h2>
+          <p className="text-muted-foreground text-sm mt-1">Khám phá bản đồ du lịch Đà Nẵng</p>
         </div>
-        <AnimatePresence mode="wait">
-          {option === "A" ? (
-            <motion.div key="A" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><ClassicMap isInView={isInView} /></motion.div>
-          ) : (
-            <motion.div key="B" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><ModernMap isInView={isInView} /></motion.div>
-          )}
-        </AnimatePresence>
+        <ModernMap isInView={isInView} />
       </div>
     </section>
   );
