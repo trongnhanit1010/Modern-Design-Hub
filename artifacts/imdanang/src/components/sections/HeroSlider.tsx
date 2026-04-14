@@ -57,6 +57,149 @@ const trendingDest = [
   { rank: 3, title: "Bà Nà Hills", sub: "Tham quan & Giải trí", img: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=100&auto=format&fit=crop" },
 ];
 
+type DropdownRect = { top: number; left: number; width: number };
+
+interface SearchDropdownProps {
+  show: boolean;
+  rect: DropdownRect;
+  searchVal: string;
+  setSearchVal: (v: string) => void;
+  setShowSuggestions: (v: boolean) => void;
+  filteredTop: typeof topSearches;
+  filteredDest: typeof trendingDest;
+}
+
+function SearchDropdown({ show, rect, searchVal, setSearchVal, setShowSuggestions, filteredTop, filteredDest }: SearchDropdownProps) {
+  if (!show || rect.width === 0) return null;
+  return createPortal(
+    <AnimatePresence>
+      <motion.div
+        key="hero-search-dropdown"
+        initial={{ opacity: 0, y: -8, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -8, scale: 0.98 }}
+        transition={{ duration: 0.18 }}
+        style={{
+          position: "fixed",
+          top: rect.top,
+          left: rect.left,
+          width: rect.width,
+          zIndex: 99999,
+          background: "#ffffff",
+          maxHeight: "min(75vh, 480px)",
+          overflowY: "auto",
+        }}
+        className="rounded-2xl shadow-2xl"
+        data-testid="search-suggestions"
+      >
+        <div className="p-4 space-y-4">
+          {!searchVal && (
+            <>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-gray-700">
+                  <Clock size={14} className="text-gray-400" />
+                  <span className="text-sm font-semibold">Lịch sử tìm kiếm</span>
+                </div>
+                <button className="text-gray-400 hover:text-gray-600">
+                  <Trash2 size={14} />
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {recentSearches.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setSearchVal(s)}
+                    className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm rounded-full transition-colors"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2 text-gray-700">
+                    <TrendingUp size={14} className="text-gray-400" />
+                    <span className="text-sm font-semibold">Mọi người đang tìm kiếm</span>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {trending.map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => setSearchVal(t)}
+                      className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-sm rounded-full transition-colors"
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+          <div className="border-t border-gray-100 my-1" />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                {searchVal ? "Địa điểm phù hợp" : "Top tìm kiếm"}
+              </p>
+              <div className="space-y-1">
+                {filteredTop.map((item) => (
+                  <button
+                    key={item.rank}
+                    onClick={() => { setSearchVal(item.title); setShowSuggestions(false); }}
+                    className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-gray-50 transition-colors text-left"
+                  >
+                    <span className="w-5 h-5 rounded-full bg-blue-500 text-white text-xs font-bold flex items-center justify-center shrink-0">
+                      {item.rank}
+                    </span>
+                    <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0">
+                      <img src={item.img} alt={item.title} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-gray-800 line-clamp-1">{item.title}</p>
+                      <div className="flex items-center gap-1">
+                        <MapPin size={9} className="text-gray-400" />
+                        <p className="text-xs text-gray-400 line-clamp-1">{item.sub}</p>
+                      </div>
+                    </div>
+                    <p className="text-xs text-blue-600 font-medium shrink-0 ml-auto">{item.price}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                {searchVal ? "Điểm đến" : "Điểm đến theo xu hướng"}
+              </p>
+              <div className="space-y-1">
+                {filteredDest.map((item) => (
+                  <button
+                    key={item.rank}
+                    onClick={() => { setSearchVal(item.title); setShowSuggestions(false); }}
+                    className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-gray-50 transition-colors text-left"
+                  >
+                    <span className="w-5 h-5 rounded-full bg-amber-500 text-white text-xs font-bold flex items-center justify-center shrink-0">
+                      {item.rank}
+                    </span>
+                    <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0">
+                      <img src={item.img} alt={item.title} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-gray-800 line-clamp-1">{item.title}</p>
+                      <p className="text-xs text-gray-400 line-clamp-1">{item.sub}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </AnimatePresence>,
+    document.body
+  );
+}
+
 const EASE_OUT = [0.25, 0.1, 0.25, 1] as const;
 
 const textVariants: Variants = {
@@ -232,136 +375,15 @@ export default function HeroSlider() {
             </button>
           </div>
 
-          <AnimatePresence>
-            {showSuggestions && dropdownRect.width > 0 && createPortal(
-              <motion.div
-                key="hero-search-dropdown"
-                initial={{ opacity: 0, y: -8, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -8, scale: 0.98 }}
-                transition={{ duration: 0.18 }}
-                style={{
-                  position: "fixed",
-                  top: dropdownRect.top,
-                  left: dropdownRect.left,
-                  width: dropdownRect.width,
-                  zIndex: 99999,
-                  background: "#ffffff",
-                  maxHeight: "min(75vh, 480px)",
-                  overflowY: "auto",
-                }}
-                className="rounded-2xl shadow-2xl"
-                data-testid="search-suggestions"
-              >
-                <div className="p-4 space-y-4">
-                  {!searchVal && (
-                    <>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-gray-700">
-                          <Clock size={14} className="text-gray-400" />
-                          <span className="text-sm font-semibold">Lịch sử tìm kiếm</span>
-                        </div>
-                        <button className="text-gray-400 hover:text-gray-600">
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {recentSearches.map((s) => (
-                          <button
-                            key={s}
-                            onClick={() => setSearchVal(s)}
-                            className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm rounded-full transition-colors"
-                          >
-                            {s}
-                          </button>
-                        ))}
-                      </div>
-
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2 text-gray-700">
-                            <TrendingUp size={14} className="text-gray-400" />
-                            <span className="text-sm font-semibold">Mọi người đang tìm kiếm</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {trending.map((t) => (
-                            <button
-                              key={t}
-                              onClick={() => setSearchVal(t)}
-                              className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-sm rounded-full transition-colors"
-                            >
-                              {t}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  <div className="border-t border-gray-100 my-1" />
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                        {searchVal ? "Địa điểm phù hợp" : "Top tìm kiếm"}
-                      </p>
-                      <div className="space-y-1">
-                        {filteredTop.map((item) => (
-                          <button
-                            key={item.rank}
-                            onClick={() => { setSearchVal(item.title); setShowSuggestions(false); }}
-                            className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-gray-50 transition-colors text-left"
-                          >
-                            <span className="w-5 h-5 rounded-full bg-blue-500 text-white text-xs font-bold flex items-center justify-center shrink-0">
-                              {item.rank}
-                            </span>
-                            <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0">
-                              <img src={item.img} alt={item.title} className="w-full h-full object-cover" />
-                            </div>
-                            <div className="min-w-0">
-                              <p className="text-sm font-medium text-gray-800 line-clamp-1">{item.title}</p>
-                              <div className="flex items-center gap-1">
-                                <MapPin size={9} className="text-gray-400" />
-                                <p className="text-xs text-gray-400 line-clamp-1">{item.sub}</p>
-                              </div>
-                            </div>
-                            <p className="text-xs text-blue-600 font-medium shrink-0 ml-auto">{item.price}</p>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                        {searchVal ? "Điểm đến" : "Điểm đến theo xu hướng"}
-                      </p>
-                      <div className="space-y-1">
-                        {filteredDest.map((item) => (
-                          <button
-                            key={item.rank}
-                            onClick={() => { setSearchVal(item.title); setShowSuggestions(false); }}
-                            className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-gray-50 transition-colors text-left"
-                          >
-                            <span className="w-5 h-5 rounded-full bg-amber-500 text-white text-xs font-bold flex items-center justify-center shrink-0">
-                              {item.rank}
-                            </span>
-                            <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0">
-                              <img src={item.img} alt={item.title} className="w-full h-full object-cover" />
-                            </div>
-                            <div className="min-w-0">
-                              <p className="text-sm font-medium text-gray-800 line-clamp-1">{item.title}</p>
-                              <p className="text-xs text-gray-400 line-clamp-1">{item.sub}</p>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>,
-              document.body
-            )}
-          </AnimatePresence>
+          <SearchDropdown
+            show={showSuggestions}
+            rect={dropdownRect}
+            searchVal={searchVal}
+            setSearchVal={setSearchVal}
+            setShowSuggestions={setShowSuggestions}
+            filteredTop={filteredTop}
+            filteredDest={filteredDest}
+          />
         </motion.div>
       </div>
 
