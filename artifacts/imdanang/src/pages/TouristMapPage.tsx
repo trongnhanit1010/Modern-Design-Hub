@@ -220,15 +220,34 @@ export default function TouristMapPage() {
     gmapRef.current.setOptions({ styles: isDark ? MAP_STYLES : [] });
   }, [isDark]);
 
+  // ── Global callbacks for dish InfoWindow buttons ──
+  useEffect(() => {
+    (window as any).__dishSelectRest = (id: number, lat: number, lng: number) => {
+      setSelectedId(id);
+      gmapRef.current?.panTo({ lat, lng });
+      gmapRef.current?.setZoom(17);
+    };
+    (window as any).__dishGoBack = (dishLat: number, dishLng: number) => {
+      setSelectedId(null);
+      gmapRef.current?.panTo({ lat: dishLat, lng: dishLng });
+      gmapRef.current?.setZoom(14);
+    };
+    return () => {
+      delete (window as any).__dishSelectRest;
+      delete (window as any).__dishGoBack;
+    };
+  }, []);
+
   // ── InfoWindow for selected regular location ──
   useEffect(() => {
     if (!mapsReady || !gmapRef.current) return;
+    if (activeCategory === "dish") return; // handled by dish effect below
     if (!infoWinRef.current) {
       infoWinRef.current = new google.maps.InfoWindow({ disableAutoPan: false });
     }
     const iw = infoWinRef.current;
     iw.close();
-    if (!selLoc || selDishRest) return;
+    if (!selLoc) return;
 
     const bg   = isDark ? "#0d0d1a"             : "#ffffff";
     const border = isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e5e7eb";
@@ -257,7 +276,83 @@ export default function TouristMapPage() {
     google.maps.event.clearListeners(iw, "closeclick");
     iw.addListener("closeclick", () => setSelectedId(null));
     iw.open(gmapRef.current);
-  }, [mapsReady, selectedId, isDark]);
+  }, [mapsReady, selectedId, isDark, activeCategory]);
+
+  // ── InfoWindow for dish mode ──
+  useEffect(() => {
+    if (!mapsReady || !gmapRef.current || activeCategory !== "dish") return;
+    if (!infoWinRef.current) {
+      infoWinRef.current = new google.maps.InfoWindow({ disableAutoPan: false });
+    }
+    const iw = infoWinRef.current;
+    iw.close();
+    if (!selDish) return;
+
+    const bg   = isDark ? "#0d0d1a" : "#ffffff";
+    const bdr  = isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #fce7f3";
+    const nameC = isDark ? "#f1f5f9" : "#111827";
+    const subC  = isDark ? "rgba(255,255,255,0.42)" : "#6b7280";
+    const chipBg  = isDark ? "rgba(244,63,94,0.12)" : "#fff1f2";
+    const chipBdr = isDark ? "rgba(244,63,94,0.35)" : "#fecdd3";
+    const chipC   = isDark ? "#fb7185" : "#e11d48";
+    const backBg  = isDark ? "rgba(255,255,255,0.06)" : "#f9fafb";
+    const backC   = isDark ? "rgba(255,255,255,0.55)" : "#6b7280";
+
+    if (selDishRest) {
+      // ─ Restaurant detail view ─
+      iw.setContent(`
+        <div style="background:${bg};border:${bdr};border-radius:14px;overflow:hidden;width:230px;font-family:system-ui,sans-serif;box-shadow:0 8px 32px rgba(0,0,0,0.20)">
+          <div onclick="window.__dishGoBack(${selDish.lat},${selDish.lng})"
+               style="background:${backBg};padding:7px 12px;display:flex;align-items:center;gap:6px;cursor:pointer;border-bottom:${bdr}">
+            <span style="font-size:15px;color:${chipC};line-height:1">←</span>
+            <span style="font-size:10px;color:${backC};font-weight:600">${selDish.name}</span>
+          </div>
+          <div style="position:relative;height:80px">
+            <img src="${selDishRest.image}" style="width:100%;height:100%;object-fit:cover" />
+            <div style="position:absolute;inset:0;background:linear-gradient(to top,${bg},transparent 60%)"></div>
+          </div>
+          <div style="padding:10px 12px 12px">
+            <div style="font-weight:700;font-size:13px;color:${nameC};margin-bottom:6px;line-height:1.3">${selDishRest.name}</div>
+            <div style="font-size:10px;color:${subC};margin-bottom:2px">📍 ${selDishRest.address}</div>
+            <div style="font-size:10px;color:${subC};margin-bottom:2px">🕐 ${selDishRest.hours}</div>
+            <div style="font-size:10px;color:${subC};margin-bottom:9px">⭐ ${selDishRest.rating} &nbsp;·&nbsp; 💰 ${selDishRest.priceRange}</div>
+            <div style="padding:7px;background:linear-gradient(135deg,#f43f5e,#ec4899);color:#fff;border-radius:9px;font-size:11px;font-weight:700;text-align:center;cursor:pointer">
+              Xem thêm về quán →
+            </div>
+          </div>
+        </div>`);
+      iw.setPosition({ lat: selDishRest.lat, lng: selDishRest.lng });
+      google.maps.event.clearListeners(iw, "closeclick");
+      iw.addListener("closeclick", () => { setExpandedDishId(null); setSelectedId(null); });
+      iw.open(gmapRef.current);
+    } else {
+      // ─ Dish overview with restaurant chips ─
+      const chips = selDish.restaurants.map(r =>
+        `<button onclick="window.__dishSelectRest(${r.id},${r.lat},${r.lng})"
+          style="padding:4px 10px;border-radius:99px;border:1px solid ${chipBdr};background:${chipBg};color:${chipC};font-size:10px;font-weight:600;cursor:pointer;font-family:system-ui;white-space:nowrap">
+          ${r.name}
+        </button>`
+      ).join("");
+      iw.setContent(`
+        <div style="background:${bg};border:${bdr};border-radius:14px;overflow:hidden;width:240px;font-family:system-ui,sans-serif;box-shadow:0 8px 32px rgba(0,0,0,0.20)">
+          <div style="position:relative;height:90px">
+            <img src="${selDish.image}" style="width:100%;height:100%;object-fit:cover" />
+            <div style="position:absolute;inset:0;background:linear-gradient(to top,${bg},transparent 55%)"></div>
+            <span style="position:absolute;bottom:7px;left:10px;font-size:9px;font-weight:700;color:#fff;background:linear-gradient(135deg,#f43f5e,#ec4899);padding:2px 9px;border-radius:99px">${selDish.tag}</span>
+          </div>
+          <div style="padding:10px 12px 13px">
+            <div style="font-weight:700;font-size:14px;color:${nameC};margin-bottom:4px">${selDish.name}</div>
+            <div style="font-size:10px;color:${subC};line-height:1.55;margin-bottom:9px">${selDish.desc}</div>
+            <div style="font-size:10px;color:${subC};font-weight:600;margin-bottom:6px">🏪 ${selDish.restaurants.length} quán — chọn để xem trên bản đồ:</div>
+            <div style="display:flex;flex-wrap:wrap;gap:5px">${chips}</div>
+          </div>
+        </div>`);
+      iw.setPosition({ lat: selDish.lat, lng: selDish.lng });
+      google.maps.event.clearListeners(iw, "closeclick");
+      iw.addListener("closeclick", () => { setExpandedDishId(null); setSelectedId(null); });
+      iw.open(gmapRef.current);
+    }
+  }, [mapsReady, expandedDishId, selectedId, isDark, activeCategory]);
 
   // ── rebuild markers ──
   useEffect(() => {
@@ -594,66 +689,6 @@ export default function TouristMapPage() {
           <span className="text-[11px]">{filteredList.length} {cat.label} · Đà Nẵng &amp; Hội An</span>
         </div>
 
-        {/* detail card - dish + restaurants */}
-        <AnimatePresence>
-          {selDish && (
-            <motion.div key={selDish.id} initial={{ opacity: 0, y: 16, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 16, scale: 0.96 }} transition={{ duration: 0.2 }}
-              className="absolute bottom-4 right-4 z-10 w-[270px]">
-              <div className={`rounded-2xl overflow-hidden shadow-2xl border ${D ? "border-rose-500/15" : "border-rose-100 shadow-xl"}`}
-                style={{ background: D ? "rgba(12,12,26,0.96)" : "rgba(255,255,255,0.97)", backdropFilter: "blur(20px)" }}>
-                {selDishRest ? (
-                  <>
-                    <div className="relative h-28">
-                      <img src={selDishRest.image} alt={selDishRest.name} className="w-full h-full object-cover" />
-                      <div className={`absolute inset-0 bg-gradient-to-t ${D ? "from-[#0c0c1a]" : "from-black/50"} to-transparent`} />
-                      <button onClick={() => setSelectedId(null)} className="absolute top-2.5 right-2.5 w-7 h-7 bg-black/60 rounded-full flex items-center justify-center text-white/70 hover:text-white"><X size={12} /></button>
-                      <span className="absolute bottom-2 left-3 text-[10px] text-rose-200 font-semibold">{selDish.name}</span>
-                    </div>
-                    <div className="p-3.5">
-                      <h3 className={`font-bold text-sm mb-2 ${tx}`}>{selDishRest.name}</h3>
-                      <div className="space-y-1 mb-3">
-                        <p className={`text-[11px] flex items-center gap-1 ${txS}`}><MapPin size={9} />{selDishRest.address}</p>
-                        <p className={`text-[11px] ${txS}`}>🕐 {selDishRest.hours}</p>
-                        <div className="flex items-center gap-1">
-                          <Star size={9} className="text-amber-500 fill-amber-500" />
-                          <span className="text-amber-500 text-[10px] font-bold">{selDishRest.rating}</span>
-                          <span className={`text-[10px] ${txS}`}>· {selDishRest.priceRange}</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl text-white text-xs font-bold cursor-pointer"
-                        style={{ background: "linear-gradient(135deg, #f43f5e, #ec4899)" }}>
-                        Xem chi tiết {selDish.name} <ChevronRight size={13} />
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="relative h-24">
-                      <img src={selDish.image} alt={selDish.name} className="w-full h-full object-cover" />
-                      <div className={`absolute inset-0 bg-gradient-to-t ${D ? "from-[#0c0c1a]" : "from-black/50"} to-transparent`} />
-                      <button onClick={() => { setExpandedDishId(null); setSelectedId(null); }} className="absolute top-2.5 right-2.5 w-7 h-7 bg-black/60 rounded-full flex items-center justify-center text-white/70 hover:text-white"><X size={12} /></button>
-                      <span className="absolute bottom-2 left-3 text-[9px] font-bold text-white bg-rose-500/80 px-2 py-0.5 rounded-full">{selDish.tag}</span>
-                    </div>
-                    <div className="p-3.5">
-                      <p className={`font-bold text-sm mb-1 ${tx}`}>{selDish.name}</p>
-                      <p className={`text-[10px] leading-relaxed mb-2.5 ${txM}`}>{selDish.desc}</p>
-                      <p className={`text-[10px] mb-2 ${txS}`}>Chọn quán để xem chi tiết:</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {selDish.restaurants.map(r => (
-                          <div key={r.id} role="button"
-                            onClick={() => { setSelectedId(r.id); panTo(r.lat, r.lng, 17); }}
-                            className={`text-[10px] px-2 py-0.5 rounded-full border cursor-pointer transition-all ${selectedId === r.id ? "bg-rose-500/20 border-rose-400/40 text-rose-500" : chipOff}`}>
-                            {r.name}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </div>
   );
