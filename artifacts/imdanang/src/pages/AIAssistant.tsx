@@ -1,18 +1,18 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Send, Sparkles, MapPin, Utensils, Hotel, Waves,
-  RefreshCw, X, ChevronRight, Mic,
+  Send, MapPin, Utensils, Hotel, Waves,
+  RefreshCw, X, ChevronRight, Mic, Sparkles,
 } from "lucide-react";
 import { useDarkMode } from "@/context/DarkModeContext";
 
 type Message = { role: "user" | "bot"; text: string; time: string };
 
 const categories = [
-  { icon: Utensils,  label: "Ẩm thực địa phương",    color: "#f97316" },
-  { icon: Waves,     label: "Bãi biển & thiên nhiên", color: "#0ea5e9" },
-  { icon: Hotel,     label: "Khách sạn & lưu trú",    color: "#8b5cf6" },
-  { icon: MapPin,    label: "Tham quan & điểm đến",   color: "#10b981" },
+  { icon: Utensils, label: "Ẩm thực địa phương",    color: "#f97316" },
+  { icon: Waves,    label: "Bãi biển & thiên nhiên", color: "#0ea5e9" },
+  { icon: Hotel,    label: "Khách sạn & lưu trú",    color: "#8b5cf6" },
+  { icon: MapPin,   label: "Tham quan & điểm đến",   color: "#10b981" },
 ];
 
 const chips = [
@@ -36,48 +36,104 @@ const initMessages: Message[] = [
   { role: "bot", text: "Xin chào! Tôi là **Trợ lý Du lịch AI** của imdanang.\n\nTôi có thể giúp bạn:\n• Tìm địa điểm tham quan và lịch trình\n• Gợi ý nhà hàng và ẩm thực\n• Tìm khách sạn phù hợp ngân sách\n• Thông tin thời tiết và mùa du lịch\n\nHãy đặt câu hỏi hoặc chọn gợi ý bên dưới!", time: getTime() },
 ];
 
-function AIOrb({ size = "lg" }: { size?: "sm" | "lg" }) {
-  const sm = size === "sm";
-  return (
-    <div className={`relative shrink-0 ${sm ? "w-8 h-8" : "w-24 h-24"}`}>
-      {!sm && (
-        <>
-          <motion.div
-            className="absolute inset-0 rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%)" }}
-            animate={{ scale: [1, 1.35, 1], opacity: [0.6, 0, 0.6] }}
-            transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div
-            className="absolute inset-2 rounded-full border border-indigo-400/30"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
-          />
-          <motion.div
-            className="absolute inset-3.5 rounded-full border border-sky-400/20"
-            animate={{ rotate: -360 }}
-            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-          />
-        </>
-      )}
-      <div
-        className={`absolute ${sm ? "inset-0" : "inset-4"} rounded-full flex items-center justify-center`}
-        style={{ background: "linear-gradient(135deg, #4f46e5 0%, #0ea5e9 100%)", boxShadow: sm ? "0 0 12px rgba(99,102,241,0.5)" : "0 0 32px rgba(99,102,241,0.6), 0 0 64px rgba(14,165,233,0.3)" }}
-      >
-        <Sparkles size={sm ? 14 : 22} className="text-white" />
+/* ─── Chatbot Mascot ──────────────────────────────────────────────── */
+function ChatbotMascot({ size = "lg" }: { size?: "sm" | "lg" }) {
+  const [blink, setBlink] = useState(false);
+
+  useEffect(() => {
+    const fire = () => {
+      setBlink(true);
+      setTimeout(() => setBlink(false), 140);
+      setTimeout(fire, 2800 + Math.random() * 2200);
+    };
+    const t = setTimeout(fire, 1500);
+    return () => clearTimeout(t);
+  }, []);
+
+  if (size === "sm") {
+    return (
+      <div className="relative w-8 h-8 shrink-0 rounded-xl flex flex-col items-center justify-center gap-[3px]"
+        style={{ background: "linear-gradient(135deg,#4f46e5 0%,#0ea5e9 100%)", boxShadow: "0 0 10px rgba(99,102,241,0.45)" }}>
+        <div className="flex gap-[5px]">
+          <div className={`w-[5px] bg-white rounded-sm transition-all duration-100 ${blink ? "h-[1px]" : "h-[5px]"}`} />
+          <div className={`w-[5px] bg-white rounded-sm transition-all duration-100 ${blink ? "h-[1px]" : "h-[5px]"}`} />
+        </div>
+        <div className="flex gap-[2px]">
+          {[2, 1, 0, 1, 2].map((d, i) => (
+            <div key={i} className="w-[2px] h-[2px] rounded-full bg-white/55"
+              style={{ marginTop: `${d}px` }} />
+          ))}
+        </div>
       </div>
-      {!sm && (
-        <motion.div
-          className="absolute inset-4 rounded-full"
-          animate={{ opacity: [0.4, 0.9, 0.4] }}
-          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-          style={{ background: "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.25), transparent 60%)" }}
-        />
-      )}
+    );
+  }
+
+  return (
+    <motion.div className="flex flex-col items-center"
+      animate={{ y: [0, -7, 0] }}
+      transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}>
+
+      {/* Antenna */}
+      <div className="flex flex-col items-center mb-0.5">
+        <motion.div className="w-2.5 h-2.5 rounded-full"
+          style={{ background: "#a5b4fc", boxShadow: "0 0 10px #818cf8, 0 0 20px rgba(129,140,248,0.5)" }}
+          animate={{ opacity: [1, 0.4, 1], scale: [1, 1.25, 1] }}
+          transition={{ duration: 1.6, repeat: Infinity }} />
+        <div className="w-[2px] h-5" style={{ background: "linear-gradient(to bottom, #a5b4fc, #4f46e5)" }} />
+      </div>
+
+      {/* Head */}
+      <div className="relative w-[72px] h-[72px] rounded-[22px] flex flex-col items-center justify-center gap-2.5"
+        style={{ background: "linear-gradient(145deg,#4f46e5 0%,#2563eb 50%,#0ea5e9 100%)", boxShadow: "0 0 28px rgba(99,102,241,0.55), 0 0 56px rgba(14,165,233,0.25), inset 0 1px 1px rgba(255,255,255,0.18)" }}>
+
+        {/* Ear left */}
+        <div className="absolute -left-[7px] top-1/2 -translate-y-1/2 w-[7px] h-8 rounded-l-full"
+          style={{ background: "linear-gradient(180deg,#4f46e5,#0ea5e9)" }} />
+        {/* Ear right */}
+        <div className="absolute -right-[7px] top-1/2 -translate-y-1/2 w-[7px] h-8 rounded-r-full"
+          style={{ background: "linear-gradient(180deg,#4f46e5,#0ea5e9)" }} />
+
+        {/* Eyes */}
+        <div className="flex gap-4">
+          <div className={`w-3.5 bg-white rounded-sm transition-all duration-100 ${blink ? "h-[2px]" : "h-3.5"}`}
+            style={{ boxShadow: blink ? "none" : "0 0 8px rgba(255,255,255,0.9), 0 0 14px rgba(165,180,252,0.6)" }} />
+          <div className={`w-3.5 bg-white rounded-sm transition-all duration-100 ${blink ? "h-[2px]" : "h-3.5"}`}
+            style={{ boxShadow: blink ? "none" : "0 0 8px rgba(255,255,255,0.9), 0 0 14px rgba(165,180,252,0.6)" }} />
+        </div>
+
+        {/* Mouth dots */}
+        <div className="flex gap-[3px] items-end">
+          {[3, 1, 0, 1, 3].map((d, i) => (
+            <div key={i} className="w-1.5 h-1.5 rounded-full bg-white/55"
+              style={{ marginTop: `${d}px` }} />
+          ))}
+        </div>
+
+        {/* Gloss */}
+        <div className="absolute top-2 left-3 w-8 h-3 rounded-full"
+          style={{ background: "rgba(255,255,255,0.15)", filter: "blur(3px)" }} />
+      </div>
+
+      {/* Ground shadow */}
+      <motion.div className="w-10 h-1.5 rounded-full mt-1.5"
+        style={{ background: "radial-gradient(ellipse,rgba(99,102,241,0.3) 0%,transparent 70%)" }}
+        animate={{ scaleX: [1, 0.75, 1], opacity: [0.7, 0.3, 0.7] }}
+        transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }} />
+    </motion.div>
+  );
+}
+
+/* ─── Small bot orb for topbar ───────────────────────────────────── */
+function TopbarMascot() {
+  return (
+    <div className="w-8 h-8 rounded-xl shrink-0 flex items-center justify-center"
+      style={{ background: "linear-gradient(135deg,#4f46e5,#0ea5e9)", boxShadow: "0 0 12px rgba(99,102,241,0.45)" }}>
+      <Sparkles size={14} className="text-white" />
     </div>
   );
 }
 
+/* ─── Main Page ───────────────────────────────────────────────────── */
 export default function AIAssistant() {
   const { isDark } = useDarkMode();
   const [messages, setMessages] = useState<Message[]>(initMessages);
@@ -94,7 +150,7 @@ export default function AIAssistant() {
     setInput("");
     setIsTyping(true);
     setTimeout(() => {
-      const reply = botReplies[text] || "Cảm ơn câu hỏi của bạn! Đà Nẵng là điểm đến tuyệt vời với rất nhiều trải nghiệm thú vị. Bạn có thể hỏi tôi về địa điểm tham quan, ẩm thực, khách sạn hay lịch trình du lịch nhé!";
+      const reply = botReplies[text] ?? "Cảm ơn câu hỏi của bạn! Đà Nẵng là điểm đến tuyệt vời. Bạn có thể hỏi tôi về địa điểm tham quan, ẩm thực, khách sạn hay lịch trình du lịch nhé!";
       setMessages((p) => [...p, { role: "bot", text: reply, time: getTime() }]);
       setIsTyping(false);
     }, 1200 + Math.random() * 600);
@@ -110,144 +166,121 @@ export default function AIAssistant() {
       </span>
     ));
 
-  const bg = isDark
-    ? "bg-[#080d1a]"
-    : "bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/30";
-
-  const surface = isDark
-    ? "bg-white/5 border-white/10"
-    : "bg-white border-slate-200/80";
-
-  const userBubble = "bg-gradient-to-br from-indigo-500 to-sky-500 text-white";
-  const botBubble = isDark
-    ? "bg-white/8 border border-white/10 text-white/90"
-    : "bg-white border border-slate-200 text-slate-700";
-
-  const inputBg = isDark
-    ? "bg-white/6 border-white/10 focus-within:border-indigo-500/60"
-    : "bg-white border-slate-200 focus-within:border-indigo-400/70";
-
+  const bg        = isDark ? "bg-[#080d1a]" : "bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/30";
+  const surface   = isDark ? "bg-white/5 border-white/10" : "bg-white border-slate-200/80";
+  const botBubble = isDark ? "bg-white/8 border border-white/10 text-white/90" : "bg-white border border-slate-200 text-slate-700";
+  const inputBg   = isDark ? "bg-white/6 border-white/10 focus-within:border-indigo-500/60" : "bg-white border-slate-200 focus-within:border-indigo-400/70";
   const txPrimary = isDark ? "text-white" : "text-slate-900";
-  const txSub = isDark ? "text-white/45" : "text-slate-400";
-  const txMid = isDark ? "text-white/65" : "text-slate-600";
+  const txSub     = isDark ? "text-white/40" : "text-slate-400";
+  const txMid     = isDark ? "text-white/65" : "text-slate-600";
 
   return (
     <div className={`h-[calc(100vh-56px)] flex flex-col overflow-hidden ${bg}`}>
 
-      {/* ── Decorative bg dots ── */}
+      {/* ── Decorative blobs ── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
-        {[...Array(6)].map((_, i) => (
-          <motion.div key={i}
-            className="absolute rounded-full"
+        {[...Array(5)].map((_, i) => (
+          <motion.div key={i} className="absolute rounded-full"
             style={{
-              width: [180, 120, 200, 100, 160, 90][i],
-              height: [180, 120, 200, 100, 160, 90][i],
-              left: `${[10, 70, 40, 85, 20, 60][i]}%`,
-              top: `${[15, 10, 60, 40, 80, 75][i]}%`,
-              background: isDark
-                ? `radial-gradient(circle, rgba(99,102,241,0.07) 0%, transparent 70%)`
-                : `radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 70%)`,
+              width:  [200, 140, 180, 100, 150][i],
+              height: [200, 140, 180, 100, 150][i],
+              left:   `${[8, 68, 38, 82, 18][i]}%`,
+              top:    `${[12, 8, 58, 38, 78][i]}%`,
+              background: `radial-gradient(circle, ${isDark ? "rgba(99,102,241,0.07)" : "rgba(99,102,241,0.05)"} 0%, transparent 70%)`,
             }}
-            animate={{ y: [0, -18, 0], opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 5 + i * 1.2, repeat: Infinity, ease: "easeInOut", delay: i * 0.7 }}
+            animate={{ y: [0, -16, 0], opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 5 + i * 1.3, repeat: Infinity, ease: "easeInOut", delay: i * 0.8 }}
           />
         ))}
       </div>
 
-      {/* ── Top bar ── */}
-      <div className={`relative z-10 shrink-0 border-b ${isDark ? "border-white/8 bg-white/4 backdrop-blur" : "border-slate-200/70 bg-white/70 backdrop-blur"} px-5 py-3 flex items-center gap-3`}>
-        <AIOrb size="sm" />
+      {/* ── Topbar ── */}
+      <div className={`relative z-10 shrink-0 border-b px-5 py-2.5 flex items-center gap-3 ${isDark ? "border-white/8 bg-white/4 backdrop-blur" : "border-slate-200/70 bg-white/70 backdrop-blur"}`}>
+        <TopbarMascot />
         <div>
           <h1 className={`font-bold text-sm ${txPrimary}`}>AI Trợ Lý Du Lịch</h1>
           <div className={`flex items-center gap-1.5 text-[11px] ${txSub}`}>
-            <motion.div className="w-1.5 h-1.5 rounded-full bg-emerald-400" animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.4, repeat: Infinity }} />
+            <motion.div className="w-1.5 h-1.5 rounded-full bg-emerald-400"
+              animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.4, repeat: Infinity }} />
             Đang hoạt động · Đà Nẵng Expert
           </div>
         </div>
-        <motion.button
-          whileHover={{ rotate: 180 }} whileTap={{ scale: 0.9 }} transition={{ duration: 0.4 }}
+        <motion.button whileHover={{ rotate: 180 }} whileTap={{ scale: 0.9 }} transition={{ duration: 0.4 }}
           onClick={() => setMessages(initMessages)}
-          className={`ml-auto p-2 rounded-xl transition-colors ${isDark ? "hover:bg-white/8 text-white/35 hover:text-white/70" : "hover:bg-slate-100 text-slate-400 hover:text-slate-600"}`}
-        >
+          className={`ml-auto p-2 rounded-xl transition-colors ${isDark ? "hover:bg-white/8 text-white/30 hover:text-white/65" : "hover:bg-slate-100 text-slate-400 hover:text-slate-600"}`}>
           <RefreshCw size={15} />
         </motion.button>
       </div>
 
-      {/* ── Messages / Welcome ── */}
-      <div className="relative z-10 flex-1 overflow-y-auto">
+      {/* ── Body ── */}
+      <div className="relative z-10 flex-1 overflow-hidden flex flex-col">
         <AnimatePresence mode="wait">
+
+          {/* ── Welcome state (no scroll) ── */}
           {isWelcome ? (
             <motion.div key="welcome"
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-              transition={{ duration: 0.45 }}
-              className="flex flex-col items-center justify-center min-h-full px-6 py-10 text-center"
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="flex-1 flex flex-col items-center justify-center px-6 text-center gap-4 overflow-hidden pb-2"
             >
-              <AIOrb size="lg" />
+              <ChatbotMascot size="lg" />
 
-              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mt-7">
-                <h2 className={`text-2xl font-bold tracking-tight ${txPrimary}`}>Ask anything about Da Nang</h2>
-                <p className={`text-sm mt-1.5 ${txSub}`}>AI Travel Assistant</p>
-                <div className={`inline-flex items-center gap-1.5 mt-2.5 px-3 py-1 rounded-full text-[11px] font-medium ${isDark ? "bg-white/8 text-white/60" : "bg-slate-100 text-slate-500"}`}>
-                  <MapPin size={10} />Đà Nẵng &amp; Hội An
+              <div>
+                <h2 className={`text-xl font-bold tracking-tight ${txPrimary}`}>Ask anything about Da Nang</h2>
+                <p className={`text-xs mt-1 ${txSub}`}>AI Travel Assistant</p>
+                <div className={`inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full text-[11px] font-medium ${isDark ? "bg-white/8 text-white/55" : "bg-slate-100 text-slate-500"}`}>
+                  <MapPin size={9} /> Đà Nẵng &amp; Hội An
                 </div>
-              </motion.div>
+              </div>
 
               {/* Category cards */}
-              <motion.div
-                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}
-                className="grid grid-cols-4 gap-3 mt-8 w-full max-w-xl"
-              >
+              <div className="grid grid-cols-4 gap-2.5 w-full max-w-[520px]">
                 {categories.map((c, i) => (
                   <motion.button key={i}
                     whileHover={{ y: -3, scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                    onClick={() => sendMessage(`Nên ăn gì khi đến Đà Nẵng?`)}
-                    className={`flex flex-col items-center gap-2.5 p-4 rounded-2xl border text-center transition-all ${surface} ${isDark ? "hover:bg-white/10" : "hover:bg-slate-50 hover:border-slate-300"} shadow-sm`}
+                    onClick={() => sendMessage("Nên ăn gì khi đến Đà Nẵng?")}
+                    className={`flex flex-col items-center gap-2 p-3.5 rounded-2xl border text-center transition-all ${surface} ${isDark ? "hover:bg-white/10" : "hover:bg-slate-50 hover:border-slate-300"} shadow-sm`}
                   >
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${c.color}18` }}>
-                      <c.icon size={18} style={{ color: c.color }} />
+                    <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: `${c.color}18` }}>
+                      <c.icon size={17} style={{ color: c.color }} />
                     </div>
-                    <span className={`text-[11px] font-medium leading-snug ${txMid}`}>{c.label}</span>
+                    <span className={`text-[10px] font-medium leading-snug ${txMid}`}>{c.label}</span>
                   </motion.button>
                 ))}
-              </motion.div>
+              </div>
 
-              {/* Chip suggestions */}
-              <motion.div
-                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-                className="flex flex-wrap justify-center gap-2 mt-5 max-w-lg"
-              >
+              {/* Chips */}
+              <div className="flex flex-wrap justify-center gap-2 max-w-lg">
                 {chips.map((chip, i) => (
                   <motion.button key={i}
                     whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                     onClick={() => sendMessage(chip)}
-                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs border transition-all ${surface} ${isDark ? "text-white/60 hover:bg-white/10 hover:text-white/85" : "text-slate-500 hover:text-slate-700 hover:border-slate-300"}`}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs border transition-all ${surface} ${isDark ? "text-white/55 hover:bg-white/10 hover:text-white/80" : "text-slate-500 hover:text-slate-700 hover:border-slate-300"}`}
                   >
                     {chip}
-                    <ChevronRight size={11} className="opacity-50" />
+                    <ChevronRight size={10} className="opacity-50" />
                   </motion.button>
                 ))}
-              </motion.div>
+              </div>
             </motion.div>
+
           ) : (
-            <motion.div key="chat"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              className="px-4 py-5 space-y-5"
-            >
+            /* ── Chat state (scrollable inside) ── */
+            <motion.div key="chat" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
               <AnimatePresence initial={false}>
                 {messages.map((msg, i) => (
                   <motion.div key={i}
-                    initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}
+                    initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.28 }}
                     className={`flex gap-2.5 ${msg.role === "user" ? "flex-row-reverse" : ""}`}
                   >
-                    {msg.role === "bot" && <AIOrb size="sm" />}
+                    {msg.role === "bot" && <ChatbotMascot size="sm" />}
                     {msg.role === "user" && (
                       <div className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                        style={{ background: "linear-gradient(135deg,#64748b,#475569)" }}>
-                        U
-                      </div>
+                        style={{ background: "linear-gradient(135deg,#64748b,#475569)" }}>U</div>
                     )}
                     <div className={`max-w-[76%] flex flex-col gap-1 ${msg.role === "user" ? "items-end" : "items-start"}`}>
-                      <div className={`px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm ${msg.role === "bot" ? `${botBubble} rounded-tl-sm` : `${userBubble} rounded-tr-sm`}`}>
+                      <div className={`px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm ${msg.role === "bot" ? `${botBubble} rounded-tl-sm` : "bg-gradient-to-br from-indigo-500 to-sky-500 text-white rounded-tr-sm"}`}>
                         {renderText(msg.text)}
                       </div>
                       <span className={`text-[10px] px-1 ${txSub}`}>{msg.time}</span>
@@ -258,75 +291,67 @@ export default function AIAssistant() {
 
               <AnimatePresence>
                 {isTyping && (
-                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex gap-2.5">
-                    <AIOrb size="sm" />
+                  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex gap-2.5">
+                    <ChatbotMascot size="sm" />
                     <div className={`px-4 py-3 rounded-2xl rounded-tl-sm flex items-center gap-1.5 shadow-sm ${botBubble}`}>
                       {[0, 1, 2].map((j) => (
-                        <motion.div key={j}
-                          className="w-1.5 h-1.5 rounded-full bg-indigo-400"
+                        <motion.div key={j} className="w-1.5 h-1.5 rounded-full bg-indigo-400"
                           animate={{ y: [0, -5, 0], opacity: [0.4, 1, 0.4] }}
-                          transition={{ duration: 0.7, delay: j * 0.16, repeat: Infinity }}
-                        />
+                          transition={{ duration: 0.7, delay: j * 0.16, repeat: Infinity }} />
                       ))}
                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
 
-              {/* Suggestions after bot reply */}
               {!isTyping && messages[messages.length - 1]?.role === "bot" && messages.length <= 3 && (
-                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex flex-wrap gap-2 pl-10">
+                <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="flex flex-wrap gap-2 pl-10">
                   {chips.slice(0, 2).map((chip, i) => (
-                    <motion.button key={i}
-                      whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                    <motion.button key={i} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                       onClick={() => sendMessage(chip)}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs border transition-all ${surface} ${isDark ? "text-white/55 hover:text-white/80" : "text-slate-500 hover:text-slate-700 hover:border-slate-300"}`}
-                    >
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs border transition-all ${surface} ${isDark ? "text-white/55 hover:text-white/80" : "text-slate-500 hover:text-slate-700 hover:border-slate-300"}`}>
                       {chip}
                     </motion.button>
                   ))}
                 </motion.div>
               )}
-
               <div ref={bottomRef} />
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      {/* ── Input bar ── */}
+      {/* ── Input ── */}
       <div className={`relative z-10 shrink-0 px-4 py-3 ${isDark ? "border-t border-white/8" : "border-t border-slate-200/70"}`}>
         <div className={`flex items-end gap-2 border rounded-2xl px-4 py-2.5 transition-colors ${inputBg}`}>
-          <button className={`shrink-0 p-0.5 ${isDark ? "text-white/25" : "text-slate-300"}`}>
-            <ChevronRight size={14} className="rotate-90" />
-          </button>
+          <ChevronRight size={13} className={`shrink-0 rotate-90 ${isDark ? "text-white/20" : "text-slate-300"}`} />
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(input); } }}
             placeholder="Type your question..."
             rows={1}
-            className={`flex-1 bg-transparent text-sm focus:outline-none resize-none leading-5 max-h-24 ${isDark ? "text-white placeholder:text-white/30" : "text-slate-800 placeholder:text-slate-400"}`}
+            className={`flex-1 bg-transparent text-sm focus:outline-none resize-none leading-5 max-h-20 ${isDark ? "text-white placeholder:text-white/30" : "text-slate-800 placeholder:text-slate-400"}`}
           />
           {input && (
-            <motion.button initial={{ scale: 0 }} animate={{ scale: 1 }} onClick={() => setInput("")} className={isDark ? "text-white/30 hover:text-white/60" : "text-slate-300 hover:text-slate-500"}>
-              <X size={14} />
+            <motion.button initial={{ scale: 0 }} animate={{ scale: 1 }} onClick={() => setInput("")}
+              className={isDark ? "text-white/30 hover:text-white/60" : "text-slate-300 hover:text-slate-500"}>
+              <X size={13} />
             </motion.button>
           )}
-          <button className={`shrink-0 p-1 ${isDark ? "text-white/25 hover:text-white/55" : "text-slate-300 hover:text-slate-500"} transition-colors`}>
-            <Mic size={16} />
+          <button className={`shrink-0 p-1 transition-colors ${isDark ? "text-white/25 hover:text-white/55" : "text-slate-300 hover:text-slate-500"}`}>
+            <Mic size={15} />
           </button>
-          <motion.button
-            whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.92 }}
-            onClick={() => sendMessage(input)}
-            disabled={!input.trim()}
-            className="shrink-0 w-8 h-8 rounded-xl flex items-center justify-center transition-all shadow-sm disabled:opacity-40"
-            style={input.trim() ? { background: "linear-gradient(135deg,#4f46e5,#0ea5e9)", boxShadow: "0 0 16px rgba(99,102,241,0.45)" } : { background: isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0" }}
-          >
-            <Send size={14} className="text-white" />
+          <motion.button whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.92 }}
+            onClick={() => sendMessage(input)} disabled={!input.trim()}
+            className="shrink-0 w-8 h-8 rounded-xl flex items-center justify-center transition-all disabled:opacity-35"
+            style={input.trim()
+              ? { background: "linear-gradient(135deg,#4f46e5,#0ea5e9)", boxShadow: "0 0 14px rgba(99,102,241,0.5)" }
+              : { background: isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0" }}>
+            <Send size={13} className="text-white" />
           </motion.button>
         </div>
-        <p className={`text-[10px] text-center mt-2 ${txSub}`}>
+        <p className={`text-[10px] text-center mt-1.5 ${txSub}`}>
           AI trả lời dựa trên dữ liệu du lịch Đà Nẵng — chỉ mang tính tham khảo.
         </p>
       </div>
