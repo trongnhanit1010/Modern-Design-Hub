@@ -37,7 +37,7 @@ function useGoogleMaps(apiKey: string) {
     const cb = "__gm_init__" + Date.now();
     (window as unknown as Record<string, unknown>)[cb] = () => setLoaded(true);
     const s = document.createElement("script");
-    s.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=${cb}&loading=async`;
+    s.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=${cb}&loading=async`;
     s.async = true;
     document.head.appendChild(s);
     return () => { delete (window as unknown as Record<string, unknown>)[cb]; };
@@ -176,6 +176,8 @@ export default function TouristMapPage() {
   const infoWinRef   = useRef<google.maps.InfoWindow | null>(null);
   const dirRendererRef = useRef<google.maps.DirectionsRenderer | null>(null);
   const userMarkerRef  = useRef<google.maps.Marker | null>(null);
+  const originInputRef = useRef<HTMLInputElement>(null);
+  const acRef          = useRef<google.maps.places.Autocomplete | null>(null);
 
   const [activeCategory, setActiveCategory] = useState("hotel");
   const [search, setSearch] = useState("");
@@ -483,6 +485,37 @@ export default function TouristMapPage() {
     (window as any).__openDirPanel = openDirPanel;
     (window as any).__clearDirections = clearDirections;
   }, [openDirPanel, clearDirections]);
+
+  // ── attach Places Autocomplete to origin input when dirPanel opens ──
+  const dirPanelOpen = !!dirPanel;
+  useEffect(() => {
+    if (!mapsReady || !dirPanelOpen) {
+      if (acRef.current) {
+        google.maps.event.clearInstanceListeners(acRef.current);
+        acRef.current = null;
+      }
+      return;
+    }
+    const timer = setTimeout(() => {
+      if (!originInputRef.current || acRef.current) return;
+      const daNangBounds = new google.maps.LatLngBounds(
+        { lat: 15.7, lng: 107.8 },
+        { lat: 16.3, lng: 108.6 },
+      );
+      const ac = new google.maps.places.Autocomplete(originInputRef.current, {
+        fields: ["formatted_address", "name"],
+        bounds: daNangBounds,
+        componentRestrictions: { country: "vn" },
+      });
+      ac.addListener("place_changed", () => {
+        const place = ac.getPlace();
+        const addr = place.formatted_address || place.name || "";
+        if (addr) setDirPanel(p => p ? { ...p, originQuery: addr } : null);
+      });
+      acRef.current = ac;
+    }, 120);
+    return () => clearTimeout(timer);
+  }, [mapsReady, dirPanelOpen]);
 
   // ── render ──
   const filterLabel = D ? "text-white/30" : "text-gray-400";
@@ -917,6 +950,7 @@ export default function TouristMapPage() {
                 <div className={`flex items-center gap-2 rounded-xl px-3 py-2 border mb-3 ${D ? "bg-white/5 border-white/8" : "bg-white border-gray-200"}`}>
                   <div className="w-2 h-2 rounded-full bg-indigo-400 shrink-0" />
                   <input
+                    ref={originInputRef}
                     value={dirPanel.originQuery}
                     onChange={e => setDirPanel(p => p ? { ...p, originQuery: e.target.value } : null)}
                     onKeyDown={e => { if (e.key === "Enter" && dirPanel.originQuery.trim()) calcRoute(dirPanel.originQuery.trim(), dirPanel.destLat, dirPanel.destLng, dirPanel.destName, dirPanel.travelMode); }}
