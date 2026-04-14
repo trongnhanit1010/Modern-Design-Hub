@@ -382,15 +382,6 @@ export default function HotelDetail() {
                       className="flex items-center justify-center gap-2 w-full py-3 border-2 border-slate-200 text-slate-700 font-semibold rounded-2xl hover:bg-slate-50 hover:border-slate-300 transition-all text-sm">
                       <Navigation size={14} />Chỉ đường
                     </motion.a>
-                    <motion.a href={`https://${hotel.website}`} target="_blank" rel="noopener noreferrer"
-                      whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                      className="flex items-center gap-3 w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl transition-all text-sm font-medium shadow-sm">
-                      <div className="w-7 h-7 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
-                        <Globe size={14} className="text-white/80" />
-                      </div>
-                      <span className="flex-1">Website chính thức</span>
-                      <ExternalLink size={12} className="text-white/40 shrink-0" />
-                    </motion.a>
                   </div>
                 </div>
               </motion.div>
