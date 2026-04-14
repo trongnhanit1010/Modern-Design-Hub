@@ -4,8 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Hotel, UtensilsCrossed, Camera, Star,
   Search, Map, ChevronRight, Grid3X3, List, ChevronLeft,
-  Waves, MapPin, Heart, X, Navigation, Coffee,
+  Waves, MapPin, Heart, X, Navigation, Coffee, SlidersHorizontal, ChevronDown,
 } from "lucide-react";
+import { useDarkMode } from "@/context/DarkModeContext";
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
 
@@ -139,6 +140,7 @@ const MAP_STYLES: google.maps.MapTypeStyle[] = [
 
 export default function TouristMapPage() {
   const mapsReady = useGoogleMaps(import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "");
+  const { isDark } = useDarkMode();
 
   const mapDivRef = useRef<HTMLDivElement>(null);
   const gmapRef   = useRef<google.maps.Map | null>(null);
@@ -151,6 +153,7 @@ export default function TouristMapPage() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [expandedDishId, setExpandedDishId] = useState<number | null>(null);
   const [liked, setLiked] = useState<number[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
 
   const [hf, setHf] = useState({ stars: [] as number[], type: [] as string[], city: [] as string[] });
   const [af, setAf] = useState({ type: [] as string[] });
@@ -159,6 +162,22 @@ export default function TouristMapPage() {
 
   const cat = categories.find(c => c.id === activeCategory)!;
   const toggle = <T,>(arr: T[], v: T): T[] => arr.includes(v) ? arr.filter(x => x !== v) : [...arr, v];
+
+  // theme helpers
+  const D = isDark;
+  const sb  = D ? "bg-[#0f0f1e] border-white/5"  : "bg-white border-gray-100";
+  const sbB = D ? "border-white/5"                : "border-gray-100";
+  const tx  = D ? "text-white"                    : "text-gray-900";
+  const txS = D ? "text-white/45"                 : "text-gray-400";
+  const txM = D ? "text-white/70"                 : "text-gray-600";
+  const inp = D ? "bg-white/5 border-white/8"     : "bg-gray-50 border-gray-200";
+  const cardBg  = D ? "bg-white/[0.02] border-white/5 hover:border-white/12"    : "bg-white border-gray-100 hover:border-gray-300 shadow-sm hover:shadow";
+  const cardAct = D ? "border-white/20 bg-white/5"                               : "border-gray-300 bg-gray-50 shadow-md";
+  const dishAct = D ? "border-rose-400/40 bg-rose-500/5"                         : "border-rose-300 bg-rose-50 shadow-sm";
+  const dishDef = D ? "border-white/5 hover:border-white/15 bg-white/[0.02]"     : "bg-white border-gray-100 hover:border-gray-300 shadow-sm hover:shadow";
+  const pgBtn   = D ? "text-white/30 hover:text-white/60"                        : "text-gray-400 hover:text-gray-700";
+  const mapCtrl = D ? "bg-[#0f0f1e]/90 border-white/10 text-white/60 hover:text-white hover:bg-white/10" : "bg-white/95 border-gray-200 text-gray-500 hover:text-gray-900 hover:bg-gray-50 shadow-sm";
+  const statusBar = D ? "bg-[#0f0f1e]/80 border-white/8 text-white/50"           : "bg-white/95 border-gray-200 text-gray-500 shadow-sm";
 
   // ── filtered list ──
   const filteredList = useCallback((): (Location | Dish)[] => {
@@ -190,9 +209,15 @@ export default function TouristMapPage() {
     if (!mapsReady || !mapDivRef.current || gmapRef.current) return;
     gmapRef.current = new google.maps.Map(mapDivRef.current, {
       center: DANANG_CENTER, zoom: 12,
-      disableDefaultUI: true, styles: MAP_STYLES,
+      disableDefaultUI: true, styles: isDark ? MAP_STYLES : [],
     });
-  }, [mapsReady]);
+  }, [mapsReady, isDark]);
+
+  // ── update map styles when dark mode changes ──
+  useEffect(() => {
+    if (!gmapRef.current) return;
+    gmapRef.current.setOptions({ styles: isDark ? MAP_STYLES : [] });
+  }, [isDark]);
 
   // ── rebuild markers ──
   useEffect(() => {
@@ -239,39 +264,47 @@ export default function TouristMapPage() {
   const panTo = (lat: number, lng: number, zoom = 16) => { gmapRef.current?.panTo({ lat, lng }); gmapRef.current?.setZoom(zoom); };
 
   // ── render ──
+  const filterLabel = D ? "text-white/30" : "text-gray-400";
+  const chipOff     = D ? "border-white/10 text-white/40 hover:border-white/25 hover:text-white/70" : "border-gray-200 text-gray-400 hover:border-gray-400 hover:text-gray-700";
+
   return (
-    <div className="flex h-[calc(100vh-56px)] overflow-hidden bg-[#0d0d1a]">
+    <div className={`flex h-[calc(100vh-56px)] overflow-hidden ${D ? "bg-[#0d0d1a]" : "bg-gray-100"}`}>
 
       {/* ─── SIDEBAR ─── */}
       <motion.aside initial={{ opacity: 0, x: -28 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.35 }}
-        className="w-[340px] shrink-0 flex flex-col overflow-hidden border-r border-white/5"
-        style={{ background: "linear-gradient(180deg, #0f0f1e 0%, #0d0d1a 100%)" }}>
+        className={`w-[340px] shrink-0 flex flex-col overflow-hidden border-r ${sb}`}>
 
         {/* header */}
-        <div className="px-4 pt-4 pb-3 border-b border-white/5">
+        <div className={`px-4 pt-4 pb-3 border-b ${sbB}`}>
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
               <Map size={15} className="text-white" />
             </div>
             <div>
-              <h1 className="text-white font-bold text-sm leading-none">Bản đồ Du lịch</h1>
-              <p className="text-white/30 text-[10px] mt-0.5">Đà Nẵng · Hội An</p>
+              <h1 className={`font-bold text-sm leading-none ${tx}`}>Bản đồ Du lịch</h1>
+              <p className={`text-[10px] mt-0.5 ${txS}`}>Đà Nẵng · Hội An</p>
             </div>
           </div>
         </div>
 
         {/* circular category icons */}
-        <div className="px-3 py-3 border-b border-white/5">
-          <div className="flex gap-3 overflow-x-auto scrollbar-none pb-1">
+        <div className={`px-3 py-3 border-b ${sbB}`}>
+          <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1 justify-between">
             {categories.map(c => {
               const active = activeCategory === c.id;
               return (
-                <button key={c.id} onClick={() => setActiveCategory(c.id)} className="shrink-0 flex flex-col items-center gap-1.5 group">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 ${active ? "scale-110" : "opacity-40 grayscale group-hover:opacity-70 group-hover:grayscale-0 group-hover:scale-105"}`}
-                    style={{ background: `linear-gradient(135deg, ${c.g1}, ${c.g2})`, boxShadow: active ? `0 0 20px ${c.g1}70, 0 4px 14px ${c.g1}40` : undefined }}>
-                    <c.icon size={20} className="text-white" />
+                <button key={c.id} onClick={() => { setActiveCategory(c.id); setShowFilters(false); }}
+                  className="shrink-0 flex flex-col items-center gap-1.5 group">
+                  <div className={`rounded-full flex items-center justify-center transition-all duration-300 ${
+                    active ? "w-14 h-14" : "w-9 h-9 opacity-40 grayscale group-hover:opacity-65 group-hover:grayscale-0 group-hover:scale-110"
+                  }`}
+                    style={{
+                      background: `linear-gradient(135deg, ${c.g1}, ${c.g2})`,
+                      boxShadow: active ? `0 0 22px ${c.g1}80, 0 4px 16px ${c.g1}50` : undefined,
+                    }}>
+                    <c.icon size={active ? 22 : 15} className="text-white transition-all duration-300" />
                   </div>
-                  <span className={`text-[9px] font-medium leading-tight text-center max-w-[56px] transition-colors ${active ? "text-white" : "text-white/30 group-hover:text-white/55"}`}>
+                  <span className={`text-[9px] font-semibold leading-tight text-center max-w-[60px] transition-colors ${active ? tx : `${txS} group-hover:text-gray-500`}`}>
                     {c.label}
                   </span>
                 </button>
@@ -280,66 +313,87 @@ export default function TouristMapPage() {
           </div>
         </div>
 
-        {/* search */}
-        <div className="px-3 py-2 border-b border-white/5">
-          <div className="flex items-center gap-2 bg-white/5 border border-white/8 rounded-xl px-3 py-2">
-            <Search size={13} className="text-white/30 shrink-0" />
+        {/* search + filter toggle */}
+        <div className={`px-3 py-2 border-b ${sbB} flex gap-2`}>
+          <div className={`flex items-center gap-2 border rounded-xl px-3 py-2 flex-1 ${inp}`}>
+            <Search size={13} className={`${txS} shrink-0`} />
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder={`Tìm ${cat.label.toLowerCase()}...`}
-              className="bg-transparent text-white/80 text-xs placeholder:text-white/25 focus:outline-none flex-1" />
-            {search && <button onClick={() => setSearch("")}><X size={11} className="text-white/30 hover:text-white/60" /></button>}
+              className={`bg-transparent text-xs focus:outline-none flex-1 ${txM} ${D ? "placeholder:text-white/25" : "placeholder:text-gray-400"}`} />
+            {search && <button onClick={() => setSearch("")}><X size={11} className={txS} /></button>}
           </div>
+          {activeCategory !== "dish" && (
+            <button onClick={() => setShowFilters(v => !v)}
+              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-[11px] font-medium transition-all ${showFilters
+                ? D ? "bg-white/10 border-white/20 text-white" : "bg-gray-100 border-gray-300 text-gray-700"
+                : D ? "border-white/10 text-white/40 hover:border-white/20 hover:text-white/70" : "border-gray-200 text-gray-400 hover:border-gray-300 hover:text-gray-600"}`}>
+              <SlidersHorizontal size={12} />
+              <ChevronDown size={10} className={`transition-transform ${showFilters ? "rotate-180" : ""}`} />
+            </button>
+          )}
         </div>
 
-        {/* filters */}
-        <div className="px-3 py-2.5 border-b border-white/5" style={{ minHeight: 62 }}>
-          {activeCategory === "hotel" && (
-            <div className="space-y-1.5">
-              <div className="flex flex-wrap gap-1.5 items-center">
-                <span className="text-white/25 text-[10px]">Sao:</span>
-                {[5,4,3].map(s => <button key={s} onClick={() => setHf(f => ({ ...f, stars: toggle(f.stars, s) }))} className={`px-2 py-0.5 rounded-full text-[10px] font-medium border transition-all ${hf.stars.includes(s) ? "bg-amber-500/20 border-amber-400/50 text-amber-300" : "border-white/10 text-white/40 hover:border-white/25 hover:text-white/70"}`}>{"★".repeat(s)}</button>)}
-                <span className="text-white/25 text-[10px] ml-1">Loại:</span>
-                {["resort","hotel","boutique"].map(t => <button key={t} onClick={() => setHf(f => ({ ...f, type: toggle(f.type, t) }))} className={`px-2 py-0.5 rounded-full text-[10px] border capitalize transition-all ${hf.type.includes(t) ? "bg-teal-500/20 border-teal-400/50 text-teal-300" : "border-white/10 text-white/40 hover:border-white/25 hover:text-white/70"}`}>{t}</button>)}
+        {/* filters — collapsible */}
+        <AnimatePresence>
+          {showFilters && activeCategory !== "dish" && (
+            <motion.div key="filters" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.22 }}
+              className={`overflow-hidden border-b ${sbB}`}>
+              <div className="px-3 py-2.5 space-y-2">
+                {activeCategory === "hotel" && <>
+                  <div className="flex flex-wrap gap-1.5 items-center">
+                    <span className={`text-[10px] ${filterLabel}`}>Sao:</span>
+                    {[5,4,3].map(s => <button key={s} onClick={() => setHf(f => ({ ...f, stars: toggle(f.stars, s) }))}
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-medium border transition-all ${hf.stars.includes(s) ? "bg-amber-500/15 border-amber-400/60 text-amber-500" : chipOff}`}>{"★".repeat(s)}</button>)}
+                    <span className={`text-[10px] ml-1 ${filterLabel}`}>Loại:</span>
+                    {["resort","hotel","boutique"].map(t => <button key={t} onClick={() => setHf(f => ({ ...f, type: toggle(f.type, t) }))}
+                      className={`px-2 py-0.5 rounded-full text-[10px] border capitalize transition-all ${hf.type.includes(t) ? "bg-teal-500/15 border-teal-500/60 text-teal-600" : chipOff}`}>{t}</button>)}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 items-center">
+                    <span className={`text-[10px] ${filterLabel}`}>Thành phố:</span>
+                    {["Đà Nẵng","Hội An"].map(c => <button key={c} onClick={() => setHf(f => ({ ...f, city: toggle(f.city, c) }))}
+                      className={`px-2 py-0.5 rounded-full text-[10px] border transition-all ${hf.city.includes(c) ? "bg-emerald-500/15 border-emerald-500/60 text-emerald-600" : chipOff}`}>{c}</button>)}
+                  </div>
+                </>}
+                {activeCategory === "attraction" && (
+                  <div className="flex flex-wrap gap-1.5 items-center">
+                    <span className={`text-[10px] ${filterLabel}`}>Loại hình:</span>
+                    {["di tích","tự nhiên","giải trí"].map(t => <button key={t} onClick={() => setAf(f => ({ ...f, type: toggle(f.type, t) }))}
+                      className={`px-2 py-0.5 rounded-full text-[10px] border capitalize transition-all ${af.type.includes(t) ? "bg-violet-500/15 border-violet-500/60 text-violet-600" : chipOff}`}>{t}</button>)}
+                  </div>
+                )}
+                {activeCategory === "restaurant" && (
+                  <div className="flex flex-wrap gap-1.5 items-center">
+                    <span className={`text-[10px] ${filterLabel}`}>Ẩm thực:</span>
+                    {["hải sản","việt nam","quốc tế"].map(t => <button key={t} onClick={() => setRf(f => ({ ...f, cuisine: toggle(f.cuisine, t) }))}
+                      className={`px-2 py-0.5 rounded-full text-[10px] border capitalize transition-all ${rf.cuisine.includes(t) ? "bg-orange-500/15 border-orange-500/60 text-orange-600" : chipOff}`}>{t}</button>)}
+                  </div>
+                )}
+                {activeCategory === "beach" && (
+                  <div className="flex flex-wrap gap-1.5 items-center">
+                    <span className={`text-[10px] ${filterLabel}`}>Quận:</span>
+                    {["Sơn Trà","Ngũ Hành Sơn"].map(d => <button key={d} onClick={() => setBf(f => ({ ...f, district: toggle(f.district, d) }))}
+                      className={`px-2 py-0.5 rounded-full text-[10px] border transition-all ${bf.district.includes(d) ? "bg-sky-500/15 border-sky-500/60 text-sky-600" : chipOff}`}>{d}</button>)}
+                  </div>
+                )}
               </div>
-              <div className="flex flex-wrap gap-1.5 items-center">
-                <span className="text-white/25 text-[10px]">Thành phố:</span>
-                {["Đà Nẵng","Hội An"].map(c => <button key={c} onClick={() => setHf(f => ({ ...f, city: toggle(f.city, c) }))} className={`px-2 py-0.5 rounded-full text-[10px] border transition-all ${hf.city.includes(c) ? "bg-emerald-500/20 border-emerald-400/50 text-emerald-300" : "border-white/10 text-white/40 hover:border-white/25 hover:text-white/70"}`}>{c}</button>)}
-              </div>
-            </div>
+            </motion.div>
           )}
-          {activeCategory === "attraction" && (
-            <div className="flex flex-wrap gap-1.5 items-center">
-              <span className="text-white/25 text-[10px]">Loại hình:</span>
-              {["di tích","tự nhiên","giải trí"].map(t => <button key={t} onClick={() => setAf(f => ({ ...f, type: toggle(f.type, t) }))} className={`px-2 py-0.5 rounded-full text-[10px] border capitalize transition-all ${af.type.includes(t) ? "bg-violet-500/20 border-violet-400/50 text-violet-300" : "border-white/10 text-white/40 hover:border-white/25 hover:text-white/70"}`}>{t}</button>)}
-            </div>
-          )}
-          {activeCategory === "restaurant" && (
-            <div className="flex flex-wrap gap-1.5 items-center">
-              <span className="text-white/25 text-[10px]">Ẩm thực:</span>
-              {["hải sản","việt nam","quốc tế"].map(t => <button key={t} onClick={() => setRf(f => ({ ...f, cuisine: toggle(f.cuisine, t) }))} className={`px-2 py-0.5 rounded-full text-[10px] border capitalize transition-all ${rf.cuisine.includes(t) ? "bg-orange-500/20 border-orange-400/50 text-orange-300" : "border-white/10 text-white/40 hover:border-white/25 hover:text-white/70"}`}>{t}</button>)}
-            </div>
-          )}
-          {activeCategory === "beach" && (
-            <div className="flex flex-wrap gap-1.5 items-center">
-              <span className="text-white/25 text-[10px]">Quận:</span>
-              {["Sơn Trà","Ngũ Hành Sơn"].map(d => <button key={d} onClick={() => setBf(f => ({ ...f, district: toggle(f.district, d) }))} className={`px-2 py-0.5 rounded-full text-[10px] border transition-all ${bf.district.includes(d) ? "bg-sky-500/20 border-sky-400/50 text-sky-300" : "border-white/10 text-white/40 hover:border-white/25 hover:text-white/70"}`}>{d}</button>)}
-            </div>
-          )}
-          {activeCategory === "dish" && <p className="text-white/25 text-[10px] leading-relaxed">Bấm vào tên món để xem tất cả quán ăn trên bản đồ</p>}
-        </div>
+        </AnimatePresence>
 
         {/* list header */}
-        <div className="px-3 py-2 flex items-center justify-between border-b border-white/5">
-          <span className="text-white/35 text-[10px]"><span className="text-white/70 font-semibold">{filteredList.length}</span> kết quả</span>
+        <div className={`px-3 py-2 flex items-center justify-between border-b ${sbB}`}>
+          <span className={`text-[10px] ${txS}`}>
+            <span className={`font-semibold ${txM}`}>{filteredList.length}</span> kết quả
+          </span>
           <div className="flex items-center gap-1">
-            <button onClick={() => setViewMode("list")} className={`p-1.5 rounded-lg transition-colors ${viewMode === "list" ? "bg-white/10 text-white" : "text-white/30 hover:text-white/60"}`}><List size={12} /></button>
-            <button onClick={() => setViewMode("grid")} className={`p-1.5 rounded-lg transition-colors ${viewMode === "grid" ? "bg-white/10 text-white" : "text-white/30 hover:text-white/60"}`}><Grid3X3 size={12} /></button>
+            <button onClick={() => setViewMode("list")} className={`p-1.5 rounded-lg transition-colors ${viewMode === "list" ? D ? "bg-white/10 text-white" : "bg-gray-100 text-gray-700" : txS}`}><List size={12} /></button>
+            <button onClick={() => setViewMode("grid")} className={`p-1.5 rounded-lg transition-colors ${viewMode === "grid" ? D ? "bg-white/10 text-white" : "bg-gray-100 text-gray-700" : txS}`}><Grid3X3 size={12} /></button>
           </div>
         </div>
 
         {/* list body */}
         <div className="flex-1 overflow-y-auto scrollbar-none">
           {filteredList.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-32 text-white/25 text-xs">
+            <div className={`flex flex-col items-center justify-center h-32 text-xs ${txS}`}>
               <MapPin size={20} className="mb-2 opacity-40" />Không có kết quả
             </div>
           ) : activeCategory === "dish" ? (
@@ -349,7 +403,7 @@ export default function TouristMapPage() {
                 return (
                   <motion.div key={dish.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
                     onClick={() => { const n = active ? null : dish.id; setExpandedDishId(n); setSelectedId(null); if (n) panTo(dish.lat, dish.lng, 14); }}
-                    role="button" className={`rounded-xl overflow-hidden border cursor-pointer transition-all ${active ? "border-rose-400/40 bg-rose-500/5" : "border-white/5 hover:border-white/15 bg-white/[0.02]"}`}>
+                    role="button" className={`rounded-xl overflow-hidden border cursor-pointer transition-all ${active ? dishAct : dishDef}`}>
                     {viewMode === "grid" ? (
                       <>
                         <div className="h-24 relative overflow-hidden">
@@ -357,18 +411,21 @@ export default function TouristMapPage() {
                           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                           <span className="absolute bottom-1.5 left-1.5 text-[9px] font-bold text-white bg-rose-500/80 px-1.5 py-0.5 rounded-full">{dish.tag}</span>
                         </div>
-                        <div className="p-2"><p className="text-white/85 font-semibold text-xs">{dish.name}</p><p className="text-white/35 text-[10px]">{dish.restaurants.length} quán</p></div>
+                        <div className="p-2">
+                          <p className={`font-semibold text-xs ${tx}`}>{dish.name}</p>
+                          <p className={`text-[10px] ${txS}`}>{dish.restaurants.length} quán</p>
+                        </div>
                       </>
                     ) : (
                       <div className="flex gap-2.5 p-2.5">
                         <img src={dish.image} alt={dish.name} className="w-14 h-14 rounded-xl object-cover shrink-0" />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                            <p className="text-white/85 font-semibold text-xs leading-tight">{dish.name}</p>
-                            <span className="text-[9px] text-rose-300 bg-rose-500/15 px-1.5 py-0.5 rounded-full border border-rose-400/20">{dish.tag}</span>
+                            <p className={`font-semibold text-xs leading-tight ${tx}`}>{dish.name}</p>
+                            <span className="text-[9px] text-rose-500 bg-rose-500/10 px-1.5 py-0.5 rounded-full border border-rose-300/40">{dish.tag}</span>
                           </div>
-                          <p className="text-white/35 text-[10px] line-clamp-2 leading-relaxed">{dish.desc}</p>
-                          <p className="text-rose-400/60 text-[10px] mt-1">{dish.restaurants.length} quán · bấm để xem bản đồ</p>
+                          <p className={`text-[10px] line-clamp-2 leading-relaxed ${txS}`}>{dish.desc}</p>
+                          <p className="text-rose-500/70 text-[10px] mt-1">{dish.restaurants.length} quán · bấm để xem bản đồ</p>
                         </div>
                       </div>
                     )}
@@ -384,14 +441,13 @@ export default function TouristMapPage() {
                   return (
                     <motion.div key={item.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ delay: i * 0.04 }}
                       onClick={() => { setSelectedId(active ? null : item.id); if (!active) panTo(item.lat, item.lng); }}
-                      role="button" className={`rounded-xl overflow-hidden border cursor-pointer transition-all ${active ? "border-white/20 bg-white/5" : "border-white/5 hover:border-white/12 bg-white/[0.02]"}`}>
+                      role="button" className={`rounded-xl overflow-hidden border cursor-pointer transition-all ${active ? cardAct : cardBg}`}>
                       {viewMode === "grid" ? (
                         <>
                           <div className="h-24 relative overflow-hidden">
                             <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                            <div className="absolute top-1.5 right-1.5"
-                              onClick={e => { e.stopPropagation(); setLiked(l => toggle(l, item.id)); }}>
+                            <div className="absolute top-1.5 right-1.5" onClick={e => { e.stopPropagation(); setLiked(l => toggle(l, item.id)); }}>
                               <div className="w-6 h-6 bg-black/40 rounded-full flex items-center justify-center">
                                 <Heart size={10} className={liked.includes(item.id) ? "text-rose-400 fill-rose-400" : "text-white/60"} />
                               </div>
@@ -399,10 +455,10 @@ export default function TouristMapPage() {
                             {item.tag && <span className="absolute bottom-1.5 left-1.5 text-[9px] font-bold text-white bg-black/50 px-1.5 py-0.5 rounded-full">{item.tag}</span>}
                           </div>
                           <div className="p-2">
-                            <p className="text-white/85 font-semibold text-[11px] leading-tight line-clamp-1">{item.name}</p>
+                            <p className={`font-semibold text-[11px] leading-tight line-clamp-1 ${tx}`}>{item.name}</p>
                             <div className="flex items-center gap-1 mt-0.5">
                               <Star size={9} className="text-amber-400 fill-amber-400" />
-                              <span className="text-amber-300 text-[10px] font-bold">{item.rating}</span>
+                              <span className="text-amber-500 text-[10px] font-bold">{item.rating}</span>
                             </div>
                           </div>
                         </>
@@ -411,22 +467,22 @@ export default function TouristMapPage() {
                           <div className="relative shrink-0">
                             <img src={item.image} alt={item.name} className="w-14 h-14 rounded-xl object-cover" />
                             {item.stars && (
-                              <div className="absolute -bottom-1 -right-1 bg-amber-500 rounded-full px-1 py-0.5 text-[8px] text-white font-bold border-2 border-[#0d0d1a]">{item.stars}★</div>
+                              <div className={`absolute -bottom-1 -right-1 bg-amber-500 rounded-full px-1 py-0.5 text-[8px] text-white font-bold border-2 ${D ? "border-[#0d0d1a]" : "border-white"}`}>{item.stars}★</div>
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-1 mb-0.5">
-                              <p className="text-white/85 font-semibold text-[11px] leading-tight line-clamp-1">{item.name}</p>
+                              <p className={`font-semibold text-[11px] leading-tight line-clamp-1 ${tx}`}>{item.name}</p>
                               <div onClick={e => { e.stopPropagation(); setLiked(l => toggle(l, item.id)); }} className="shrink-0 mt-0.5 cursor-pointer">
-                                <Heart size={11} className={liked.includes(item.id) ? "text-rose-400 fill-rose-400" : "text-white/20 hover:text-white/50"} />
+                                <Heart size={11} className={liked.includes(item.id) ? "text-rose-400 fill-rose-400" : `${txS} hover:text-rose-400`} />
                               </div>
                             </div>
                             <div className="flex items-center gap-1 mb-0.5">
                               <Star size={9} className="text-amber-400 fill-amber-400" />
-                              <span className="text-amber-300 text-[10px] font-bold">{item.rating}</span>
-                              <span className="text-white/25 text-[10px]">({item.reviews.toLocaleString()})</span>
+                              <span className="text-amber-500 text-[10px] font-bold">{item.rating}</span>
+                              <span className={`text-[10px] ${txS}`}>({item.reviews.toLocaleString()})</span>
                             </div>
-                            <div className="flex items-center gap-1 text-white/30 text-[10px]">
+                            <div className={`flex items-center gap-1 text-[10px] ${txS}`}>
                               <MapPin size={8} className="shrink-0" /><span className="truncate">{item.address}</span>
                             </div>
                           </div>
@@ -442,22 +498,22 @@ export default function TouristMapPage() {
 
         {/* pagination */}
         {activeCategory !== "dish" && totalPages > 1 && (
-          <div className="px-3 py-2.5 border-t border-white/5 flex items-center justify-between">
+          <div className={`px-3 py-2.5 border-t ${sbB} flex items-center justify-between`}>
             <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-              className="flex items-center gap-1 text-white/40 text-xs disabled:opacity-30 hover:text-white/70 transition-colors">
+              className={`flex items-center gap-1 text-xs disabled:opacity-30 transition-colors ${pgBtn}`}>
               <ChevronLeft size={12} /> Trước
             </button>
             <div className="flex gap-1">
               {Array.from({ length: totalPages }, (_, i) => (
                 <button key={i} onClick={() => setPage(i + 1)}
-                  className={`w-5 h-5 rounded-full text-[10px] font-medium transition-all ${page === i + 1 ? "text-white" : "text-white/30 hover:text-white/60"}`}
+                  className={`w-5 h-5 rounded-full text-[10px] font-medium transition-all ${page === i + 1 ? "text-white" : pgBtn}`}
                   style={page === i + 1 ? { background: `linear-gradient(135deg, ${cat.g1}, ${cat.g2})` } : {}}>
                   {i + 1}
                 </button>
               ))}
             </div>
             <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-              className="flex items-center gap-1 text-white/40 text-xs disabled:opacity-30 hover:text-white/70 transition-colors">
+              className={`flex items-center gap-1 text-xs disabled:opacity-30 transition-colors ${pgBtn}`}>
               Sau <ChevronRight size={12} />
             </button>
           </div>
@@ -467,14 +523,14 @@ export default function TouristMapPage() {
       {/* ─── MAP ─── */}
       <div className="flex-1 relative">
         {!mapsReady && (
-          <div className="absolute inset-0 flex items-center justify-center bg-[#0d0d1a] z-20">
+          <div className={`absolute inset-0 flex items-center justify-center z-20 ${D ? "bg-[#0d0d1a]" : "bg-gray-100"}`}>
             <div className="flex flex-col items-center gap-3">
               <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/40">
                 <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}>
                   <Map size={22} className="text-white" />
                 </motion.div>
               </div>
-              <p className="text-white/40 text-sm">Đang tải Google Maps...</p>
+              <p className={`text-sm ${txS}`}>Đang tải Google Maps...</p>
             </div>
           </div>
         )}
@@ -483,19 +539,19 @@ export default function TouristMapPage() {
         {/* zoom controls */}
         <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
           <button onClick={() => gmapRef.current?.setZoom((gmapRef.current.getZoom() || 12) + 1)}
-            className="w-9 h-9 bg-[#0f0f1e]/90 backdrop-blur border border-white/10 rounded-xl flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-all text-xl font-light">+</button>
+            className={`w-9 h-9 backdrop-blur border rounded-xl flex items-center justify-center transition-all text-xl font-light ${mapCtrl}`}>+</button>
           <button onClick={() => gmapRef.current?.setZoom((gmapRef.current.getZoom() || 12) - 1)}
-            className="w-9 h-9 bg-[#0f0f1e]/90 backdrop-blur border border-white/10 rounded-xl flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-all text-xl font-light">−</button>
+            className={`w-9 h-9 backdrop-blur border rounded-xl flex items-center justify-center transition-all text-xl font-light ${mapCtrl}`}>−</button>
           <button onClick={() => { gmapRef.current?.panTo(DANANG_CENTER); gmapRef.current?.setZoom(12); }}
-            className="w-9 h-9 bg-[#0f0f1e]/90 backdrop-blur border border-white/10 rounded-xl flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-all">
+            className={`w-9 h-9 backdrop-blur border rounded-xl flex items-center justify-center transition-all ${mapCtrl}`}>
             <Navigation size={14} />
           </button>
         </div>
 
         {/* status */}
-        <div className="absolute bottom-4 left-4 z-10 flex items-center gap-2 bg-[#0f0f1e]/80 backdrop-blur border border-white/8 rounded-xl px-3 py-2">
+        <div className={`absolute bottom-4 left-4 z-10 flex items-center gap-2 backdrop-blur border rounded-xl px-3 py-2 ${statusBar}`}>
           <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-          <span className="text-white/50 text-[11px]">{filteredList.length} {cat.label} · Đà Nẵng &amp; Hội An</span>
+          <span className="text-[11px]">{filteredList.length} {cat.label} · Đà Nẵng &amp; Hội An</span>
         </div>
 
         {/* detail card - regular location */}
@@ -503,23 +559,24 @@ export default function TouristMapPage() {
           {selLoc && !selDishRest && (
             <motion.div key={selLoc.id} initial={{ opacity: 0, y: 16, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 16, scale: 0.96 }} transition={{ duration: 0.2 }}
               className="absolute bottom-4 right-4 z-10 w-[270px]">
-              <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/8" style={{ background: "rgba(12,12,26,0.96)", backdropFilter: "blur(20px)" }}>
+              <div className={`rounded-2xl overflow-hidden shadow-2xl border ${D ? "border-white/8" : "border-gray-200 shadow-xl"}`}
+                style={{ background: D ? "rgba(12,12,26,0.96)" : "rgba(255,255,255,0.97)", backdropFilter: "blur(20px)" }}>
                 <div className="relative h-32">
                   <img src={selLoc.image} alt={selLoc.name} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c1a] via-[#0c0c1a]/10 to-transparent" />
+                  <div className={`absolute inset-0 bg-gradient-to-t ${D ? "from-[#0c0c1a]" : "from-black/50"} via-transparent to-transparent`} />
                   <button onClick={() => setSelectedId(null)} className="absolute top-2.5 right-2.5 w-7 h-7 bg-black/60 rounded-full flex items-center justify-center text-white/70 hover:text-white"><X size={12} /></button>
                   <span className="absolute bottom-2 left-3 text-[10px] font-bold text-white px-2 py-0.5 rounded-full" style={{ background: `linear-gradient(135deg, ${cat.g1}, ${cat.g2})` }}>{selLoc.tag || cat.label}</span>
                 </div>
                 <div className="p-4">
                   <div className="flex items-start justify-between mb-1.5">
-                    <h3 className="text-white font-bold text-sm leading-tight flex-1 pr-2">{selLoc.name}</h3>
+                    <h3 className={`font-bold text-sm leading-tight flex-1 pr-2 ${tx}`}>{selLoc.name}</h3>
                     <div className="flex items-center gap-1 bg-amber-400/10 rounded-full px-2 py-0.5 shrink-0">
-                      <Star size={10} className="text-amber-400 fill-amber-400" />
-                      <span className="text-amber-300 text-xs font-bold">{selLoc.rating}</span>
+                      <Star size={10} className="text-amber-500 fill-amber-500" />
+                      <span className="text-amber-500 text-xs font-bold">{selLoc.rating}</span>
                     </div>
                   </div>
-                  <p className="text-white/35 text-[11px] mb-1 flex items-center gap-1"><MapPin size={9} className="shrink-0" />{selLoc.address}</p>
-                  <p className="text-white/45 text-[11px] mb-3 line-clamp-2 leading-relaxed">{selLoc.desc}</p>
+                  <p className={`text-[11px] mb-1 flex items-center gap-1 ${txS}`}><MapPin size={9} className="shrink-0" />{selLoc.address}</p>
+                  <p className={`text-[11px] mb-3 line-clamp-2 leading-relaxed ${txM}`}>{selLoc.desc}</p>
                   {selLoc.slug ? (
                     <a href={`/luu-tru-khach-san/${selLoc.slug}`}
                       className="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl text-white text-xs font-bold no-underline"
@@ -543,24 +600,25 @@ export default function TouristMapPage() {
           {selDish && (
             <motion.div key={selDish.id} initial={{ opacity: 0, y: 16, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 16, scale: 0.96 }} transition={{ duration: 0.2 }}
               className="absolute bottom-4 right-4 z-10 w-[270px]">
-              <div className="rounded-2xl overflow-hidden shadow-2xl border border-rose-500/15" style={{ background: "rgba(12,12,26,0.96)", backdropFilter: "blur(20px)" }}>
+              <div className={`rounded-2xl overflow-hidden shadow-2xl border ${D ? "border-rose-500/15" : "border-rose-100 shadow-xl"}`}
+                style={{ background: D ? "rgba(12,12,26,0.96)" : "rgba(255,255,255,0.97)", backdropFilter: "blur(20px)" }}>
                 {selDishRest ? (
                   <>
                     <div className="relative h-28">
                       <img src={selDishRest.image} alt={selDishRest.name} className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c1a] to-transparent" />
+                      <div className={`absolute inset-0 bg-gradient-to-t ${D ? "from-[#0c0c1a]" : "from-black/50"} to-transparent`} />
                       <button onClick={() => setSelectedId(null)} className="absolute top-2.5 right-2.5 w-7 h-7 bg-black/60 rounded-full flex items-center justify-center text-white/70 hover:text-white"><X size={12} /></button>
-                      <span className="absolute bottom-2 left-3 text-[10px] text-rose-300 font-semibold">{selDish.name}</span>
+                      <span className="absolute bottom-2 left-3 text-[10px] text-rose-200 font-semibold">{selDish.name}</span>
                     </div>
                     <div className="p-3.5">
-                      <h3 className="text-white font-bold text-sm mb-2">{selDishRest.name}</h3>
+                      <h3 className={`font-bold text-sm mb-2 ${tx}`}>{selDishRest.name}</h3>
                       <div className="space-y-1 mb-3">
-                        <p className="text-white/35 text-[11px] flex items-center gap-1"><MapPin size={9} />{selDishRest.address}</p>
-                        <p className="text-white/35 text-[11px]">🕐 {selDishRest.hours}</p>
+                        <p className={`text-[11px] flex items-center gap-1 ${txS}`}><MapPin size={9} />{selDishRest.address}</p>
+                        <p className={`text-[11px] ${txS}`}>🕐 {selDishRest.hours}</p>
                         <div className="flex items-center gap-1">
-                          <Star size={9} className="text-amber-400 fill-amber-400" />
-                          <span className="text-amber-300 text-[10px] font-bold">{selDishRest.rating}</span>
-                          <span className="text-white/25 text-[10px]">· {selDishRest.priceRange}</span>
+                          <Star size={9} className="text-amber-500 fill-amber-500" />
+                          <span className="text-amber-500 text-[10px] font-bold">{selDishRest.rating}</span>
+                          <span className={`text-[10px] ${txS}`}>· {selDishRest.priceRange}</span>
                         </div>
                       </div>
                       <div className="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl text-white text-xs font-bold cursor-pointer"
@@ -573,19 +631,19 @@ export default function TouristMapPage() {
                   <>
                     <div className="relative h-24">
                       <img src={selDish.image} alt={selDish.name} className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c1a] to-transparent" />
+                      <div className={`absolute inset-0 bg-gradient-to-t ${D ? "from-[#0c0c1a]" : "from-black/50"} to-transparent`} />
                       <button onClick={() => { setExpandedDishId(null); setSelectedId(null); }} className="absolute top-2.5 right-2.5 w-7 h-7 bg-black/60 rounded-full flex items-center justify-center text-white/70 hover:text-white"><X size={12} /></button>
                       <span className="absolute bottom-2 left-3 text-[9px] font-bold text-white bg-rose-500/80 px-2 py-0.5 rounded-full">{selDish.tag}</span>
                     </div>
                     <div className="p-3.5">
-                      <p className="text-white font-bold text-sm mb-1">{selDish.name}</p>
-                      <p className="text-white/40 text-[10px] leading-relaxed mb-2.5">{selDish.desc}</p>
-                      <p className="text-white/25 text-[10px] mb-2">Chọn quán để xem chi tiết:</p>
+                      <p className={`font-bold text-sm mb-1 ${tx}`}>{selDish.name}</p>
+                      <p className={`text-[10px] leading-relaxed mb-2.5 ${txM}`}>{selDish.desc}</p>
+                      <p className={`text-[10px] mb-2 ${txS}`}>Chọn quán để xem chi tiết:</p>
                       <div className="flex flex-wrap gap-1.5">
                         {selDish.restaurants.map(r => (
                           <div key={r.id} role="button"
                             onClick={() => { setSelectedId(r.id); panTo(r.lat, r.lng, 17); }}
-                            className={`text-[10px] px-2 py-0.5 rounded-full border cursor-pointer transition-all ${selectedId === r.id ? "bg-rose-500/20 border-rose-400/40 text-rose-300" : "border-white/10 text-white/50 hover:border-white/25 hover:text-white/80"}`}>
+                            className={`text-[10px] px-2 py-0.5 rounded-full border cursor-pointer transition-all ${selectedId === r.id ? "bg-rose-500/20 border-rose-400/40 text-rose-500" : chipOff}`}>
                             {r.name}
                           </div>
                         ))}
