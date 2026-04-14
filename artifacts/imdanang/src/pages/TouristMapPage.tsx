@@ -123,7 +123,7 @@ function hexToRgba(hex: string, a: number) {
 }
 
 function markerIcon(color: string, emoji: string, selected: boolean) {
-  const s = selected ? 56 : 44;
+  const s = selected ? 38 : 28;
   const r = s / 2;
   const canvas = document.createElement("canvas");
   canvas.width = s; canvas.height = s;
