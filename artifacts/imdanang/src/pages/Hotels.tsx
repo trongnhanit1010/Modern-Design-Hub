@@ -174,128 +174,57 @@ export default function Hotels() {
         <AnimatePresence>
           {showFilter && (
             <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.22 }}
-              className="mb-6"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden mb-5"
             >
-              <div className="bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden">
-                {/* header strip */}
-                <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-3 flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-white">
-                    <SlidersHorizontal size={15} />
-                    <span className="font-semibold text-sm">Tinh chỉnh kết quả</span>
-                    {activeFilterCount > 0 && (
-                      <span className="bg-white/25 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                        {activeFilterCount} đang chọn
-                      </span>
-                    )}
-                  </div>
-                  {activeFilterCount > 0 && (
-                    <button
-                      onClick={() => { setSelectedStars([]); setSelectedTypes([]); setSelectedCities([]); }}
-                      className="flex items-center gap-1 text-white/80 hover:text-white text-xs transition-colors"
-                    >
-                      <X size={12} /> Xóa tất cả
+              <div className="bg-white border border-gray-200 rounded-2xl px-5 py-4 flex flex-wrap items-center gap-x-6 gap-y-4 shadow-sm">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-gray-400 text-xs font-medium shrink-0">Sao</span>
+                  {starOptions.map((s) => (
+                    <button key={s} onClick={() => toggleStar(s)}
+                      className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${selectedStars.includes(s) ? "bg-amber-500 border-amber-500 text-white" : "border-gray-200 text-gray-500 hover:border-amber-300 hover:text-amber-600"}`}>
+                      {[...Array(s)].map((_, i) => <Star key={i} size={9} className="fill-current" />)}
+                      <span className="ml-0.5">{s}</span>
                     </button>
-                  )}
+                  ))}
                 </div>
 
-                {/* body */}
-                <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-0 divide-y md:divide-y-0 md:divide-x divide-gray-100">
-                  {/* Hạng sao */}
-                  <div className="pb-5 md:pb-0 md:pr-6">
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="w-7 h-7 rounded-lg bg-amber-50 border border-amber-100 flex items-center justify-center">
-                        <Star size={13} className="text-amber-500 fill-amber-500" />
-                      </div>
-                      <span className="text-gray-800 text-sm font-semibold">Hạng sao</span>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      {starOptions.map((s) => (
-                        <button
-                          key={s}
-                          onClick={() => toggleStar(s)}
-                          className={`flex items-center justify-between w-full px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all border ${
-                            selectedStars.includes(s)
-                              ? "bg-amber-50 border-amber-300 text-amber-700 shadow-sm"
-                              : "border-gray-100 text-gray-600 hover:border-amber-200 hover:bg-amber-50/50 bg-gray-50"
-                          }`}
-                        >
-                          <div className="flex items-center gap-2">
-                            <div className="flex gap-0.5">
-                              {[...Array(s)].map((_, i) => (
-                                <Star key={i} size={11} className={selectedStars.includes(s) ? "text-amber-500 fill-amber-500" : "text-gray-300 fill-gray-300"} />
-                              ))}
-                            </div>
-                            <span>{s} sao</span>
-                          </div>
-                          {selectedStars.includes(s) && (
-                            <span className="w-4 h-4 rounded-full bg-amber-500 flex items-center justify-center">
-                              <svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3l2 2 4-4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                            </span>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                <div className="w-px h-5 bg-gray-200 hidden md:block" />
 
-                  {/* Loại hình */}
-                  <div className="py-5 md:py-0 md:px-6">
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="w-7 h-7 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
-                        <Hotel size={13} className="text-blue-500" />
-                      </div>
-                      <span className="text-gray-800 text-sm font-semibold">Loại hình</span>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {typeOptions.map((t) => (
-                        <button
-                          key={t.value}
-                          onClick={() => toggleType(t.value)}
-                          className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border ${
-                            selectedTypes.includes(t.value)
-                              ? "bg-blue-500 border-blue-400 text-white shadow-md shadow-blue-100"
-                              : "border-gray-100 text-gray-600 hover:border-blue-200 hover:bg-blue-50/60 bg-gray-50"
-                          }`}
-                        >
-                          {t.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Thành phố */}
-                  <div className="pt-5 md:pt-0 md:pl-6">
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="w-7 h-7 rounded-lg bg-teal-50 border border-teal-100 flex items-center justify-center">
-                        <MapPin size={13} className="text-teal-500" />
-                      </div>
-                      <span className="text-gray-800 text-sm font-semibold">Thành phố</span>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      {cityOptions.map((c) => (
-                        <button
-                          key={c}
-                          onClick={() => toggleCity(c)}
-                          className={`flex items-center justify-between w-full px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all border ${
-                            selectedCities.includes(c)
-                              ? "bg-teal-50 border-teal-300 text-teal-700 shadow-sm"
-                              : "border-gray-100 text-gray-600 hover:border-teal-200 hover:bg-teal-50/50 bg-gray-50"
-                          }`}
-                        >
-                          <span>{c}</span>
-                          {selectedCities.includes(c) && (
-                            <span className="w-4 h-4 rounded-full bg-teal-500 flex items-center justify-center">
-                              <svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3l2 2 4-4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                            </span>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-gray-400 text-xs font-medium shrink-0">Loại</span>
+                  {typeOptions.map((t) => (
+                    <button key={t.value} onClick={() => toggleType(t.value)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${selectedTypes.includes(t.value) ? "bg-blue-500 border-blue-500 text-white" : "border-gray-200 text-gray-500 hover:border-blue-300 hover:text-blue-600"}`}>
+                      {t.label}
+                    </button>
+                  ))}
                 </div>
+
+                <div className="w-px h-5 bg-gray-200 hidden md:block" />
+
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-gray-400 text-xs font-medium shrink-0">Thành phố</span>
+                  {cityOptions.map((c) => (
+                    <button key={c} onClick={() => toggleCity(c)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${selectedCities.includes(c) ? "bg-teal-500 border-teal-500 text-white" : "border-gray-200 text-gray-500 hover:border-teal-300 hover:text-teal-600"}`}>
+                      {c}
+                    </button>
+                  ))}
+                </div>
+
+                {activeFilterCount > 0 && (
+                  <>
+                    <div className="w-px h-5 bg-gray-200 hidden md:block" />
+                    <button onClick={() => { setSelectedStars([]); setSelectedTypes([]); setSelectedCities([]); }}
+                      className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-700 transition-colors">
+                      <X size={12} /> Xóa
+                    </button>
+                  </>
+                )}
               </div>
             </motion.div>
           )}
