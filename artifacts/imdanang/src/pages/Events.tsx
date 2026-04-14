@@ -1,295 +1,596 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo, useCallback } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import {
-  Star, MapPin, Clock, Heart, Search, Filter, SlidersHorizontal, X,
-  ChevronRight, Loader2, CalendarDays, Music, Utensils, Landmark,
-  Waves, Users, Flame, Radio, Tag,
+  CalendarDays, MapPin, Clock, Music, Utensils,
+  Landmark, Waves, ChevronLeft, ChevronRight,
+  Radio, Users, ArrowRight, Flame, Tag,
 } from "lucide-react";
+import useEmblaCarousel from "embla-carousel-react";
 
+/* ─── Types ─────────────────────────────────────────────── */
 type Category = "festival" | "music" | "food" | "culture" | "sport";
 type Status   = "live" | "upcoming";
 
 interface EventItem {
   id: number; name: string; category: Category; status: Status;
-  date: string; time: string; location: string; area: string;
+  startDate: string; endDate: string; time: string; location: string;
   image: string; desc: string; price: string; attendees: number;
-  tag: string; tagColor: string;
+  gradient: string;
 }
 
+/* ─── Data (today = 14 Apr 2026) ────────────────────────── */
 const ALL_EVENTS: EventItem[] = [
-  { id: 1, name: "Lễ hội Pháo hoa Quốc tế Đà Nẵng 2026", category: "festival", status: "live", date: "4–28/04/2026", time: "21:00 – 22:00", location: "Cầu Rồng & Cầu Sông Hàn", area: "Đà Nẵng", image: "https://images.unsplash.com/photo-1533294455009-a77b7557d2d1?w=700&auto=format&fit=crop", desc: "Sự kiện pháo hoa quốc tế lớn nhất Đông Nam Á với hơn 10 quốc gia trình diễn.", price: "Miễn phí", attendees: 120000, tag: "Đang diễn ra", tagColor: "from-violet-600 to-blue-600" },
-  { id: 2, name: "Đêm Nhạc Acoustic Sông Hàn", category: "music", status: "live", date: "Cuối tuần/04/2026", time: "19:30 – 22:00", location: "Bờ Tây Sông Hàn", area: "Đà Nẵng", image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=700&auto=format&fit=crop", desc: "Âm nhạc acoustic mỗi tối cuối tuần bên bờ sông Hàn thơ mộng.", price: "Miễn phí", attendees: 3000, tag: "Đang diễn ra", tagColor: "from-teal-600 to-emerald-600" },
-  { id: 3, name: "Triển lãm Ảnh Đà Nẵng Xưa & Nay", category: "culture", status: "live", date: "10–30/04/2026", time: "08:00 – 17:00", location: "Bảo tàng Điêu khắc Chăm", area: "Đà Nẵng", image: "https://images.unsplash.com/photo-1536924430914-91f9e2041b83?w=700&auto=format&fit=crop", desc: "Hơn 200 bức ảnh lịch sử ghi lại cuộc sống Đà Nẵng qua các thập kỷ.", price: "30.000đ", attendees: 5000, tag: "Triển lãm", tagColor: "from-amber-600 to-orange-600" },
-  { id: 4, name: "Festival Biển Đà Nẵng 2026", category: "festival", status: "upcoming", date: "15–20/05/2026", time: "18:00 – 23:00", location: "Bãi biển Mỹ Khê", area: "Đà Nẵng", image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=700&auto=format&fit=crop", desc: "Lễ hội biển lớn nhất với thể thao, âm nhạc, ẩm thực và trình diễn ánh sáng.", price: "Miễn phí", attendees: 50000, tag: "Sắp diễn ra", tagColor: "from-sky-600 to-blue-600" },
-  { id: 5, name: "Lễ hội Ẩm thực Phố Cổ Hội An", category: "food", status: "upcoming", date: "20–22/05/2026", time: "09:00 – 22:00", location: "Phố Cổ Hội An", area: "Hội An", image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=700&auto=format&fit=crop", desc: "Hội tụ ẩm thực 3 miền với hơn 500 gian hàng và workshop nấu ăn.", price: "Miễn phí vào cửa", attendees: 30000, tag: "Ẩm thực", tagColor: "from-orange-600 to-red-600" },
-  { id: 6, name: "Danang Music Festival 2026", category: "music", status: "upcoming", date: "6–7/06/2026", time: "20:00 – 24:00", location: "Công viên APEC", area: "Đà Nẵng", image: "https://images.unsplash.com/photo-1501386761578-eaa54b7f791e?w=700&auto=format&fit=crop", desc: "Liên hoan âm nhạc quy tụ các nghệ sĩ hàng đầu Việt Nam và quốc tế.", price: "350.000đ", attendees: 20000, tag: "Âm nhạc", tagColor: "from-pink-600 to-fuchsia-600" },
-  { id: 7, name: "Marathon Đà Nẵng 2026", category: "sport", status: "upcoming", date: "21/06/2026", time: "04:30 – 12:00", location: "Quảng trường 29/3", area: "Đà Nẵng", image: "https://images.unsplash.com/photo-1513593771513-7b58b6c4af38?w=700&auto=format&fit=crop", desc: "Giải chạy marathon quốc tế lớn nhất miền Trung với 10.000+ vận động viên.", price: "Đăng ký từ 500K", attendees: 10000, tag: "Thể thao", tagColor: "from-green-600 to-emerald-600" },
-  { id: 8, name: "Lễ hội Đèn lồng Hội An", category: "culture", status: "upcoming", date: "Rằm hàng tháng", time: "18:00 – 22:00", location: "Phố Cổ Hội An", area: "Hội An", image: "https://images.unsplash.com/photo-1548013146-72479768bada?w=700&auto=format&fit=crop", desc: "Đêm rằm thả đèn lồng trên sông Hoài — trải nghiệm không thể quên tại Hội An.", price: "Miễn phí", attendees: 15000, tag: "Di sản", tagColor: "from-amber-500 to-yellow-500" },
-  { id: 9, name: "Triển lãm Nghệ thuật Đương đại", category: "culture", status: "upcoming", date: "01–30/07/2026", time: "09:00 – 18:00", location: "Trung tâm Nghệ thuật Đà Nẵng", area: "Đà Nẵng", image: "https://images.unsplash.com/photo-1536924430914-91f9e2041b83?w=700&auto=format&fit=crop", desc: "Triển lãm tác phẩm nghệ thuật từ 50 nghệ sĩ trẻ Việt Nam và quốc tế.", price: "50.000đ", attendees: 8000, tag: "Nghệ thuật", tagColor: "from-violet-500 to-purple-600" },
-  { id: 10, name: "Hội chợ Du lịch Đà Nẵng 2026", category: "festival", status: "upcoming", date: "15–17/08/2026", time: "09:00 – 21:00", location: "Trung tâm Hội nghị", area: "Đà Nẵng", image: "https://images.unsplash.com/photo-1533294455009-a77b7557d2d1?w=700&auto=format&fit=crop", desc: "Hội chợ du lịch lớn nhất miền Trung với 200+ gian hàng từ khắp cả nước.", price: "Miễn phí", attendees: 25000, tag: "Hội chợ", tagColor: "from-indigo-600 to-blue-700" },
+  {
+    id: 1, name: "Lễ hội Pháo hoa Quốc tế Đà Nẵng 2026",
+    category: "festival", status: "live",
+    startDate: "2026-04-04", endDate: "2026-04-28",
+    time: "21:00 – 22:00", location: "Cầu Rồng & Cầu Sông Hàn",
+    image: "https://images.unsplash.com/photo-1533294455009-a77b7557d2d1?w=1200&auto=format&fit=crop",
+    desc: "Sự kiện pháo hoa quốc tế lớn nhất Đông Nam Á với hơn 10 quốc gia trình diễn.",
+    price: "Miễn phí", attendees: 120000,
+    gradient: "from-violet-700 via-indigo-700 to-blue-700",
+  },
+  {
+    id: 2, name: "Đêm Nhạc Acoustic Sông Hàn",
+    category: "music", status: "live",
+    startDate: "2026-04-01", endDate: "2026-04-30",
+    time: "19:30 – 22:00", location: "Bờ Tây Sông Hàn",
+    image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=1200&auto=format&fit=crop",
+    desc: "Âm nhạc acoustic mỗi tối cuối tuần bên bờ sông Hàn thơ mộng.",
+    price: "Miễn phí", attendees: 3000,
+    gradient: "from-teal-700 via-emerald-700 to-green-700",
+  },
+  {
+    id: 3, name: "Triển lãm Ảnh Đà Nẵng Xưa & Nay",
+    category: "culture", status: "live",
+    startDate: "2026-04-10", endDate: "2026-04-30",
+    time: "08:00 – 17:00", location: "Bảo tàng Điêu khắc Chăm",
+    image: "https://images.unsplash.com/photo-1536924430914-91f9e2041b83?w=1200&auto=format&fit=crop",
+    desc: "Hơn 200 bức ảnh lịch sử ghi lại cuộc sống Đà Nẵng qua các thập kỷ.",
+    price: "30.000đ", attendees: 5000,
+    gradient: "from-amber-700 via-orange-700 to-red-700",
+  },
+  {
+    id: 4, name: "Festival Biển Đà Nẵng 2026",
+    category: "festival", status: "upcoming",
+    startDate: "2026-05-15", endDate: "2026-05-20",
+    time: "18:00 – 23:00", location: "Bãi biển Mỹ Khê",
+    image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=1200&auto=format&fit=crop",
+    desc: "Lễ hội biển lớn nhất với thể thao, âm nhạc, ẩm thực và trình diễn ánh sáng.",
+    price: "Miễn phí", attendees: 50000,
+    gradient: "from-sky-700 via-blue-700 to-indigo-700",
+  },
+  {
+    id: 5, name: "Lễ hội Ẩm thực Phố Cổ Hội An",
+    category: "food", status: "upcoming",
+    startDate: "2026-05-20", endDate: "2026-05-22",
+    time: "09:00 – 22:00", location: "Phố Cổ Hội An",
+    image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&auto=format&fit=crop",
+    desc: "Hội tụ ẩm thực 3 miền với hơn 500 gian hàng và workshop nấu ăn.",
+    price: "Miễn phí vào cửa", attendees: 30000,
+    gradient: "from-orange-700 via-red-700 to-rose-700",
+  },
+  {
+    id: 6, name: "Danang Music Festival 2026",
+    category: "music", status: "upcoming",
+    startDate: "2026-06-06", endDate: "2026-06-07",
+    time: "20:00 – 24:00", location: "Công viên APEC",
+    image: "https://images.unsplash.com/photo-1501386761578-eaa54b7f791e?w=1200&auto=format&fit=crop",
+    desc: "Liên hoan âm nhạc quy tụ các nghệ sĩ hàng đầu Việt Nam và quốc tế.",
+    price: "350.000đ", attendees: 20000,
+    gradient: "from-violet-700 via-purple-700 to-fuchsia-700",
+  },
+  {
+    id: 7, name: "Hội chợ Di sản Miền Trung",
+    category: "culture", status: "upcoming",
+    startDate: "2026-07-10", endDate: "2026-07-15",
+    time: "08:00 – 21:00", location: "Trung tâm Triển lãm",
+    image: "https://images.unsplash.com/photo-1548013146-72479768bada?w=1200&auto=format&fit=crop",
+    desc: "Giới thiệu di sản văn hóa, nghề thủ công và ẩm thực miền Trung.",
+    price: "50.000đ", attendees: 15000,
+    gradient: "from-amber-700 via-yellow-700 to-lime-700",
+  },
+  {
+    id: 8, name: "Lễ Vu Lan Báo Hiếu 2026",
+    category: "culture", status: "upcoming",
+    startDate: "2026-08-08", endDate: "2026-08-09",
+    time: "Cả ngày", location: "Các chùa lớn Đà Nẵng",
+    image: "https://images.unsplash.com/photo-1545579133-99bb5ab189bd?w=1200&auto=format&fit=crop",
+    desc: "Nghi lễ truyền thống tại các ngôi chùa lớn, thả hoa đăng trên sông Hàn.",
+    price: "Miễn phí", attendees: 40000,
+    gradient: "from-rose-700 via-pink-700 to-fuchsia-700",
+  },
 ];
 
-const heroImages = [
-  "https://images.unsplash.com/photo-1533294455009-a77b7557d2d1?w=800&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1501386761578-eaa54b7f791e?w=800&auto=format&fit=crop",
-];
-const statsData = [
-  { icon: CalendarDays, label: "Sự kiện", value: "40+" },
-  { icon: Users,        label: "Lượt tham dự", value: "500K+" },
-  { icon: Flame,        label: "Đang diễn ra", value: "3" },
-];
-const categoryOptions: { value: Category; label: string; icon: typeof Music }[] = [
-  { value: "festival", label: "Lễ hội",    icon: Flame },
-  { value: "music",    label: "Âm nhạc",   icon: Music },
-  { value: "food",     label: "Ẩm thực",   icon: Utensils },
-  { value: "culture",  label: "Văn hóa",   icon: Landmark },
-  { value: "sport",    label: "Thể thao",  icon: Waves },
-];
-const statusOptions = [
-  { value: "live",     label: "Đang diễn ra" },
-  { value: "upcoming", label: "Sắp diễn ra" },
-];
-const areaOptions = ["Đà Nẵng", "Hội An"];
-const sortOptions = [
-  { label: "Phổ biến nhất",  value: "popular" },
-  { label: "Gần nhất",       value: "name" },
-];
+const CAT_ICON: Record<Category, typeof Music> = {
+  festival: Waves, music: Music, food: Utensils, culture: Landmark, sport: Waves,
+};
+const CAT_LABEL: Record<Category, string> = {
+  festival: "Lễ hội", music: "Âm nhạc", food: "Ẩm thực", culture: "Văn hóa", sport: "Thể thao",
+};
+const CAT_COLOR: Record<Category, string> = {
+  festival: "bg-violet-500", music: "bg-teal-500", food: "bg-orange-500",
+  culture: "bg-amber-500", sport: "bg-sky-500",
+};
 
-export default function Events() {
-  const [search, setSearch]         = useState("");
-  const [selCats, setSelCats]       = useState<string[]>([]);
-  const [selStatus, setSelStatus]   = useState<string[]>([]);
-  const [selAreas, setSelAreas]     = useState<string[]>([]);
-  const [sort, setSort]             = useState("popular");
-  const [liked, setLiked]           = useState<number[]>([]);
-  const [showFilter, setShowFilter] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(6);
-  const [loadingMore, setLoadingMore]   = useState(false);
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
+const MONTHS = ["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6",
+                 "Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"];
+const DAYS   = ["CN","Th2","Th3","Th4","Th5","Th6","Th7"];
 
-  const toggleCat    = (v: string) => setSelCats(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v]);
-  const toggleStatus = (v: string) => setSelStatus(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v]);
-  const toggleArea   = (v: string) => setSelAreas(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v]);
-  const toggleLike   = (id: number) => setLiked(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
+function formatAttendees(n: number) {
+  if (n >= 1000) return `${(n / 1000).toFixed(0)}K`;
+  return `${n}`;
+}
 
-  const handleLoadMore = () => {
-    setLoadingMore(true);
-    setTimeout(() => { setVisibleCount(v => v + 3); setLoadingMore(false); }, 800);
-  };
+/* ─── Mini Calendar ─────────────────────────────────────── */
+function MiniCalendar({
+  year, month, events, selectedDay, onSelectDay, onPrev, onNext,
+}: {
+  year: number; month: number; events: EventItem[];
+  selectedDay: number | null; onSelectDay: (d: number | null) => void;
+  onPrev: () => void; onNext: () => void;
+}) {
+  const firstWeekday = new Date(year, month, 1).getDay();
+  const daysInMonth  = new Date(year, month + 1, 0).getDate();
 
-  let filtered = ALL_EVENTS.filter(ev => {
-    if (search && !ev.name.toLowerCase().includes(search.toLowerCase()) && !ev.location.toLowerCase().includes(search.toLowerCase())) return false;
-    if (selCats.length && !selCats.includes(ev.category)) return false;
-    if (selStatus.length && !selStatus.includes(ev.status)) return false;
-    if (selAreas.length && !selAreas.includes(ev.area)) return false;
-    return true;
-  });
-  if (sort === "popular") filtered = [...filtered].sort((a, b) => b.attendees - a.attendees);
+  const eventDayMap = useMemo(() => {
+    const map: Record<number, string[]> = {};
+    for (const ev of events) {
+      const s = new Date(ev.startDate + "T00:00:00");
+      const e = new Date(ev.endDate   + "T00:00:00");
+      for (let d = new Date(s); d <= e; d.setDate(d.getDate() + 1)) {
+        if (d.getFullYear() === year && d.getMonth() === month) {
+          const dd = d.getDate();
+          if (!map[dd]) map[dd] = [];
+          map[dd].push(ev.category);
+        }
+      }
+    }
+    return map;
+  }, [year, month, events]);
 
-  const visible   = filtered.slice(0, visibleCount);
-  const hasMore   = visibleCount < filtered.length;
-  const remaining = filtered.length - visibleCount;
-  const activeFilterCount = selCats.length + selStatus.length + selAreas.length;
+  const today = { y: 2026, m: 3, d: 14 }; // April 14, 2026
+
+  const cells: (number | null)[] = [
+    ...Array(firstWeekday).fill(null),
+    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+  ];
+  while (cells.length % 7 !== 0) cells.push(null);
 
   return (
-    <div className="min-h-screen bg-gray-50" ref={ref}>
+    <div className="select-none">
+      {/* Month header */}
+      <div className="flex items-center justify-between mb-4">
+        <button onClick={onPrev} className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+          <ChevronLeft size={18} className="text-slate-500" />
+        </button>
+        <span className="text-slate-800 font-bold text-base">{MONTHS[month]} {year}</span>
+        <button onClick={onNext} className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+          <ChevronRight size={18} className="text-slate-500" />
+        </button>
+      </div>
 
-      {/* ── Hero ── */}
-      <div className="relative h-[72vh] min-h-[480px] overflow-hidden">
-        <div className="absolute inset-0 grid grid-cols-3 gap-0">
-          {heroImages.map((src, i) => (
-            <div key={i} className="relative overflow-hidden">
-              <img src={src} alt="" className="w-full h-full object-cover scale-105" style={{ filter: "brightness(0.72)" }} />
-            </div>
-          ))}
+      {/* Weekday headers */}
+      <div className="grid grid-cols-7 mb-1">
+        {DAYS.map((d) => (
+          <div key={d} className="text-center text-[10px] font-semibold text-slate-400 pb-1.5">{d}</div>
+        ))}
+      </div>
+
+      {/* Day cells */}
+      <div className="grid grid-cols-7 gap-0.5">
+        {cells.map((day, i) => {
+          if (!day) return <div key={`empty-${i}`} />;
+          const isToday = today.y === year && today.m === month && today.d === day;
+          const isSelected = selectedDay === day;
+          const cats = eventDayMap[day] ?? [];
+          const hasEvent = cats.length > 0;
+
+          return (
+            <button
+              key={day}
+              onClick={() => onSelectDay(isSelected ? null : day)}
+              className={`relative flex flex-col items-center justify-center h-9 w-full rounded-xl text-xs font-semibold transition-all ${
+                isSelected
+                  ? "bg-indigo-600 text-white shadow-md"
+                  : isToday
+                  ? "bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200"
+                  : hasEvent
+                  ? "text-slate-800 hover:bg-slate-100"
+                  : "text-slate-300 cursor-default"
+              }`}
+            >
+              {day}
+              {hasEvent && !isSelected && (
+                <div className="flex gap-[2px] mt-0.5">
+                  {cats.slice(0, 3).map((c, ci) => (
+                    <span key={ci} className={`w-1 h-1 rounded-full ${
+                      c === "festival" ? "bg-violet-500" :
+                      c === "music"   ? "bg-teal-500"   :
+                      c === "food"    ? "bg-orange-500"  :
+                      "bg-amber-500"
+                    }`} />
+                  ))}
+                </div>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Legend */}
+      <div className="mt-4 flex flex-wrap gap-2">
+        {(["festival","music","food","culture"] as Category[]).map((c) => (
+          <span key={c} className="flex items-center gap-1 text-[10px] text-slate-400">
+            <span className={`w-1.5 h-1.5 rounded-full ${
+              c === "festival" ? "bg-violet-500" :
+              c === "music"    ? "bg-teal-500"   :
+              c === "food"     ? "bg-orange-500"  :
+              "bg-amber-500"
+            }`} />
+            {CAT_LABEL[c]}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Live Event Card ────────────────────────────────────── */
+function LiveCard({ ev }: { ev: EventItem }) {
+  const Icon = CAT_ICON[ev.category];
+  return (
+    <div className="flex-shrink-0 w-72 md:w-80 bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-lg border border-slate-100 transition-shadow group cursor-pointer">
+      {/* Image */}
+      <div className="relative h-48 overflow-hidden">
+        <img src={ev.image} alt={ev.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
+        <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-red-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-md">
+          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />LIVE
         </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/35 to-black/70" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-          <motion.div initial={{ opacity: 0, y: 36 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="max-w-3xl w-full">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white/90 rounded-full px-4 py-1.5 text-sm mb-6 shadow-lg">
-              <Radio size={13} className="text-violet-400 animate-pulse" />
-              <span>3 sự kiện đang diễn ra tại Đà Nẵng</span>
+        <div className={`absolute top-3 right-3 flex items-center gap-1 ${CAT_COLOR[ev.category]} text-white text-[10px] font-bold px-2.5 py-1 rounded-full`}>
+          <Icon size={9} />{CAT_LABEL[ev.category]}
+        </div>
+      </div>
+      {/* Content */}
+      <div className="p-4">
+        <h3 className="text-slate-900 font-bold text-sm leading-snug mb-2.5 line-clamp-2">{ev.name}</h3>
+        <div className="space-y-1 mb-3">
+          <span className="flex items-center gap-1.5 text-slate-500 text-xs"><Clock size={11} className="text-slate-400 shrink-0" />{ev.time}</span>
+          <span className="flex items-center gap-1.5 text-slate-500 text-xs"><MapPin size={11} className="text-slate-400 shrink-0" />{ev.location}</span>
+        </div>
+        <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+          <span className="flex items-center gap-1 text-slate-400 text-xs">
+            <Users size={10} />{formatAttendees(ev.attendees)} quan tâm
+          </span>
+          <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+            ev.price === "Miễn phí"
+              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+              : "bg-slate-100 text-slate-600"
+          }`}>{ev.price}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Upcoming Event Card ────────────────────────────────── */
+function UpcomingCard({ ev, index, isInView }: { ev: EventItem; index: number; isInView: boolean }) {
+  const Icon = CAT_ICON[ev.category];
+  const start = new Date(ev.startDate + "T00:00:00");
+  const dayNum = start.getDate();
+  const monthName = MONTHS[start.getMonth()].replace("Tháng ", "Th") + " " + start.getFullYear();
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ delay: index * 0.09 }}
+      whileHover={{ y: -4 }}
+      className="group flex gap-4 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg transition-all cursor-pointer overflow-hidden"
+    >
+      {/* Date block */}
+      <div className={`flex-shrink-0 w-16 bg-gradient-to-b ${ev.gradient} flex flex-col items-center justify-center py-3 px-2`}>
+        <span className="text-white font-extrabold text-2xl leading-none">{dayNum}</span>
+        <span className="text-white/70 text-[10px] font-medium mt-0.5 text-center leading-tight">{monthName}</span>
+      </div>
+
+      {/* Image */}
+      <div className="relative w-24 h-24 flex-shrink-0 overflow-hidden self-center rounded-xl m-2 ml-0">
+        <img src={ev.image} alt={ev.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+      </div>
+
+      {/* Info */}
+      <div className="flex-1 min-w-0 py-3 pr-3">
+        <div className="flex items-center gap-1.5 mb-1.5">
+          <span className={`flex items-center gap-1 ${CAT_COLOR[ev.category]} text-white text-[10px] font-bold px-2 py-0.5 rounded-full`}>
+            <Icon size={9} />{CAT_LABEL[ev.category]}
+          </span>
+          {ev.price === "Miễn phí" || ev.price === "Miễn phí vào cửa" ? (
+            <span className="text-emerald-600 text-[10px] font-bold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+              Miễn phí
+            </span>
+          ) : (
+            <span className="text-slate-500 text-[10px] font-medium">{ev.price}</span>
+          )}
+        </div>
+        <h3 className="text-slate-900 font-bold text-sm leading-tight mb-1.5 line-clamp-2 group-hover:text-indigo-700 transition-colors">{ev.name}</h3>
+        <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-slate-400 text-xs">
+          <span className="flex items-center gap-1"><Clock size={10} />{ev.time}</span>
+          <span className="flex items-center gap-1 truncate"><MapPin size={10} />{ev.location}</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ─── Main Page ─────────────────────────────────────────── */
+export default function Events() {
+  const liveEvents     = ALL_EVENTS.filter((e) => e.status === "live");
+  const upcomingEvents = ALL_EVENTS.filter((e) => e.status === "upcoming");
+
+  const [calYear,  setCalYear]  = useState(2026);
+  const [calMonth, setCalMonth] = useState(3); // April
+  const [selDay,   setSelDay]   = useState<number | null>(null);
+  const [catFilter, setCatFilter] = useState<Category | "all">("all");
+
+  const upcomingRef = useRef(null);
+  const upcomingInView = useInView(upcomingRef, { once: true, margin: "-60px" });
+
+  const [liveEmblaRef, liveEmblaApi] = useEmblaCarousel({ loop: true, align: "start", dragFree: true });
+  const scrollLivePrev = useCallback(() => liveEmblaApi?.scrollPrev(), [liveEmblaApi]);
+  const scrollLiveNext = useCallback(() => liveEmblaApi?.scrollNext(), [liveEmblaApi]);
+
+  function prevMonth() {
+    if (calMonth === 0) { setCalYear((y) => y - 1); setCalMonth(11); }
+    else setCalMonth((m) => m - 1);
+    setSelDay(null);
+  }
+  function nextMonth() {
+    if (calMonth === 11) { setCalYear((y) => y + 1); setCalMonth(0); }
+    else setCalMonth((m) => m + 1);
+    setSelDay(null);
+  }
+
+  // Events that fall in the current calendar month (for the calendar section)
+  const calMonthEvents = useMemo(() =>
+    ALL_EVENTS.filter((ev) => {
+      const s = new Date(ev.startDate + "T00:00:00");
+      const e = new Date(ev.endDate   + "T00:00:00");
+      const first = new Date(calYear, calMonth, 1);
+      const last  = new Date(calYear, calMonth + 1, 0);
+      return s <= last && e >= first;
+    }),
+    [calYear, calMonth]
+  );
+
+  // Events on selected day (or all month events if no day selected)
+  const calPanelEvents = useMemo(() => {
+    if (!selDay) return calMonthEvents;
+    return calMonthEvents.filter((ev) => {
+      const s = new Date(ev.startDate + "T00:00:00");
+      const e = new Date(ev.endDate   + "T00:00:00");
+      const selected = new Date(calYear, calMonth, selDay);
+      return s <= selected && e >= selected;
+    });
+  }, [selDay, calMonthEvents, calYear, calMonth]);
+
+  // Filtered upcoming events
+  const filteredUpcoming = catFilter === "all"
+    ? upcomingEvents
+    : upcomingEvents.filter((e) => e.category === catFilter);
+
+  const cats: (Category | "all")[] = ["all", "festival", "music", "food", "culture"];
+  const catAllLabel: Record<string, string> = { all: "Tất cả", ...CAT_LABEL };
+
+  return (
+    <div className="min-h-screen bg-slate-50">
+
+      {/* ── Hero ─────────────────────────────────────────── */}
+      <div className="relative h-72 sm:h-80 overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1533294455009-a77b7557d2d1?w=1600&auto=format&fit=crop"
+          alt="Events"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/35 to-black/55" />
+
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pb-4">
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white/90 rounded-full px-4 py-1.5 text-sm mb-4 shadow-lg">
+              <CalendarDays size={14} className="text-amber-400" />
+              Sự Kiện & Lễ Hội 2026
             </div>
-            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 leading-tight drop-shadow-xl">
-              Sự Kiện <span className="text-violet-400">&amp; Lễ Hội</span><br />Đà Nẵng 2026
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-4 leading-tight tracking-tight">
+              Đà Nẵng <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">Lễ Hội</span>
             </h1>
-            <p className="text-white/75 text-base md:text-lg max-w-xl mx-auto mb-10 leading-relaxed">
-              Từ pháo hoa quốc tế đến lễ hội đèn lồng — đừng bỏ lỡ những sự kiện đặc sắc nhất
-            </p>
-            <div className="flex items-center justify-center gap-6 md:gap-12">
-              {statsData.map(({ icon: Icon, label, value }) => (
-                <div key={label} className="flex flex-col items-center gap-1">
-                  <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center mb-1">
-                    <Icon size={18} className="text-violet-400" />
-                  </div>
-                  <span className="text-white font-bold text-xl">{value}</span>
-                  <span className="text-white/60 text-xs">{label}</span>
+            {/* Stats */}
+            <div className="flex items-center justify-center gap-6 sm:gap-10">
+              {[
+                { value: liveEvents.length, label: "Đang diễn ra", color: "text-red-400" },
+                { value: upcomingEvents.length, label: "Sắp tới", color: "text-sky-400" },
+                { value: ALL_EVENTS.length, label: "Sự kiện 2026", color: "text-amber-400" },
+              ].map((s) => (
+                <div key={s.label} className="flex flex-col items-center gap-0.5">
+                  <span className={`text-2xl font-extrabold ${s.color}`}>{s.value}</span>
+                  <span className="text-white/50 text-xs">{s.label}</span>
                 </div>
               ))}
             </div>
           </motion.div>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-gray-900 to-transparent" />
       </div>
 
-      {/* ── Filter bar ── */}
-      <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-10">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
-          className="bg-white rounded-2xl p-4 mb-6 flex flex-wrap items-center gap-3 shadow-xl border border-gray-100">
-          <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 flex-1 min-w-48">
-            <Search size={15} className="text-gray-400 shrink-0" />
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Tìm sự kiện..." className="bg-transparent text-gray-800 text-sm placeholder:text-gray-400 focus:outline-none flex-1" />
-            {search && <button onClick={() => setSearch("")}><X size={13} className="text-gray-400" /></button>}
+      {/* ── Đang diễn ra ─────────────────────────────────── */}
+      <div className="bg-white border-b border-slate-100 px-4 sm:px-6 py-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
+              <Radio size={15} className="text-red-500" />
+              <h2 className="text-slate-900 font-extrabold text-lg">Đang diễn ra</h2>
+              <span className="bg-red-50 text-red-600 text-[11px] font-bold px-2 py-0.5 rounded-full border border-red-100 ml-1">
+                {liveEvents.length} sự kiện
+              </span>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={scrollLivePrev} className="p-2 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl shadow-sm text-slate-600 transition-colors">
+                <ChevronLeft size={16} />
+              </button>
+              <button onClick={scrollLiveNext} className="p-2 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl shadow-sm text-slate-600 transition-colors">
+                <ChevronRight size={16} />
+              </button>
+            </div>
           </div>
-          <button onClick={() => setShowFilter(!showFilter)}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all border ${showFilter ? "bg-violet-500 border-violet-400 text-white" : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"}`}>
-            <SlidersHorizontal size={15} />Bộ lọc
-            {activeFilterCount > 0 && <span className="w-5 h-5 bg-violet-500 text-white rounded-full text-xs font-bold flex items-center justify-center">{activeFilterCount}</span>}
-          </button>
-          <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-500 text-sm">
-            <Filter size={14} />
-            <select value={sort} onChange={e => setSort(e.target.value)} className="bg-transparent text-gray-700 focus:outline-none cursor-pointer">
-              {sortOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
+          <div className="overflow-hidden" ref={liveEmblaRef}>
+            <div className="flex gap-4">
+              {liveEvents.map((ev) => <LiveCard key={ev.id} ev={ev} />)}
+            </div>
           </div>
-        </motion.div>
+        </div>
+      </div>
 
-        <AnimatePresence>
-          {showFilter && (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden mb-5">
-              <div className="bg-white border border-gray-200 rounded-2xl px-5 py-4 flex flex-wrap items-center gap-x-6 gap-y-4 shadow-sm">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-gray-400 text-xs font-medium shrink-0">Danh mục</span>
-                  {categoryOptions.map(c => (
-                    <button key={c.value} onClick={() => toggleCat(c.value)}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${selCats.includes(c.value) ? "bg-violet-500 border-violet-500 text-white" : "border-gray-200 text-gray-500 hover:border-violet-300 hover:text-violet-600"}`}>
-                      <c.icon size={11} />{c.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="w-px h-5 bg-gray-200 hidden md:block" />
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-gray-400 text-xs font-medium shrink-0">Trạng thái</span>
-                  {statusOptions.map(s => (
-                    <button key={s.value} onClick={() => toggleStatus(s.value)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${selStatus.includes(s.value) ? "bg-emerald-500 border-emerald-500 text-white" : "border-gray-200 text-gray-500 hover:border-emerald-300 hover:text-emerald-600"}`}>
-                      {s.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="w-px h-5 bg-gray-200 hidden md:block" />
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-gray-400 text-xs font-medium shrink-0">Khu vực</span>
-                  {areaOptions.map(a => (
-                    <button key={a} onClick={() => toggleArea(a)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${selAreas.includes(a) ? "bg-blue-500 border-blue-500 text-white" : "border-gray-200 text-gray-500 hover:border-blue-300 hover:text-blue-600"}`}>
-                      {a}
-                    </button>
-                  ))}
-                </div>
-                {activeFilterCount > 0 && (
-                  <>
-                    <div className="w-px h-5 bg-gray-200 hidden md:block" />
-                    <button onClick={() => { setSelCats([]); setSelStatus([]); setSelAreas([]); }} className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-700 transition-colors">
-                      <X size={12} />Xóa
-                    </button>
-                  </>
+      {/* ── Lịch sự kiện ─────────────────────────────────── */}
+      <div className="bg-slate-50 border-t border-slate-100 px-4 sm:px-6 py-10">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center gap-2 mb-8">
+            <CalendarDays size={20} className="text-indigo-600" />
+            <h2 className="text-slate-900 font-extrabold text-xl">Lịch sự kiện</h2>
+          </div>
+
+          <div className="grid lg:grid-cols-5 gap-6 lg:gap-8">
+            {/* Calendar */}
+            <div className="lg:col-span-2 bg-white border border-slate-200 rounded-3xl p-5 shadow-sm">
+              <MiniCalendar
+                year={calYear} month={calMonth}
+                events={ALL_EVENTS}
+                selectedDay={selDay}
+                onSelectDay={setSelDay}
+                onPrev={prevMonth} onNext={nextMonth}
+              />
+            </div>
+
+            {/* Event panel */}
+            <div className="lg:col-span-3">
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-slate-500 text-sm">
+                  {selDay
+                    ? `Sự kiện ngày ${selDay} tháng ${calMonth + 1}, ${calYear}`
+                    : `Sự kiện tháng ${calMonth + 1}/${calYear}`}
+                </p>
+                {selDay && (
+                  <button onClick={() => setSelDay(null)} className="text-slate-400 hover:text-slate-700 text-xs transition-colors">
+                    Xem tất cả tháng
+                  </button>
                 )}
               </div>
-            </motion.div>
-          )}
+
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`${calYear}-${calMonth}-${selDay}`}
+                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="space-y-3 max-h-80 lg:max-h-96 overflow-y-auto pr-1 scrollbar-hide"
+                >
+                  {calPanelEvents.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-12 text-slate-300">
+                      <CalendarDays size={36} strokeWidth={1} />
+                      <p className="mt-3 text-sm">Không có sự kiện trong ngày này</p>
+                    </div>
+                  ) : (
+                    calPanelEvents.map((ev, i) => {
+                      const Icon = CAT_ICON[ev.category];
+                      return (
+                        <motion.div
+                          key={ev.id}
+                          initial={{ opacity: 0, x: 12 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.07 }}
+                          className="flex gap-3 bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl p-3.5 cursor-pointer transition-all group shadow-sm"
+                        >
+                          <div className="relative w-16 h-16 flex-shrink-0 rounded-xl overflow-hidden">
+                            <img src={ev.image} alt={ev.name} className="w-full h-full object-cover" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5 mb-1">
+                              {ev.status === "live" && (
+                                <span className="flex items-center gap-1 bg-red-50 text-red-600 text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-red-100">
+                                  <span className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />LIVE
+                                </span>
+                              )}
+                              <span className={`flex items-center gap-0.5 ${CAT_COLOR[ev.category]} text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full`}>
+                                <Icon size={8} />{CAT_LABEL[ev.category]}
+                              </span>
+                            </div>
+                            <h4 className="text-slate-800 font-semibold text-xs leading-tight mb-1 line-clamp-2 group-hover:text-indigo-600 transition-colors">{ev.name}</h4>
+                            <div className="flex gap-2 text-slate-400 text-[10px]">
+                              <span className="flex items-center gap-0.5"><Clock size={9} />{ev.time}</span>
+                              <span className="flex items-center gap-0.5 truncate"><MapPin size={9} />{ev.location}</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center shrink-0">
+                            <ArrowRight size={14} className="text-slate-300 group-hover:text-indigo-500 transition-colors" />
+                          </div>
+                        </motion.div>
+                      );
+                    })
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Sắp diễn ra ──────────────────────────────────── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 pb-16" ref={upcomingRef}>
+        {/* Section header */}
+        <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <div className="flex items-center gap-2">
+            <Flame size={20} className="text-orange-500" />
+            <h2 className="text-slate-900 font-extrabold text-xl">Sắp diễn ra</h2>
+          </div>
+          {/* Category filter */}
+          <div className="flex gap-1.5 flex-wrap">
+            {cats.map((c) => (
+              <button
+                key={c}
+                onClick={() => setCatFilter(c)}
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${
+                  catFilter === c
+                    ? "bg-indigo-600 border-indigo-500 text-white shadow-md"
+                    : "bg-white border-slate-200 text-slate-500 hover:border-indigo-300 hover:text-indigo-600"
+                }`}
+              >
+                {c !== "all" && (() => { const I = CAT_ICON[c as Category]; return <I size={10} />; })()}
+                {catAllLabel[c]}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Event list */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={catFilter}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="grid sm:grid-cols-2 gap-3"
+          >
+            {filteredUpcoming.length === 0 ? (
+              <div className="sm:col-span-2 flex flex-col items-center py-16 text-slate-400">
+                <Tag size={36} strokeWidth={1} />
+                <p className="mt-3 text-sm">Không có sự kiện nào trong danh mục này</p>
+              </div>
+            ) : (
+              filteredUpcoming.map((ev, i) => (
+                <UpcomingCard key={ev.id} ev={ev} index={i} isInView={upcomingInView} />
+              ))
+            )}
+          </motion.div>
         </AnimatePresence>
 
-        <div className="flex items-center justify-between mb-5">
-          <p className="text-gray-500 text-sm"><span className="text-gray-900 font-semibold">{filtered.length}</span> sự kiện phù hợp</p>
-          {activeFilterCount > 0 && (
-            <button onClick={() => { setSelCats([]); setSelStatus([]); setSelAreas([]); }} className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-700 transition-colors">
-              <X size={12} />Xóa bộ lọc
-            </button>
-          )}
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 pb-6">
-          <AnimatePresence>
-            {visible.map((ev, i) => (
-              <motion.div key={ev.id} initial={{ opacity: 0, y: 30 }} animate={isInView ? { opacity: 1, y: 0 } : {}} exit={{ opacity: 0, scale: 0.95 }} transition={{ delay: i * 0.07, duration: 0.45 }} whileHover={{ y: -6 }}
-                className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-md hover:shadow-xl transition-shadow group cursor-pointer">
-                <div className="relative h-52 overflow-hidden">
-                  <img src={ev.image} alt={ev.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  <div className={`absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-full text-white bg-gradient-to-r ${ev.tagColor}`}>{ev.tag}</div>
-                  {ev.status === "live" && (
-                    <div className="absolute top-3 right-12 flex items-center gap-1 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                      <Radio size={9} className="animate-pulse" />LIVE
-                    </div>
-                  )}
-                  <button onClick={e => { e.stopPropagation(); toggleLike(ev.id); }} className="absolute top-3 right-3 p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-colors shadow-sm">
-                    <Heart size={15} className={liked.includes(ev.id) ? "text-rose-500 fill-rose-500" : "text-gray-500"} />
-                  </button>
-                  <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-black/40 backdrop-blur-sm rounded-lg px-2 py-1">
-                    <CalendarDays size={11} className="text-white/80" />
-                    <span className="text-white/90 text-xs font-medium">{ev.date}</span>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <h3 className="text-gray-900 font-bold text-base leading-tight mb-2">{ev.name}</h3>
-                  <p className="text-gray-500 text-xs mb-3 line-clamp-2 leading-relaxed">{ev.desc}</p>
-                  <div className="space-y-1.5 mb-4">
-                    <div className="flex items-center gap-2 text-gray-500 text-xs">
-                      <MapPin size={11} className="text-gray-400 shrink-0" />{ev.location}
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-500 text-xs">
-                      <Clock size={11} className="text-gray-400 shrink-0" />{ev.time}
-                      <span className="mx-1">·</span>
-                      <Tag size={10} className="text-gray-400 shrink-0" />{ev.price}
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-500 text-xs">
-                      <Users size={11} className="text-gray-400 shrink-0" />{ev.attendees.toLocaleString()} người tham dự
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{ev.area}</span>
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }}
-                      className="flex items-center gap-1 bg-gradient-to-r from-violet-500 to-indigo-500 hover:from-violet-400 hover:to-indigo-400 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all shadow-md shadow-violet-100">
-                      Chi tiết <ChevronRight size={14} />
-                    </motion.div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-
-        {hasMore && (
-          <div className="flex flex-col items-center gap-3 pb-12">
-            <p className="text-gray-400 text-sm">
-              Đang hiển thị <span className="text-gray-700 font-semibold">{visible.length}</span> / <span className="text-gray-700 font-semibold">{filtered.length}</span> sự kiện
-              {" — "}còn <span className="text-violet-600 font-semibold">{remaining}</span> chưa hiển thị
-            </p>
-            <motion.button whileHover={{ scale: loadingMore ? 1 : 1.04 }} whileTap={{ scale: loadingMore ? 1 : 0.97 }}
-              onClick={handleLoadMore} disabled={loadingMore}
-              className="flex items-center gap-2.5 px-8 py-3 bg-gradient-to-r from-violet-500 to-indigo-500 text-white font-semibold rounded-2xl shadow-lg shadow-violet-200 hover:from-violet-400 hover:to-indigo-400 transition-all text-sm disabled:opacity-80 disabled:cursor-not-allowed min-w-52 justify-center">
-              <AnimatePresence mode="wait">
-                {loadingMore
-                  ? <motion.span key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-2"><Loader2 size={16} className="animate-spin" />Đang tải...</motion.span>
-                  : <motion.span key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-2">Xem thêm {remaining} sự kiện</motion.span>}
-              </AnimatePresence>
-            </motion.button>
-          </div>
-        )}
-        {!hasMore && filtered.length > 0 && (
-          <div className="pb-12 text-center text-gray-400 text-sm">Đã hiển thị tất cả <span className="text-gray-600 font-semibold">{filtered.length}</span> sự kiện</div>
-        )}
-        {filtered.length === 0 && (
-          <div className="pb-12 flex flex-col items-center justify-center py-16 text-center">
-            <CalendarDays size={40} className="text-gray-300 mb-3" />
-            <p className="text-gray-600 font-medium">Không tìm thấy sự kiện phù hợp</p>
-            <p className="text-gray-400 text-sm mt-1">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
-          </div>
-        )}
       </div>
     </div>
   );
