@@ -65,7 +65,7 @@ export default function Header() {
 
         <div className="flex items-center gap-1 shrink-0">
           <button
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted text-sm transition-colors"
+            className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted text-sm transition-colors"
             data-testid="button-language"
           >
             <Globe size={15} />
@@ -92,14 +92,14 @@ export default function Header() {
           </button>
 
           <button
-            className="relative p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="relative hidden sm:block p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             data-testid="button-notifications"
           >
             <Bell size={18} />
             <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-amber-400 rounded-full" />
           </button>
           <button
-            className="p-1.5 rounded-full bg-muted hover:bg-muted/80 transition-colors"
+            className="hidden sm:block p-1.5 rounded-full bg-muted hover:bg-muted/80 transition-colors"
             data-testid="button-user"
           >
             <User size={16} className="text-foreground" />

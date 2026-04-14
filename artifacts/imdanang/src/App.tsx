@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import NProgress from "nprogress";
@@ -19,6 +19,7 @@ import Shopping from "@/pages/Shopping";
 import AIAssistant from "@/pages/AIAssistant";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
+import BottomNav from "@/components/layout/BottomNav";
 import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
 import { DarkModeProvider } from "@/context/DarkModeContext";
 
@@ -37,15 +38,23 @@ function PageLoader() {
 
 function Layout() {
   const { isExpanded } = useSidebar();
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <Sidebar />
+      <BottomNav />
       <motion.div
-        animate={{ marginLeft: isExpanded ? 224 : 60 }}
+        animate={{ marginLeft: isMobile ? 0 : isExpanded ? 224 : 60 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="pt-14"
+        className="pt-14 pb-16 md:pb-0"
       >
         <Switch>
           <Route path="/" component={Home} />

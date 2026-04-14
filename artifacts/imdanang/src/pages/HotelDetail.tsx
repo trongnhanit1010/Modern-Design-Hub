@@ -318,7 +318,7 @@ export default function HotelDetail() {
           </div>
 
           {/* ── Right sidebar ────────────────────────────────── */}
-          <div className="lg:col-span-1">
+          <div className="hidden lg:block lg:col-span-1">
             <div className="sticky top-20 space-y-4">
 
               {/* Contact card */}
@@ -567,7 +567,7 @@ export default function HotelDetail() {
       </div>
 
       {/* ── Nearby — full width ────────────────────────────────── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-36 lg:pb-12">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-slate-900 font-bold text-xl flex items-center gap-2">
             <span className="w-1 h-6 rounded-full bg-sky-500 inline-block" />
@@ -605,6 +605,21 @@ export default function HotelDetail() {
               </Link>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* ── Mobile sticky CTA (below bottom nav) ─────────────── */}
+      <div className="lg:hidden fixed bottom-16 left-0 right-0 z-30 px-4 pb-2">
+        <div className="flex gap-2 bg-background/95 backdrop-blur-xl border border-border rounded-2xl p-2 shadow-xl shadow-black/10">
+          <motion.a href={`tel:${hotel.phone}`} whileTap={{ scale: 0.97 }}
+            className="flex-1 flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-xl text-sm shadow-md shadow-amber-400/30">
+            <Phone size={15} />Gọi ngay
+          </motion.a>
+          <motion.a href={`https://www.google.com/maps/search/${encodeURIComponent(hotel.address)}`}
+            target="_blank" rel="noopener noreferrer" whileTap={{ scale: 0.97 }}
+            className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-slate-200 text-slate-700 font-semibold rounded-xl text-sm hover:bg-slate-50 transition-colors">
+            <Navigation size={14} />Chỉ đường
+          </motion.a>
         </div>
       </div>
     </div>

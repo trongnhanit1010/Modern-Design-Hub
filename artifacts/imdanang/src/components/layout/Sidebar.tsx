@@ -26,7 +26,7 @@ export default function Sidebar() {
     <motion.aside
       animate={{ width: isExpanded ? 224 : 60 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="fixed left-0 top-14 bottom-0 z-40 bg-background border-r border-border flex flex-col overflow-hidden"
+      className="hidden md:flex fixed left-0 top-14 bottom-0 z-40 bg-background border-r border-border flex-col overflow-hidden"
       data-testid="sidebar"
     >
       <nav className="flex-1 py-4 overflow-hidden">

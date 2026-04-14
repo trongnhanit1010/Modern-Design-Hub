@@ -118,7 +118,7 @@ export default function Hotels() {
               <span>128 Chỗ nghỉ cao cấp tại Đà Nẵng & Hội An</span>
             </div>
 
-            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 leading-tight drop-shadow-xl">
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 leading-tight drop-shadow-xl">
               Tìm Nơi <span className="text-amber-400">Nghỉ Ngơi</span><br />Hoàn Hảo
             </h1>
             <p className="text-white/75 text-base md:text-lg max-w-xl mx-auto mb-10 leading-relaxed">
