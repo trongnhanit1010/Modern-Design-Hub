@@ -23,7 +23,9 @@ interface DishRestaurant {
 }
 interface Dish {
   id: number; name: string; desc: string; image: string;
-  lat: number; lng: number; tag: string; restaurants: DishRestaurant[];
+  lat: number; lng: number; tag: string;
+  dishType: string; area: string;
+  restaurants: DishRestaurant[];
 }
 
 // ─── GOOGLE MAPS LOADER HOOK ─────────────────────────────────────────────────
@@ -81,42 +83,56 @@ const beachData: Location[] = [
   { id: 403, category: "beach", name: "Bãi biển Mân Thái", lat: 16.1050, lng: 108.2645, address: "Mân Thái, Sơn Trà, Đà Nẵng", rating: 4.6, reviews: 2100, hours: "Mở cửa 24/7", desc: "Bãi biển hoang sơ ít người biết đến, nước trong xanh", image: "https://images.unsplash.com/photo-1473177104440-ffee2f376098?w=400&auto=format&fit=crop", tag: "Hoang sơ", district: "Sơn Trà" },
 ];
 const dishData: Dish[] = [
-  { id: 501, name: "Mì Quảng", tag: "Đặc sản số 1", desc: "Sợi mì vàng đặc trưng với nước dùng đậm đà, nhân tôm thịt, rau sống và bánh tráng giòn", image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&auto=format&fit=crop", lat: 16.0600, lng: 108.2100, restaurants: [
+  { id: 501, name: "Mì Quảng", tag: "Đặc sản số 1", dishType: "bún & mì", area: "Đà Nẵng", desc: "Sợi mì vàng đặc trưng với nước dùng đậm đà, nhân tôm thịt, rau sống và bánh tráng giòn", image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&auto=format&fit=crop", lat: 16.0600, lng: 108.2100, restaurants: [
     { id: 5011, name: "Mì Quảng 1A", address: "1 Hải Phòng, Hải Châu", lat: 16.0612, lng: 108.2115, rating: 4.8, reviews: 3200, hours: "6:00–14:00", priceRange: "35k–50k", image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=200&auto=format&fit=crop" },
     { id: 5012, name: "Mì Quảng Bà Mua", address: "19 Trần Bình Trọng", lat: 16.0644, lng: 108.2088, rating: 4.7, reviews: 1870, hours: "6:00–13:00", priceRange: "30k–45k", image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=200&auto=format&fit=crop" },
     { id: 5013, name: "Mì Quảng Phú Chiêm", address: "45 Ngô Gia Tự", lat: 16.0588, lng: 108.2130, rating: 4.6, reviews: 2450, hours: "7:00–14:00", priceRange: "30k–40k", image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=200&auto=format&fit=crop" },
   ]},
-  { id: 502, name: "Bánh Mì Đà Nẵng", tag: "Phải thử", desc: "Bánh mì giòn với thịt nướng, pa tê và rau sống – đặc sản đường phố Đà Nẵng", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&auto=format&fit=crop", lat: 16.0720, lng: 108.2260, restaurants: [
+  { id: 502, name: "Bánh Mì Đà Nẵng", tag: "Phải thử", dishType: "bánh & xôi", area: "Cả hai", desc: "Bánh mì giòn với thịt nướng, pa tê và rau sống – đặc sản đường phố Đà Nẵng", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&auto=format&fit=crop", lat: 16.0720, lng: 108.2260, restaurants: [
     { id: 5021, name: "Bánh Mì Bà Lan", address: "26 Thái Phiên, Hải Châu", lat: 16.0735, lng: 108.2271, rating: 4.9, reviews: 5600, hours: "6:00–20:00", priceRange: "20k–35k", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=200&auto=format&fit=crop" },
     { id: 5022, name: "Bánh Mì Phượng Hội An", address: "2B Phan Châu Trinh, Hội An", lat: 15.8790, lng: 108.3360, rating: 4.8, reviews: 8900, hours: "6:30–21:30", priceRange: "25k–40k", image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=200&auto=format&fit=crop" },
   ]},
-  { id: 503, name: "Bún Chả Cá", tag: "Đặc sản biển", desc: "Bún nước với chả cá thơm ngon, vị đặc trưng của người Đà Nẵng qua nhiều thế hệ", image: "https://images.unsplash.com/photo-1556040220-4096d522378d?w=400&auto=format&fit=crop", lat: 16.0480, lng: 108.2340, restaurants: [
+  { id: 503, name: "Bún Chả Cá", tag: "Đặc sản biển", dishType: "bún & mì", area: "Đà Nẵng", desc: "Bún nước với chả cá thơm ngon, vị đặc trưng của người Đà Nẵng qua nhiều thế hệ", image: "https://images.unsplash.com/photo-1556040220-4096d522378d?w=400&auto=format&fit=crop", lat: 16.0480, lng: 108.2340, restaurants: [
     { id: 5031, name: "Bún Chả Cá Ngô Thì Nhậm", address: "10 Ngô Thì Nhậm", lat: 16.0490, lng: 108.2350, rating: 4.7, reviews: 2100, hours: "6:00–11:00", priceRange: "25k–40k", image: "https://images.unsplash.com/photo-1556040220-4096d522378d?w=200&auto=format&fit=crop" },
     { id: 5032, name: "Bún Chả Cá Bà Hiền", address: "64 Phan Chu Trinh", lat: 16.0510, lng: 108.2320, rating: 4.6, reviews: 1430, hours: "6:30–11:30", priceRange: "20k–35k", image: "https://images.unsplash.com/photo-1556040220-4096d522378d?w=200&auto=format&fit=crop" },
     { id: 5033, name: "Bún Chả Cá Hoàng", address: "28 Lê Hồng Phong", lat: 16.0460, lng: 108.2360, rating: 4.5, reviews: 980, hours: "6:00–12:00", priceRange: "20k–30k", image: "https://images.unsplash.com/photo-1556040220-4096d522378d?w=200&auto=format&fit=crop" },
   ]},
-  { id: 504, name: "Cao Lầu Hội An", tag: "Di sản ẩm thực", desc: "Món mì đặc biệt chỉ có tại Hội An, nước tro và giếng cổ làm nên hương vị độc nhất", image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&auto=format&fit=crop", lat: 15.8810, lng: 108.3370, restaurants: [
+  { id: 504, name: "Cao Lầu Hội An", tag: "Di sản ẩm thực", dishType: "đặc sản", area: "Hội An", desc: "Món mì đặc biệt chỉ có tại Hội An, nước tro và giếng cổ làm nên hương vị độc nhất", image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&auto=format&fit=crop", lat: 15.8810, lng: 108.3370, restaurants: [
     { id: 5041, name: "Cao Lầu Bà Bé", address: "45 Trần Phú, Hội An", lat: 15.8798, lng: 108.3382, rating: 4.8, reviews: 3400, hours: "8:00–20:00", priceRange: "40k–60k", image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=200&auto=format&fit=crop" },
     { id: 5042, name: "Cao Lầu Thanh", address: "26 Thái Phiên, Hội An", lat: 15.8820, lng: 108.3355, rating: 4.7, reviews: 2100, hours: "7:00–21:00", priceRange: "35k–55k", image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=200&auto=format&fit=crop" },
+  ]},
+  { id: 505, name: "Bánh Xèo Đà Nẵng", tag: "Giòn tan", dishType: "bánh & xôi", area: "Đà Nẵng", desc: "Bánh xèo nhân tôm thịt giòn rụm, ăn kèm rau sống và mắm chua ngọt đặc trưng xứ Quảng", image: "https://images.unsplash.com/photo-1563379091339-03246963d96e?w=400&auto=format&fit=crop", lat: 16.0550, lng: 108.2050, restaurants: [
+    { id: 5051, name: "Bánh Xèo Bà Dưỡng", address: "280/23 Hoàng Diệu, Hải Châu", lat: 16.0560, lng: 108.2065, rating: 4.9, reviews: 7200, hours: "10:00–21:00", priceRange: "30k–55k", image: "https://images.unsplash.com/photo-1563379091339-03246963d96e?w=200&auto=format&fit=crop" },
+    { id: 5052, name: "Bánh Xèo Trần Quý Cáp", address: "18 Trần Quý Cáp, Hải Châu", lat: 16.0545, lng: 108.2040, rating: 4.6, reviews: 3100, hours: "9:00–20:00", priceRange: "25k–45k", image: "https://images.unsplash.com/photo-1563379091339-03246963d96e?w=200&auto=format&fit=crop" },
+  ]},
+  { id: 506, name: "Cơm Gà Hội An", tag: "Hội An chuẩn vị", dishType: "đặc sản", area: "Hội An", desc: "Cơm trắng dẻo với gà ta luộc xé phay, nước dùng vàng óng và tương ớt đặc biệt", image: "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=400&auto=format&fit=crop", lat: 15.8795, lng: 108.3345, restaurants: [
+    { id: 5061, name: "Cơm Gà Bà Buội", address: "22 Trần Phú, Hội An", lat: 15.8800, lng: 108.3358, rating: 4.8, reviews: 4500, hours: "8:00–18:00", priceRange: "40k–70k", image: "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=200&auto=format&fit=crop" },
+    { id: 5062, name: "Cơm Gà Hải Nam Phương", address: "6 Hoàng Diệu, Hội An", lat: 15.8782, lng: 108.3340, rating: 4.7, reviews: 2800, hours: "7:30–19:00", priceRange: "35k–60k", image: "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=200&auto=format&fit=crop" },
   ]},
 ];
 
 const allLocations: Location[] = [...hotelData, ...attractionData, ...restaurantData, ...beachData];
 const ITEMS_PER_PAGE = 6;
-const dishEmojiMap: Record<number, string> = { 501: "🍜", 502: "🥖", 503: "🐟", 504: "🍝" };
+const dishEmojiMap: Record<number, string> = { 501: "🍜", 502: "🥖", 503: "🐟", 504: "🍝", 505: "🥞", 506: "🍗" };
 
-// ─── MARKER ICON ─────────────────────────────────────────────────────────────
+// ─── MARKER ICON — glowing circle, no pin ────────────────────────────────────
 
 function markerSvg(color: string, emoji: string, selected: boolean) {
-  const s = selected ? 48 : 38;
-  const h = s + 10;
-  const svg = `<svg width="${s}" height="${h}" viewBox="0 0 ${s} ${h}" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="${s / 2}" cy="${s / 2}" r="${s / 2 - 1}" fill="${color}" opacity="${selected ? 1 : 0.88}"/>
-    <circle cx="${s / 2}" cy="${s / 2}" r="${s / 2 - 1}" fill="none" stroke="white" stroke-width="${selected ? 2.5 : 1.8}" opacity="0.9"/>
-    <text x="${s / 2}" y="${s / 2 + 6}" text-anchor="middle" font-size="${selected ? 20 : 15}">${emoji}</text>
-    <polygon points="${s / 2 - 5},${s - 2} ${s / 2 + 5},${s - 2} ${s / 2},${h - 1}" fill="${color}" opacity="${selected ? 1 : 0.88}"/>
+  const s = selected ? 56 : 44;
+  const r = s / 2;
+  // Three concentric rings: outer glow → mid halo → inner solid
+  const svg = `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="${r}" cy="${r}" r="${r - 1}"   fill="${color}" opacity="${selected ? 0.18 : 0.12}"/>
+    <circle cx="${r}" cy="${r}" r="${r * 0.68}" fill="${color}" opacity="${selected ? 0.32 : 0.22}"/>
+    <circle cx="${r}" cy="${r}" r="${r * 0.48}" fill="${color}" opacity="${selected ? 1 : 0.88}"/>
+    <circle cx="${r}" cy="${r}" r="${r * 0.48}" fill="none" stroke="white" stroke-width="${selected ? 2.2 : 1.6}" opacity="0.95"/>
+    <text x="${r}" y="${r + 5}" text-anchor="middle" font-size="${selected ? 18 : 14}" dominant-baseline="auto">${emoji}</text>
   </svg>`;
-  return { url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`, scaledSize: { width: s, height: h } as google.maps.Size, anchor: { x: s / 2, y: h } as google.maps.Point };
+  return {
+    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+    scaledSize: { width: s, height: s } as google.maps.Size,
+    anchor: { x: r, y: r } as google.maps.Point,
+  };
 }
 
 // ─── MAP DARK STYLES ─────────────────────────────────────────────────────────
@@ -160,6 +176,7 @@ export default function TouristMapPage() {
   const [af, setAf] = useState({ type: [] as string[] });
   const [rf, setRf] = useState({ cuisine: [] as string[] });
   const [bf, setBf] = useState({ district: [] as string[] });
+  const [df, setDf] = useState({ dishType: [] as string[], area: [] as string[] });
 
   const cat = categories.find(c => c.id === activeCategory)!;
   const toggle = <T,>(arr: T[], v: T): T[] => arr.includes(v) ? arr.filter(x => x !== v) : [...arr, v];
@@ -182,8 +199,12 @@ export default function TouristMapPage() {
 
   // ── filtered list ──
   const filteredList = useCallback((): (Location | Dish)[] => {
-    if (activeCategory === "dish")
-      return dishData.filter(d => !search || d.name.toLowerCase().includes(search.toLowerCase()));
+    if (activeCategory === "dish") {
+      let dl = dishData.filter(d => !search || d.name.toLowerCase().includes(search.toLowerCase()));
+      if (df.dishType.length) dl = dl.filter(d => df.dishType.includes(d.dishType));
+      if (df.area.length)     dl = dl.filter(d => df.area.includes(d.area) || d.area === "Cả hai");
+      return dl;
+    }
     let list = allLocations.filter(l => l.category === activeCategory);
     if (search) list = list.filter(l => l.name.toLowerCase().includes(search.toLowerCase()) || l.address.toLowerCase().includes(search.toLowerCase()));
     if (activeCategory === "hotel") {
@@ -195,7 +216,7 @@ export default function TouristMapPage() {
     if (activeCategory === "restaurant" && rf.cuisine.length) list = list.filter(l => rf.cuisine.includes(l.cuisine!));
     if (activeCategory === "beach" && bf.district.length)     list = list.filter(l => bf.district.includes(l.district!));
     return list;
-  }, [activeCategory, search, hf, af, rf, bf])();
+  }, [activeCategory, search, hf, af, rf, bf, df])();
 
   const totalPages  = Math.ceil(filteredList.length / ITEMS_PER_PAGE);
   const pageItems   = filteredList.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE) as Location[];
@@ -350,7 +371,7 @@ export default function TouristMapPage() {
 
       {/* ─── SIDEBAR ─── */}
       <motion.aside initial={{ opacity: 0, x: -28 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.35 }}
-        className={`w-[340px] shrink-0 flex flex-col overflow-hidden border-r ${sb}`}>
+        className={`w-[400px] shrink-0 flex flex-col overflow-hidden border-r ${sb}`}>
 
         {/* header */}
         <div className={`px-4 pt-4 pb-3 border-b ${sbB}`}>
@@ -399,20 +420,18 @@ export default function TouristMapPage() {
               className={`bg-transparent text-xs focus:outline-none flex-1 ${txM} ${D ? "placeholder:text-white/25" : "placeholder:text-gray-400"}`} />
             {search && <button onClick={() => setSearch("")}><X size={11} className={txS} /></button>}
           </div>
-          {activeCategory !== "dish" && (
-            <button onClick={() => setShowFilters(v => !v)}
-              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-[11px] font-medium transition-all ${showFilters
-                ? D ? "bg-white/10 border-white/20 text-white" : "bg-gray-100 border-gray-300 text-gray-700"
-                : D ? "border-white/10 text-white/40 hover:border-white/20 hover:text-white/70" : "border-gray-200 text-gray-400 hover:border-gray-300 hover:text-gray-600"}`}>
-              <SlidersHorizontal size={12} />
-              <ChevronDown size={10} className={`transition-transform ${showFilters ? "rotate-180" : ""}`} />
-            </button>
-          )}
+          <button onClick={() => setShowFilters(v => !v)}
+            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-[11px] font-medium transition-all ${showFilters
+              ? D ? "bg-white/10 border-white/20 text-white" : "bg-gray-100 border-gray-300 text-gray-700"
+              : D ? "border-white/10 text-white/40 hover:border-white/20 hover:text-white/70" : "border-gray-200 text-gray-400 hover:border-gray-300 hover:text-gray-600"}`}>
+            <SlidersHorizontal size={12} />
+            <ChevronDown size={10} className={`transition-transform ${showFilters ? "rotate-180" : ""}`} />
+          </button>
         </div>
 
         {/* filters — collapsible */}
         <AnimatePresence>
-          {showFilters && activeCategory !== "dish" && (
+          {showFilters && (
             <motion.div key="filters" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.22 }}
               className={`overflow-hidden border-b ${sbB}`}>
               <div className="px-3 py-2.5 space-y-2">
@@ -452,6 +471,18 @@ export default function TouristMapPage() {
                       className={`px-2 py-0.5 rounded-full text-[10px] border transition-all ${bf.district.includes(d) ? "bg-sky-500/15 border-sky-500/60 text-sky-600" : chipOff}`}>{d}</button>)}
                   </div>
                 )}
+                {activeCategory === "dish" && <>
+                  <div className="flex flex-wrap gap-1.5 items-center">
+                    <span className={`text-[10px] ${filterLabel}`}>Loại:</span>
+                    {["bún & mì","bánh & xôi","đặc sản"].map(t => <button key={t} onClick={() => setDf(f => ({ ...f, dishType: toggle(f.dishType, t) }))}
+                      className={`px-2 py-0.5 rounded-full text-[10px] border capitalize transition-all ${df.dishType.includes(t) ? "bg-rose-500/15 border-rose-500/60 text-rose-500" : chipOff}`}>{t}</button>)}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 items-center">
+                    <span className={`text-[10px] ${filterLabel}`}>Khu vực:</span>
+                    {["Đà Nẵng","Hội An"].map(a => <button key={a} onClick={() => setDf(f => ({ ...f, area: toggle(f.area, a) }))}
+                      className={`px-2 py-0.5 rounded-full text-[10px] border transition-all ${df.area.includes(a) ? "bg-pink-500/15 border-pink-500/60 text-pink-600" : chipOff}`}>{a}</button>)}
+                  </div>
+                </>}
               </div>
             </motion.div>
           )}
@@ -534,7 +565,34 @@ export default function TouristMapPage() {
               ) : (
                 /* ═══ DISH LIST view ═══ */
                 <motion.div key="dish-list" initial={{ opacity: 0, x: -28 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -28 }} transition={{ duration: 0.2, ease: "easeOut" }}>
-                  <div className="p-2 space-y-1.5">
+                  {viewMode === "grid" ? (
+                    /* Grid layout */
+                    <div className="p-2 grid grid-cols-2 gap-2">
+                      {(filteredList as Dish[]).map((dish, i) => (
+                        <motion.div key={dish.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
+                          <div onClick={() => { setExpandedDishId(dish.id); setSelectedId(null); panTo(dish.lat, dish.lng, 13); }}
+                            role="button" className={`rounded-xl border cursor-pointer transition-all overflow-hidden ${dishDef}`}>
+                            <div className="relative h-28 overflow-hidden">
+                              <img src={dish.image} alt={dish.name} className="w-full h-full object-cover" />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                              <span className="absolute bottom-2 left-2 text-[9px] font-bold text-white bg-rose-500/80 px-1.5 py-0.5 rounded-full leading-none">{dish.tag}</span>
+                              <span className="absolute top-2 right-2 text-[9px] font-medium text-white/80 bg-black/40 px-1.5 py-0.5 rounded-full">{dish.area}</span>
+                            </div>
+                            <div className="p-2.5">
+                              <p className={`font-bold text-xs leading-tight mb-0.5 ${tx}`}>{dish.name}</p>
+                              <p className={`text-[10px] line-clamp-2 leading-relaxed ${txS} mb-1`}>{dish.desc}</p>
+                              <div className="flex items-center justify-between">
+                                <span className="text-rose-500/70 text-[10px]">{dish.restaurants.length} quán</span>
+                                <ChevronRight size={11} className={txS} />
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  ) : (
+                    /* List layout */
+                    <div className="p-2 space-y-1.5">
                     {(filteredList as Dish[]).map((dish, i) => (
                       <motion.div key={dish.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
                         <div onClick={() => { setExpandedDishId(dish.id); setSelectedId(null); panTo(dish.lat, dish.lng, 13); }}
@@ -547,7 +605,7 @@ export default function TouristMapPage() {
                                 <span className="text-[9px] text-rose-500 bg-rose-500/10 px-1.5 py-0.5 rounded-full border border-rose-300/40">{dish.tag}</span>
                               </div>
                               <p className={`text-[10px] line-clamp-2 leading-relaxed ${txS}`}>{dish.desc}</p>
-                              <p className="text-rose-500/60 text-[10px] mt-0.5">{dish.restaurants.length} quán</p>
+                              <p className="text-rose-500/60 text-[10px] mt-0.5">{dish.restaurants.length} quán · {dish.area}</p>
                             </div>
                             <ChevronRight size={13} className={`shrink-0 ${txS}`} />
                           </div>
@@ -555,6 +613,7 @@ export default function TouristMapPage() {
                       </motion.div>
                     ))}
                   </div>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
