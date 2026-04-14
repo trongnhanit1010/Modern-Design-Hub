@@ -192,10 +192,11 @@ export default function TouristMapPage() {
   const [bf, setBf] = useState({ district: [] as string[] });
   const [df, setDf] = useState({ dishType: [] as string[], area: [] as string[] });
 
-  interface RouteInfo { destName: string; distance: string; duration: string; loading: boolean; error?: string; }
+  type TravelMode = "DRIVING" | "WALKING" | "BICYCLING" | "TRANSIT";
+  interface RouteInfo { destName: string; distance: string; duration: string; loading: boolean; error?: string; travelMode?: TravelMode; }
   const [routeInfo, setRouteInfo] = useState<RouteInfo | null>(null);
 
-  interface DirPanel { destLat: number; destLng: number; destName: string; originQuery: string; locating: boolean; }
+  interface DirPanel { destLat: number; destLng: number; destName: string; originQuery: string; locating: boolean; travelMode: TravelMode; }
   const [dirPanel, setDirPanel] = useState<DirPanel | null>(null);
 
   const cat = categories.find(c => c.id === activeCategory)!;
@@ -429,45 +430,52 @@ export default function TouristMapPage() {
     setDirPanel(null);
   }, []);
 
-  const calcRoute = useCallback((origin: google.maps.LatLng | google.maps.LatLngLiteral | string, destLat: number, destLng: number, destName: string) => {
+  const calcRoute = useCallback((origin: google.maps.LatLng | google.maps.LatLngLiteral | string, destLat: number, destLng: number, destName: string, travelMode: "DRIVING" | "WALKING" | "BICYCLING" | "TRANSIT" = "DRIVING") => {
     if (!mapsReady || !gmapRef.current) return;
-    setRouteInfo({ destName, distance: "", duration: "", loading: true });
+    setRouteInfo({ destName, distance: "", duration: "", loading: true, travelMode });
     setDirPanel(null);
+    const modeMap: Record<string, google.maps.TravelMode> = {
+      DRIVING: google.maps.TravelMode.DRIVING,
+      WALKING: google.maps.TravelMode.WALKING,
+      BICYCLING: google.maps.TravelMode.BICYCLING,
+      TRANSIT: google.maps.TravelMode.TRANSIT,
+    };
     const svc = new google.maps.DirectionsService();
+    const polyColors: Record<string, string> = { DRIVING: "#6366f1", WALKING: "#10b981", BICYCLING: "#f59e0b", TRANSIT: "#06b6d4" };
     svc.route(
-      { origin, destination: { lat: destLat, lng: destLng }, travelMode: google.maps.TravelMode.DRIVING },
+      { origin, destination: { lat: destLat, lng: destLng }, travelMode: modeMap[travelMode] },
       (result, status) => {
         if (status === "OK" && result) {
           dirRendererRef.current?.setMap(null);
           const renderer = new google.maps.DirectionsRenderer({
             suppressMarkers: false,
-            polylineOptions: { strokeColor: "#6366f1", strokeWeight: 5, strokeOpacity: 0.85 },
+            polylineOptions: { strokeColor: polyColors[travelMode] || "#6366f1", strokeWeight: 5, strokeOpacity: 0.85 },
           });
           renderer.setMap(gmapRef.current!);
           renderer.setDirections(result);
           dirRendererRef.current = renderer;
           userMarkerRef.current?.setMap(null);
           const leg = result.routes[0].legs[0];
-          setRouteInfo({ destName, distance: leg.distance?.text || "", duration: leg.duration?.text || "", loading: false });
+          setRouteInfo({ destName, distance: leg.distance?.text || "", duration: leg.duration?.text || "", loading: false, travelMode });
           gmapRef.current!.fitBounds(result.routes[0].bounds, 60);
         } else {
-          setRouteInfo({ destName, distance: "", duration: "", loading: false, error: "Không thể tìm tuyến đường. Thử lại với địa chỉ khác." });
+          setRouteInfo({ destName, distance: "", duration: "", loading: false, error: "Không thể tìm tuyến đường. Thử lại với địa chỉ khác.", travelMode });
         }
       }
     );
   }, [mapsReady]);
 
-  const autoLocateAndRoute = useCallback((destLat: number, destLng: number, destName: string) => {
+  const autoLocateAndRoute = useCallback((destLat: number, destLng: number, destName: string, travelMode: "DRIVING" | "WALKING" | "BICYCLING" | "TRANSIT" = "DRIVING") => {
     setDirPanel(p => p ? { ...p, locating: true } : null);
     navigator.geolocation.getCurrentPosition(
-      (pos) => calcRoute({ lat: pos.coords.latitude, lng: pos.coords.longitude }, destLat, destLng, destName),
+      (pos) => calcRoute({ lat: pos.coords.latitude, lng: pos.coords.longitude }, destLat, destLng, destName, travelMode),
       () => setDirPanel(p => p ? { ...p, locating: false } : null),
       { enableHighAccuracy: true, timeout: 8000 }
     );
   }, [calcRoute]);
 
   const openDirPanel = useCallback((destLat: number, destLng: number, destName: string) => {
-    setDirPanel({ destLat, destLng, destName, originQuery: "", locating: false });
+    setDirPanel({ destLat, destLng, destName, originQuery: "", locating: false, travelMode: "DRIVING" });
   }, []);
 
   // expose to InfoWindow HTML
@@ -869,6 +877,36 @@ export default function TouristMapPage() {
                     <X size={13} />
                   </button>
                 </div>
+                {/* Travel mode selector */}
+                {(() => {
+                  const modes: { id: "DRIVING"|"WALKING"|"BICYCLING"|"TRANSIT"; label: string; icon: string; color: string }[] = [
+                    { id: "DRIVING",   label: "Xe hơi",  icon: "🚗", color: "#6366f1" },
+                    { id: "WALKING",   label: "Đi bộ",   icon: "🚶", color: "#10b981" },
+                    { id: "BICYCLING", label: "Xe đạp",  icon: "🚲", color: "#f59e0b" },
+                    { id: "TRANSIT",   label: "Xe buýt", icon: "🚌", color: "#06b6d4" },
+                  ];
+                  return (
+                    <div className="flex gap-1.5 mb-3">
+                      {modes.map(m => {
+                        const active = dirPanel.travelMode === m.id;
+                        return (
+                          <button key={m.id}
+                            onClick={() => setDirPanel(p => p ? { ...p, travelMode: m.id } : null)}
+                            title={m.label}
+                            className={`flex-1 flex flex-col items-center gap-0.5 py-1.5 rounded-xl border text-[10px] font-semibold transition-all`}
+                            style={active
+                              ? { background: m.color + "22", borderColor: m.color + "66", color: m.color }
+                              : { borderColor: D ? "rgba(255,255,255,0.08)" : "#e5e7eb", color: D ? "rgba(255,255,255,0.4)" : "#9ca3af" }
+                            }
+                          >
+                            <span className="text-sm leading-none">{m.icon}</span>
+                            <span>{m.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
                 {/* Destination (read-only) */}
                 <div className={`flex items-center gap-2 rounded-xl px-3 py-2 mb-2 border ${D ? "bg-white/5 border-white/8" : "bg-gray-50 border-gray-200"}`}>
                   <MapPin size={12} className="text-rose-400 shrink-0" />
@@ -881,7 +919,7 @@ export default function TouristMapPage() {
                   <input
                     value={dirPanel.originQuery}
                     onChange={e => setDirPanel(p => p ? { ...p, originQuery: e.target.value } : null)}
-                    onKeyDown={e => { if (e.key === "Enter" && dirPanel.originQuery.trim()) calcRoute(dirPanel.originQuery.trim(), dirPanel.destLat, dirPanel.destLng, dirPanel.destName); }}
+                    onKeyDown={e => { if (e.key === "Enter" && dirPanel.originQuery.trim()) calcRoute(dirPanel.originQuery.trim(), dirPanel.destLat, dirPanel.destLng, dirPanel.destName, dirPanel.travelMode); }}
                     placeholder="Nhập điểm xuất phát..."
                     className={`bg-transparent text-xs flex-1 focus:outline-none ${txM} ${D ? "placeholder:text-white/25" : "placeholder:text-gray-400"}`}
                   />
@@ -894,7 +932,7 @@ export default function TouristMapPage() {
                 {/* Actions */}
                 <div className="flex gap-2">
                   <button
-                    onClick={() => autoLocateAndRoute(dirPanel.destLat, dirPanel.destLng, dirPanel.destName)}
+                    onClick={() => autoLocateAndRoute(dirPanel.destLat, dirPanel.destLng, dirPanel.destName, dirPanel.travelMode)}
                     disabled={dirPanel.locating}
                     className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-500 text-xs font-semibold border border-indigo-400/20 transition-all disabled:opacity-50"
                   >
@@ -904,7 +942,7 @@ export default function TouristMapPage() {
                   </button>
                   {dirPanel.originQuery.trim() && (
                     <button
-                      onClick={() => calcRoute(dirPanel.originQuery.trim(), dirPanel.destLat, dirPanel.destLng, dirPanel.destName)}
+                      onClick={() => calcRoute(dirPanel.originQuery.trim(), dirPanel.destLat, dirPanel.destLng, dirPanel.destName, dirPanel.travelMode)}
                       className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-bold transition-all"
                     >
                       <Navigation size={11} />Bắt đầu
@@ -927,9 +965,20 @@ export default function TouristMapPage() {
               className="absolute top-4 left-4 right-16 z-20"
             >
               <div className={`backdrop-blur border rounded-2xl px-4 py-3 flex items-center gap-3 shadow-lg ${D ? "bg-[#0f0f1e]/90 border-white/10" : "bg-white/95 border-gray-200 shadow-md"}`}>
-                <div className="w-8 h-8 rounded-xl bg-indigo-500 flex items-center justify-center shrink-0">
-                  <Navigation size={15} className="text-white" />
-                </div>
+                {(() => {
+                  const modeIcons: Record<string, { icon: string; color: string }> = {
+                    DRIVING: { icon: "🚗", color: "#6366f1" },
+                    WALKING: { icon: "🚶", color: "#10b981" },
+                    BICYCLING: { icon: "🚲", color: "#f59e0b" },
+                    TRANSIT: { icon: "🚌", color: "#06b6d4" },
+                  };
+                  const m = modeIcons[routeInfo.travelMode || "DRIVING"];
+                  return (
+                    <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-lg" style={{ background: m.color + "22" }}>
+                      {m.icon}
+                    </div>
+                  );
+                })()}
                 <div className="flex-1 min-w-0">
                   {routeInfo.loading ? (
                     <div className="flex items-center gap-2">
@@ -945,7 +994,11 @@ export default function TouristMapPage() {
                         <span className={`text-xs font-semibold ${tx} truncate max-w-[180px]`}>{routeInfo.destName}</span>
                       </div>
                       <div className={`flex items-center gap-3 text-xs ${txM}`}>
-                        <span className="font-bold text-indigo-500">{routeInfo.distance}</span>
+                        {(() => {
+                          const colors: Record<string, string> = { DRIVING: "#6366f1", WALKING: "#10b981", BICYCLING: "#f59e0b", TRANSIT: "#06b6d4" };
+                          const c = colors[routeInfo.travelMode || "DRIVING"];
+                          return <span className="font-bold" style={{ color: c }}>{routeInfo.distance}</span>;
+                        })()}
                         <span className="text-slate-400">·</span>
                         <span className="font-bold">{routeInfo.duration}</span>
                       </div>
