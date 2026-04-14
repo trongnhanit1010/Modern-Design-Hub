@@ -475,63 +475,89 @@ export default function TouristMapPage() {
               <MapPin size={20} className="mb-2 opacity-40" />Không có kết quả
             </div>
           ) : activeCategory === "dish" ? (
-            <div className="p-2 space-y-1.5">
-              {(filteredList as Dish[]).map((dish, i) => {
-                const expanded = expandedDishId === dish.id;
-                return (
-                  <motion.div key={dish.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-                    {/* ─ Dish header row ─ */}
-                    <div onClick={() => { const n = !expanded; setExpandedDishId(n ? dish.id : null); setSelectedId(null); if (n) panTo(dish.lat, dish.lng, 13); }}
-                      role="button" className={`rounded-xl border cursor-pointer transition-all ${expanded ? dishAct : dishDef}`}>
-                      <div className="flex gap-2.5 p-2.5 items-center">
-                        <img src={dish.image} alt={dish.name} className="w-12 h-12 rounded-xl object-cover shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                            <p className={`font-semibold text-xs leading-tight ${tx}`}>{dish.name}</p>
-                            <span className="text-[9px] text-rose-500 bg-rose-500/10 px-1.5 py-0.5 rounded-full border border-rose-300/40">{dish.tag}</span>
-                          </div>
-                          <p className={`text-[10px] line-clamp-2 leading-relaxed ${txS}`}>{dish.desc}</p>
-                          <p className={`text-[10px] mt-0.5 ${expanded ? "text-rose-400" : "text-rose-500/60"}`}>{dish.restaurants.length} quán · bấm để mở danh sách</p>
-                        </div>
-                        <ChevronDown size={13} className={`shrink-0 transition-transform duration-200 ${expanded ? "rotate-180 text-rose-400" : txS}`} />
+            <AnimatePresence mode="wait">
+              {selDish ? (
+                /* ═══ DRILL-DOWN: restaurant list for selected dish ═══ */
+                <motion.div key="rest-view" initial={{ opacity: 0, x: 28 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 28 }} transition={{ duration: 0.2, ease: "easeOut" }}>
+                  {/* Back bar */}
+                  <div onClick={() => { setExpandedDishId(null); setSelectedId(null); }}
+                    role="button"
+                    className={`sticky top-0 z-10 flex items-center gap-2 px-3 py-2.5 border-b cursor-pointer transition-colors ${sb} ${sbB} hover:${D ? "bg-white/5" : "bg-gray-50"}`}>
+                    <ChevronLeft size={14} className="text-rose-400 shrink-0" />
+                    <span className={`text-xs font-medium ${txM}`}>Tất cả món ngon</span>
+                  </div>
+                  {/* Dish summary card */}
+                  <div className="p-2 pb-1">
+                    <div className={`rounded-xl overflow-hidden border ${dishAct}`}>
+                      <div className="relative h-[72px]">
+                        <img src={selDish.image} alt={selDish.name} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/75 to-transparent" />
+                        <span className="absolute bottom-2 left-3 text-[9px] font-bold text-white bg-rose-500/80 px-2 py-0.5 rounded-full">{selDish.tag}</span>
+                      </div>
+                      <div className="px-3 py-2.5">
+                        <p className={`font-bold text-sm ${tx}`}>{selDish.name}</p>
+                        <p className={`text-[10px] leading-relaxed mt-0.5 ${txS}`}>{selDish.desc}</p>
                       </div>
                     </div>
-                    {/* ─ Restaurant list (accordion) ─ */}
-                    <AnimatePresence>
-                      {expanded && (
-                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }}
-                          className="overflow-hidden">
-                          <div className="mt-1 space-y-1 pl-3 pr-0.5 pb-1">
-                            {dish.restaurants.map(r => {
-                              const sel = selectedId === r.id;
-                              return (
-                                <div key={r.id}
-                                  onClick={() => { setSelectedId(sel ? null : r.id); if (!sel) panTo(r.lat, r.lng, 17); }}
-                                  role="button"
-                                  className={`rounded-lg border cursor-pointer p-2 flex gap-2 items-center transition-all ${sel
-                                    ? D ? "border-rose-400/40 bg-rose-500/10" : "border-rose-300 bg-rose-50"
-                                    : D ? "border-white/5 hover:border-white/15 bg-white/[0.02]" : "bg-white border-gray-100 hover:border-gray-300 shadow-sm"}`}>
-                                  <img src={r.image} alt={r.name} className="w-10 h-10 rounded-lg object-cover shrink-0" />
-                                  <div className="flex-1 min-w-0">
-                                    <p className={`font-semibold text-[11px] leading-tight ${sel ? "text-rose-400" : tx}`}>{r.name}</p>
-                                    <p className={`text-[10px] truncate mt-0.5 ${txS}`}>{r.address}</p>
-                                    <div className="flex items-center gap-2 mt-0.5">
-                                      <span className="text-amber-500 text-[10px] font-semibold">⭐ {r.rating}</span>
-                                      <span className={`text-[10px] ${txS}`}>{r.priceRange}</span>
-                                    </div>
-                                  </div>
-                                  <ChevronRight size={11} className={sel ? "text-rose-400" : txS} />
-                                </div>
-                              );
-                            })}
+                  </div>
+                  {/* Restaurant count */}
+                  <div className={`px-3 pt-1 pb-1.5 text-[10px] font-semibold ${txS}`}>{selDish.restaurants.length} quán phục vụ món này</div>
+                  {/* Restaurant list */}
+                  <div className="px-2 pb-3 space-y-1.5">
+                    {selDish.restaurants.map((r, i) => {
+                      const sel = selectedId === r.id;
+                      return (
+                        <motion.div key={r.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                          <div onClick={() => { setSelectedId(sel ? null : r.id); if (!sel) panTo(r.lat, r.lng, 17); }}
+                            role="button"
+                            className={`rounded-xl border cursor-pointer p-2.5 flex gap-2.5 items-center transition-all ${sel
+                              ? D ? "border-rose-400/40 bg-rose-500/10" : "border-rose-300 bg-rose-50"
+                              : D ? "border-white/5 hover:border-white/15 bg-white/[0.02]" : "bg-white border-gray-100 hover:border-gray-300 shadow-sm"}`}>
+                            <img src={r.image} alt={r.name} className="w-12 h-12 rounded-xl object-cover shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <p className={`font-semibold text-[11px] leading-tight ${sel ? "text-rose-400" : tx}`}>{r.name}</p>
+                              <p className={`text-[10px] truncate mt-0.5 ${txS}`}>{r.address}</p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <span className="text-amber-500 text-[10px] font-semibold">⭐ {r.rating}</span>
+                                <span className={`text-[10px] ${txS}`}>· {r.priceRange}</span>
+                              </div>
+                            </div>
+                            {sel
+                              ? <div className="w-2 h-2 rounded-full bg-rose-400 shrink-0" />
+                              : <ChevronRight size={12} className={`shrink-0 ${txS}`} />}
                           </div>
                         </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                );
-              })}
-            </div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              ) : (
+                /* ═══ DISH LIST view ═══ */
+                <motion.div key="dish-list" initial={{ opacity: 0, x: -28 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -28 }} transition={{ duration: 0.2, ease: "easeOut" }}>
+                  <div className="p-2 space-y-1.5">
+                    {(filteredList as Dish[]).map((dish, i) => (
+                      <motion.div key={dish.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                        <div onClick={() => { setExpandedDishId(dish.id); setSelectedId(null); panTo(dish.lat, dish.lng, 13); }}
+                          role="button" className={`rounded-xl border cursor-pointer transition-all ${dishDef}`}>
+                          <div className="flex gap-2.5 p-2.5 items-center">
+                            <img src={dish.image} alt={dish.name} className="w-12 h-12 rounded-xl object-cover shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                                <p className={`font-semibold text-xs leading-tight ${tx}`}>{dish.name}</p>
+                                <span className="text-[9px] text-rose-500 bg-rose-500/10 px-1.5 py-0.5 rounded-full border border-rose-300/40">{dish.tag}</span>
+                              </div>
+                              <p className={`text-[10px] line-clamp-2 leading-relaxed ${txS}`}>{dish.desc}</p>
+                              <p className="text-rose-500/60 text-[10px] mt-0.5">{dish.restaurants.length} quán</p>
+                            </div>
+                            <ChevronRight size={13} className={`shrink-0 ${txS}`} />
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           ) : (
             <div className={`p-2 ${viewMode === "grid" ? "grid grid-cols-2 gap-2" : "space-y-1.5"}`}>
               <AnimatePresence mode="popLayout">
