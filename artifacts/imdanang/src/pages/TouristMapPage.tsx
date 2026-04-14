@@ -117,19 +117,36 @@ const dishEmojiMap: Record<number, string> = { 501: "🍜", 502: "🥖", 503: "�
 
 // ─── MARKER ICON — glowing circle, no pin ────────────────────────────────────
 
-function markerSvg(color: string, emoji: string, selected: boolean) {
+function hexToRgba(hex: string, a: number) {
+  const n = parseInt(hex.replace("#", ""), 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+}
+
+function markerIcon(color: string, emoji: string, selected: boolean) {
   const s = selected ? 56 : 44;
   const r = s / 2;
-  // Three concentric rings: outer glow → mid halo → inner solid
-  const svg = `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="${r}" cy="${r}" r="${r - 1}"   fill="${color}" opacity="${selected ? 0.18 : 0.12}"/>
-    <circle cx="${r}" cy="${r}" r="${r * 0.68}" fill="${color}" opacity="${selected ? 0.32 : 0.22}"/>
-    <circle cx="${r}" cy="${r}" r="${r * 0.48}" fill="${color}" opacity="${selected ? 1 : 0.88}"/>
-    <circle cx="${r}" cy="${r}" r="${r * 0.48}" fill="none" stroke="white" stroke-width="${selected ? 2.2 : 1.6}" opacity="0.95"/>
-    <text x="${r}" y="${r + 5}" text-anchor="middle" font-size="${selected ? 18 : 14}" dominant-baseline="auto">${emoji}</text>
-  </svg>`;
+  const canvas = document.createElement("canvas");
+  canvas.width = s; canvas.height = s;
+  const ctx = canvas.getContext("2d")!;
+  // outer glow
+  ctx.beginPath(); ctx.arc(r, r, r - 1, 0, Math.PI * 2);
+  ctx.fillStyle = hexToRgba(color, selected ? 0.18 : 0.12); ctx.fill();
+  // mid halo
+  ctx.beginPath(); ctx.arc(r, r, r * 0.68, 0, Math.PI * 2);
+  ctx.fillStyle = hexToRgba(color, selected ? 0.32 : 0.22); ctx.fill();
+  // inner solid
+  ctx.beginPath(); ctx.arc(r, r, r * 0.48, 0, Math.PI * 2);
+  ctx.fillStyle = hexToRgba(color, selected ? 1 : 0.88); ctx.fill();
+  // white ring
+  ctx.beginPath(); ctx.arc(r, r, r * 0.48, 0, Math.PI * 2);
+  ctx.strokeStyle = "rgba(255,255,255,0.95)"; ctx.lineWidth = selected ? 2.2 : 1.6; ctx.stroke();
+  // emoji
+  const fs = selected ? 18 : 14;
+  ctx.font = `${fs}px 'Apple Color Emoji','Noto Color Emoji','Segoe UI Emoji',serif`;
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.fillText(emoji, r, r + 1);
   return {
-    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+    url: canvas.toDataURL(),
     scaledSize: { width: s, height: s } as google.maps.Size,
     anchor: { x: r, y: r } as google.maps.Point,
   };
@@ -229,10 +246,12 @@ export default function TouristMapPage() {
   // ── init map ──
   useEffect(() => {
     if (!mapsReady || !mapDivRef.current || gmapRef.current) return;
-    gmapRef.current = new google.maps.Map(mapDivRef.current, {
+    const gmap = new google.maps.Map(mapDivRef.current, {
       center: DANANG_CENTER, zoom: 12,
       disableDefaultUI: true, styles: isDark ? MAP_STYLES : [],
     });
+    gmapRef.current = gmap;
+    gmap.addListener("click", () => setSelectedId(null));
   }, [mapsReady, isDark]);
 
   // ── update map styles when dark mode changes ──
@@ -259,8 +278,10 @@ export default function TouristMapPage() {
     const sub  = isDark ? "rgba(255,255,255,0.4)" : "#6b7280";
     const btn  = `linear-gradient(135deg,${cat.g1},${cat.g2})`;
 
+    (window as any).__closeIW = () => setSelectedId(null);
     iw.setContent(`
-      <div style="background:${bg};border:${border};border-radius:14px;overflow:hidden;width:220px;font-family:system-ui,sans-serif;box-shadow:0 8px 32px rgba(0,0,0,0.18)">
+      <div style="position:relative;background:${bg};border:${border};border-radius:14px;overflow:hidden;width:220px;font-family:system-ui,sans-serif;box-shadow:0 8px 32px rgba(0,0,0,0.18)">
+        <button onclick="window.__closeIW()" style="position:absolute;top:6px;right:6px;z-index:10;width:22px;height:22px;border-radius:50%;border:none;background:rgba(0,0,0,0.45);color:#fff;font-size:13px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)">×</button>
         <div style="position:relative;height:90px">
           <img src="${selLoc.image}" style="width:100%;height:100%;object-fit:cover" />
           <div style="position:absolute;inset:0;background:linear-gradient(to top,${bg} 0%,transparent 60%)"></div>
@@ -297,8 +318,10 @@ export default function TouristMapPage() {
     const nameC = isDark ? "#f1f5f9" : "#111827";
     const subC  = isDark ? "rgba(255,255,255,0.42)" : "#6b7280";
 
+    (window as any).__closeIW = () => setSelectedId(null);
     iw.setContent(`
-      <div style="background:${bg};border:${bdr};border-radius:14px;overflow:hidden;width:220px;font-family:system-ui,sans-serif;box-shadow:0 8px 32px rgba(0,0,0,0.20)">
+      <div style="position:relative;background:${bg};border:${bdr};border-radius:14px;overflow:hidden;width:220px;font-family:system-ui,sans-serif;box-shadow:0 8px 32px rgba(0,0,0,0.20)">
+        <button onclick="window.__closeIW()" style="position:absolute;top:6px;right:6px;z-index:10;width:22px;height:22px;border-radius:50%;border:none;background:rgba(0,0,0,0.45);color:#fff;font-size:13px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)">×</button>
         <div style="position:relative;height:80px">
           <img src="${selDishRest.image}" style="width:100%;height:100%;object-fit:cover" />
           <div style="position:absolute;inset:0;background:linear-gradient(to top,${bg},transparent 60%)"></div>
@@ -326,7 +349,7 @@ export default function TouristMapPage() {
     markersRef.current = [];
 
     const mkIcon = (color: string, emoji: string, selected: boolean) => {
-      const ic = markerSvg(color, emoji, selected);
+      const ic = markerIcon(color, emoji, selected);
       return { url: ic.url, scaledSize: new google.maps.Size(ic.scaledSize.width, ic.scaledSize.height), anchor: new google.maps.Point(ic.anchor.x, ic.anchor.y) };
     };
 
