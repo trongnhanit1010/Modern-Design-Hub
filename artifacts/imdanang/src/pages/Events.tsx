@@ -1,10 +1,11 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useCallback } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import {
-  CalendarDays, MapPin, Clock, Ticket, Music, Utensils,
+  CalendarDays, MapPin, Clock, Music, Utensils,
   Landmark, Waves, ChevronLeft, ChevronRight,
   Radio, Users, ArrowRight, Flame, Tag,
 } from "lucide-react";
+import useEmblaCarousel from "embla-carousel-react";
 
 /* ─── Types ─────────────────────────────────────────────── */
 type Category = "festival" | "music" | "food" | "culture" | "sport";
@@ -236,47 +237,40 @@ function MiniCalendar({
 }
 
 /* ─── Live Event Card ────────────────────────────────────── */
-function LiveCard({ ev, index }: { ev: EventItem; index: number }) {
+function LiveCard({ ev }: { ev: EventItem }) {
   const Icon = CAT_ICON[ev.category];
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.1 }}
-      className="relative flex-shrink-0 w-72 md:w-80 rounded-3xl overflow-hidden group cursor-pointer"
-    >
-      <img src={ev.image} alt={ev.name} className="w-full h-52 object-cover transition-transform duration-700 group-hover:scale-110" />
-      <div className={`absolute inset-0 bg-gradient-to-t ${ev.gradient} opacity-75 group-hover:opacity-85 transition-opacity`} />
-
-      {/* Live badge */}
-      <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-red-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-lg">
-        <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-        ĐANG DIỄN RA
+    <div className="flex-shrink-0 w-72 md:w-80 bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-lg border border-slate-100 transition-shadow group cursor-pointer">
+      {/* Image */}
+      <div className="relative h-48 overflow-hidden">
+        <img src={ev.image} alt={ev.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
+        <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-red-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-md">
+          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />LIVE
+        </div>
+        <div className={`absolute top-3 right-3 flex items-center gap-1 ${CAT_COLOR[ev.category]} text-white text-[10px] font-bold px-2.5 py-1 rounded-full`}>
+          <Icon size={9} />{CAT_LABEL[ev.category]}
+        </div>
       </div>
-
-      {/* Category */}
-      <div className={`absolute top-3 right-3 flex items-center gap-1 ${CAT_COLOR[ev.category]} text-white text-[11px] font-bold px-2.5 py-1 rounded-full`}>
-        <Icon size={10} />{CAT_LABEL[ev.category]}
-      </div>
-
       {/* Content */}
-      <div className="absolute bottom-0 left-0 right-0 p-4">
-        <h3 className="text-white font-bold text-sm leading-tight mb-2 line-clamp-2">{ev.name}</h3>
-        <div className="flex flex-wrap gap-x-3 gap-y-1 text-white/75 text-xs mb-3">
-          <span className="flex items-center gap-1"><Clock size={10} />{ev.time}</span>
-          <span className="flex items-center gap-1"><MapPin size={10} />{ev.location}</span>
+      <div className="p-4">
+        <h3 className="text-slate-900 font-bold text-sm leading-snug mb-2.5 line-clamp-2">{ev.name}</h3>
+        <div className="space-y-1 mb-3">
+          <span className="flex items-center gap-1.5 text-slate-500 text-xs"><Clock size={11} className="text-slate-400 shrink-0" />{ev.time}</span>
+          <span className="flex items-center gap-1.5 text-slate-500 text-xs"><MapPin size={11} className="text-slate-400 shrink-0" />{ev.location}</span>
         </div>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1 text-white/70 text-xs">
-            <Users size={10} />
-            <span>{formatAttendees(ev.attendees)} người quan tâm</span>
-          </div>
-          <span className="text-white text-xs font-semibold bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/25">
-            {ev.price}
+        <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+          <span className="flex items-center gap-1 text-slate-400 text-xs">
+            <Users size={10} />{formatAttendees(ev.attendees)} quan tâm
           </span>
+          <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+            ev.price === "Miễn phí"
+              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+              : "bg-slate-100 text-slate-600"
+          }`}>{ev.price}</span>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -343,6 +337,10 @@ export default function Events() {
   const upcomingRef = useRef(null);
   const upcomingInView = useInView(upcomingRef, { once: true, margin: "-60px" });
 
+  const [liveEmblaRef, liveEmblaApi] = useEmblaCarousel({ loop: true, align: "start", dragFree: true });
+  const scrollLivePrev = useCallback(() => liveEmblaApi?.scrollPrev(), [liveEmblaApi]);
+  const scrollLiveNext = useCallback(() => liveEmblaApi?.scrollNext(), [liveEmblaApi]);
+
   function prevMonth() {
     if (calMonth === 0) { setCalYear((y) => y - 1); setCalMonth(11); }
     else setCalMonth((m) => m - 1);
@@ -395,8 +393,7 @@ export default function Events() {
           alt="Events"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-slate-900" />
-        <div className="absolute inset-0 bg-gradient-to-r from-indigo-900/60 via-transparent to-violet-900/60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/35 to-black/55" />
 
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pb-4">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
@@ -425,19 +422,30 @@ export default function Events() {
       </div>
 
       {/* ── Đang diễn ra ─────────────────────────────────── */}
-      <div className="bg-slate-900 px-4 sm:px-6 py-8">
+      <div className="bg-white border-b border-slate-100 px-4 sm:px-6 py-8">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shadow shadow-red-500/50" />
-              <Radio size={16} className="text-red-400" />
-              <span className="text-white font-extrabold text-lg">Đang diễn ra</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
+              <Radio size={15} className="text-red-500" />
+              <h2 className="text-slate-900 font-extrabold text-lg">Đang diễn ra</h2>
+              <span className="bg-red-50 text-red-600 text-[11px] font-bold px-2 py-0.5 rounded-full border border-red-100 ml-1">
+                {liveEvents.length} sự kiện
+              </span>
             </div>
-            <div className="flex-1 h-px bg-white/10" />
-            <span className="text-white/40 text-sm">{liveEvents.length} sự kiện</span>
+            <div className="flex gap-2">
+              <button onClick={scrollLivePrev} className="p-2 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl shadow-sm text-slate-600 transition-colors">
+                <ChevronLeft size={16} />
+              </button>
+              <button onClick={scrollLiveNext} className="p-2 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl shadow-sm text-slate-600 transition-colors">
+                <ChevronRight size={16} />
+              </button>
+            </div>
           </div>
-          <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
-            {liveEvents.map((ev, i) => <LiveCard key={ev.id} ev={ev} index={i} />)}
+          <div className="overflow-hidden" ref={liveEmblaRef}>
+            <div className="flex gap-4">
+              {liveEvents.map((ev) => <LiveCard key={ev.id} ev={ev} />)}
+            </div>
           </div>
         </div>
       </div>
@@ -584,31 +592,6 @@ export default function Events() {
           </motion.div>
         </AnimatePresence>
 
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={upcomingInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.5 }}
-          className="mt-10 rounded-3xl overflow-hidden relative"
-        >
-          <img
-            src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1400&auto=format&fit=crop"
-            alt="events"
-            className="w-full h-40 object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-indigo-900/90 via-indigo-900/70 to-violet-900/50 flex items-center justify-between px-6 sm:px-10">
-            <div>
-              <p className="text-white/60 text-xs mb-1 flex items-center gap-1.5"><Ticket size={12} />Nhận thông báo sự kiện</p>
-              <h3 className="text-white font-extrabold text-lg sm:text-xl">Đừng bỏ lỡ sự kiện nào!</h3>
-            </div>
-            <motion.button
-              whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}
-              className="flex items-center gap-2 bg-white text-indigo-900 font-bold text-sm px-5 py-2.5 rounded-xl shadow-xl shrink-0"
-            >
-              Đăng ký <ArrowRight size={14} />
-            </motion.button>
-          </div>
-        </motion.div>
       </div>
     </div>
   );
