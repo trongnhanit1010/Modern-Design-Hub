@@ -64,7 +64,7 @@ interface SearchDropdownProps {
   rect: DropdownRect;
   searchVal: string;
   setSearchVal: (v: string) => void;
-  setShowSuggestions: (v: boolean) => void;
+  setShowSuggestions: () => void;
   filteredTop: typeof topSearches;
   filteredDest: typeof trendingDest;
 }
@@ -146,7 +146,7 @@ function SearchDropdown({ show, rect, searchVal, setSearchVal, setShowSuggestion
                 {filteredTop.map((item) => (
                   <button
                     key={item.rank}
-                    onClick={() => { setSearchVal(item.title); setShowSuggestions(false); }}
+                    onClick={() => { setSearchVal(item.title); setShowSuggestions(); }}
                     className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-gray-50 transition-colors text-left"
                   >
                     <span className="w-5 h-5 rounded-full bg-blue-500 text-white text-xs font-bold flex items-center justify-center shrink-0">
@@ -175,7 +175,7 @@ function SearchDropdown({ show, rect, searchVal, setSearchVal, setShowSuggestion
                 {filteredDest.map((item) => (
                   <button
                     key={item.rank}
-                    onClick={() => { setSearchVal(item.title); setShowSuggestions(false); }}
+                    onClick={() => { setSearchVal(item.title); setShowSuggestions(); }}
                     className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-gray-50 transition-colors text-left"
                   >
                     <span className="w-5 h-5 rounded-full bg-amber-500 text-white text-xs font-bold flex items-center justify-center shrink-0">
@@ -220,6 +220,12 @@ export default function HeroSlider() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [dropdownRect, setDropdownRect] = useState({ top: 0, left: 0, width: 0 });
   const searchRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const closeDropdown = useCallback(() => {
+    setShowSuggestions(false);
+    inputRef.current?.blur();
+  }, []);
 
   const updateDropdownRect = useCallback(() => {
     if (searchRef.current) {
@@ -252,7 +258,7 @@ export default function HeroSlider() {
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-        setShowSuggestions(false);
+        closeDropdown();
       }
     };
     document.addEventListener("mousedown", handleClick);
@@ -265,7 +271,7 @@ export default function HeroSlider() {
       if (searchRef.current) {
         const r = searchRef.current.getBoundingClientRect();
         if (r.bottom < 0 || r.top > window.innerHeight) {
-          setShowSuggestions(false);
+          closeDropdown();
         } else {
           setDropdownRect({ top: r.bottom + 8, left: r.left, width: r.width });
         }
@@ -363,6 +369,7 @@ export default function HeroSlider() {
           <div className="flex items-center gap-2 bg-white/15 backdrop-blur-xl border border-white/25 rounded-2xl p-2 shadow-2xl">
             <Search className="ml-2 text-white/60 shrink-0" size={18} />
             <input
+              ref={inputRef}
               type="search"
               value={searchVal}
               onChange={(e) => setSearchVal(e.target.value)}
@@ -389,7 +396,7 @@ export default function HeroSlider() {
             rect={dropdownRect}
             searchVal={searchVal}
             setSearchVal={setSearchVal}
-            setShowSuggestions={setShowSuggestions}
+            setShowSuggestions={closeDropdown}
             filteredTop={filteredTop}
             filteredDest={filteredDest}
           />
