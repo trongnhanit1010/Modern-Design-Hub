@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "wouter";
 import {
   Home, Hotel, MapPin, UtensilsCrossed, Bus, CalendarDays,
-  ShoppingBag, Map, Bot, ChevronRight
+  ShoppingBag, Map, Bot, ChevronRight, Soup
 } from "lucide-react";
 import { useSidebar } from "@/context/SidebarContext";
 
@@ -11,6 +11,7 @@ const navItems = [
   { icon: Hotel, label: "Hotels", href: "/luu-tru-khach-san" },
   { icon: MapPin, label: "Địa điểm tham quan", href: "/destinations" },
   { icon: UtensilsCrossed, label: "Restaurants", href: "/restaurants" },
+  { icon: Soup, label: "Món ngon địa phương", href: "/mon-ngon" },
   { icon: Bus, label: "Giao thông / Di chuyển", href: "/transport" },
   { icon: CalendarDays, label: "Sự kiện - Lễ hội", href: "/events" },
   { icon: ShoppingBag, label: "Mua sắm", href: "/shopping" },

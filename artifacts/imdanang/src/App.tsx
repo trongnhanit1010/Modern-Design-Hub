@@ -17,6 +17,7 @@ import Transport from "@/pages/Transport";
 import Events from "@/pages/Events";
 import Shopping from "@/pages/Shopping";
 import AIAssistant from "@/pages/AIAssistant";
+import LocalFood from "@/pages/LocalFood";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import BottomNav from "@/components/layout/BottomNav";
@@ -63,6 +64,7 @@ function Layout() {
           <Route path="/ban-do" component={TouristMapPage} />
           <Route path="/destinations" component={Destinations} />
           <Route path="/restaurants" component={Restaurants} />
+          <Route path="/mon-ngon" component={LocalFood} />
           <Route path="/transport" component={Transport} />
           <Route path="/events" component={Events} />
           <Route path="/shopping" component={Shopping} />
