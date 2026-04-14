@@ -220,23 +220,6 @@ export default function TouristMapPage() {
     gmapRef.current.setOptions({ styles: isDark ? MAP_STYLES : [] });
   }, [isDark]);
 
-  // ── Global callbacks for dish InfoWindow buttons ──
-  useEffect(() => {
-    (window as any).__dishSelectRest = (id: number, lat: number, lng: number) => {
-      setSelectedId(id);
-      gmapRef.current?.panTo({ lat, lng });
-      gmapRef.current?.setZoom(17);
-    };
-    (window as any).__dishGoBack = (dishLat: number, dishLng: number) => {
-      setSelectedId(null);
-      gmapRef.current?.panTo({ lat: dishLat, lng: dishLng });
-      gmapRef.current?.setZoom(14);
-    };
-    return () => {
-      delete (window as any).__dishSelectRest;
-      delete (window as any).__dishGoBack;
-    };
-  }, []);
 
   // ── InfoWindow for selected regular location ──
   useEffect(() => {
@@ -278,7 +261,7 @@ export default function TouristMapPage() {
     iw.open(gmapRef.current);
   }, [mapsReady, selectedId, isDark, activeCategory]);
 
-  // ── InfoWindow for dish mode ──
+  // ── InfoWindow for dish mode: only when a restaurant is selected ──
   useEffect(() => {
     if (!mapsReady || !gmapRef.current || activeCategory !== "dish") return;
     if (!infoWinRef.current) {
@@ -286,73 +269,33 @@ export default function TouristMapPage() {
     }
     const iw = infoWinRef.current;
     iw.close();
-    if (!selDish) return;
+    if (!selDishRest || !selDish) return;
 
-    const bg   = isDark ? "#0d0d1a" : "#ffffff";
-    const bdr  = isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #fce7f3";
+    const bg    = isDark ? "#0d0d1a" : "#ffffff";
+    const bdr   = isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #fce7f3";
     const nameC = isDark ? "#f1f5f9" : "#111827";
     const subC  = isDark ? "rgba(255,255,255,0.42)" : "#6b7280";
-    const chipBg  = isDark ? "rgba(244,63,94,0.12)" : "#fff1f2";
-    const chipBdr = isDark ? "rgba(244,63,94,0.35)" : "#fecdd3";
-    const chipC   = isDark ? "#fb7185" : "#e11d48";
-    const backBg  = isDark ? "rgba(255,255,255,0.06)" : "#f9fafb";
-    const backC   = isDark ? "rgba(255,255,255,0.55)" : "#6b7280";
 
-    if (selDishRest) {
-      // ─ Restaurant detail view ─
-      iw.setContent(`
-        <div style="background:${bg};border:${bdr};border-radius:14px;overflow:hidden;width:230px;font-family:system-ui,sans-serif;box-shadow:0 8px 32px rgba(0,0,0,0.20)">
-          <div onclick="window.__dishGoBack(${selDish.lat},${selDish.lng})"
-               style="background:${backBg};padding:7px 12px;display:flex;align-items:center;gap:6px;cursor:pointer;border-bottom:${bdr}">
-            <span style="font-size:15px;color:${chipC};line-height:1">←</span>
-            <span style="font-size:10px;color:${backC};font-weight:600">${selDish.name}</span>
-          </div>
-          <div style="position:relative;height:80px">
-            <img src="${selDishRest.image}" style="width:100%;height:100%;object-fit:cover" />
-            <div style="position:absolute;inset:0;background:linear-gradient(to top,${bg},transparent 60%)"></div>
-          </div>
-          <div style="padding:10px 12px 12px">
-            <div style="font-weight:700;font-size:13px;color:${nameC};margin-bottom:6px;line-height:1.3">${selDishRest.name}</div>
-            <div style="font-size:10px;color:${subC};margin-bottom:2px">📍 ${selDishRest.address}</div>
-            <div style="font-size:10px;color:${subC};margin-bottom:2px">🕐 ${selDishRest.hours}</div>
-            <div style="font-size:10px;color:${subC};margin-bottom:9px">⭐ ${selDishRest.rating} &nbsp;·&nbsp; 💰 ${selDishRest.priceRange}</div>
-            <div style="padding:7px;background:linear-gradient(135deg,#f43f5e,#ec4899);color:#fff;border-radius:9px;font-size:11px;font-weight:700;text-align:center;cursor:pointer">
-              Xem thêm về quán →
-            </div>
-          </div>
-        </div>`);
-      iw.setPosition({ lat: selDishRest.lat, lng: selDishRest.lng });
-      google.maps.event.clearListeners(iw, "closeclick");
-      iw.addListener("closeclick", () => { setExpandedDishId(null); setSelectedId(null); });
-      iw.open(gmapRef.current);
-    } else {
-      // ─ Dish overview with restaurant chips ─
-      const chips = selDish.restaurants.map(r =>
-        `<button onclick="window.__dishSelectRest(${r.id},${r.lat},${r.lng})"
-          style="padding:4px 10px;border-radius:99px;border:1px solid ${chipBdr};background:${chipBg};color:${chipC};font-size:10px;font-weight:600;cursor:pointer;font-family:system-ui;white-space:nowrap">
-          ${r.name}
-        </button>`
-      ).join("");
-      iw.setContent(`
-        <div style="background:${bg};border:${bdr};border-radius:14px;overflow:hidden;width:240px;font-family:system-ui,sans-serif;box-shadow:0 8px 32px rgba(0,0,0,0.20)">
-          <div style="position:relative;height:90px">
-            <img src="${selDish.image}" style="width:100%;height:100%;object-fit:cover" />
-            <div style="position:absolute;inset:0;background:linear-gradient(to top,${bg},transparent 55%)"></div>
-            <span style="position:absolute;bottom:7px;left:10px;font-size:9px;font-weight:700;color:#fff;background:linear-gradient(135deg,#f43f5e,#ec4899);padding:2px 9px;border-radius:99px">${selDish.tag}</span>
-          </div>
-          <div style="padding:10px 12px 13px">
-            <div style="font-weight:700;font-size:14px;color:${nameC};margin-bottom:4px">${selDish.name}</div>
-            <div style="font-size:10px;color:${subC};line-height:1.55;margin-bottom:9px">${selDish.desc}</div>
-            <div style="font-size:10px;color:${subC};font-weight:600;margin-bottom:6px">🏪 ${selDish.restaurants.length} quán — chọn để xem trên bản đồ:</div>
-            <div style="display:flex;flex-wrap:wrap;gap:5px">${chips}</div>
-          </div>
-        </div>`);
-      iw.setPosition({ lat: selDish.lat, lng: selDish.lng });
-      google.maps.event.clearListeners(iw, "closeclick");
-      iw.addListener("closeclick", () => { setExpandedDishId(null); setSelectedId(null); });
-      iw.open(gmapRef.current);
-    }
-  }, [mapsReady, expandedDishId, selectedId, isDark, activeCategory]);
+    iw.setContent(`
+      <div style="background:${bg};border:${bdr};border-radius:14px;overflow:hidden;width:220px;font-family:system-ui,sans-serif;box-shadow:0 8px 32px rgba(0,0,0,0.20)">
+        <div style="position:relative;height:80px">
+          <img src="${selDishRest.image}" style="width:100%;height:100%;object-fit:cover" />
+          <div style="position:absolute;inset:0;background:linear-gradient(to top,${bg},transparent 60%)"></div>
+          <span style="position:absolute;bottom:7px;left:10px;font-size:9px;font-weight:700;color:#fff;background:linear-gradient(135deg,#f43f5e,#ec4899);padding:2px 8px;border-radius:99px">${selDish.name}</span>
+        </div>
+        <div style="padding:10px 12px 12px">
+          <div style="font-weight:700;font-size:13px;color:${nameC};margin-bottom:5px;line-height:1.3">${selDishRest.name}</div>
+          <div style="font-size:10px;color:${subC};margin-bottom:2px">📍 ${selDishRest.address}</div>
+          <div style="font-size:10px;color:${subC};margin-bottom:2px">🕐 ${selDishRest.hours}</div>
+          <div style="font-size:10px;color:${subC}">⭐ ${selDishRest.rating} &nbsp;·&nbsp; 💰 ${selDishRest.priceRange}</div>
+        </div>
+      </div>`);
+    iw.setOptions({ pixelOffset: new google.maps.Size(0, -8) });
+    iw.setPosition({ lat: selDishRest.lat, lng: selDishRest.lng });
+    google.maps.event.clearListeners(iw, "closeclick");
+    iw.addListener("closeclick", () => setSelectedId(null));
+    iw.open(gmapRef.current);
+  }, [mapsReady, selectedId, isDark, activeCategory]);
 
   // ── rebuild markers ──
   useEffect(() => {
@@ -532,38 +475,59 @@ export default function TouristMapPage() {
               <MapPin size={20} className="mb-2 opacity-40" />Không có kết quả
             </div>
           ) : activeCategory === "dish" ? (
-            <div className={`p-2 ${viewMode === "grid" ? "grid grid-cols-2 gap-2" : "space-y-2"}`}>
+            <div className="p-2 space-y-1.5">
               {(filteredList as Dish[]).map((dish, i) => {
-                const active = expandedDishId === dish.id;
+                const expanded = expandedDishId === dish.id;
                 return (
-                  <motion.div key={dish.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                    onClick={() => { const n = active ? null : dish.id; setExpandedDishId(n); setSelectedId(null); if (n) panTo(dish.lat, dish.lng, 14); }}
-                    role="button" className={`rounded-xl overflow-hidden border cursor-pointer transition-all ${active ? dishAct : dishDef}`}>
-                    {viewMode === "grid" ? (
-                      <>
-                        <div className="h-24 relative overflow-hidden">
-                          <img src={dish.image} alt={dish.name} className="w-full h-full object-cover" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                          <span className="absolute bottom-1.5 left-1.5 text-[9px] font-bold text-white bg-rose-500/80 px-1.5 py-0.5 rounded-full">{dish.tag}</span>
-                        </div>
-                        <div className="p-2">
-                          <p className={`font-semibold text-xs ${tx}`}>{dish.name}</p>
-                          <p className={`text-[10px] ${txS}`}>{dish.restaurants.length} quán</p>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="flex gap-2.5 p-2.5">
-                        <img src={dish.image} alt={dish.name} className="w-14 h-14 rounded-xl object-cover shrink-0" />
+                  <motion.div key={dish.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                    {/* ─ Dish header row ─ */}
+                    <div onClick={() => { const n = !expanded; setExpandedDishId(n ? dish.id : null); setSelectedId(null); if (n) panTo(dish.lat, dish.lng, 13); }}
+                      role="button" className={`rounded-xl border cursor-pointer transition-all ${expanded ? dishAct : dishDef}`}>
+                      <div className="flex gap-2.5 p-2.5 items-center">
+                        <img src={dish.image} alt={dish.name} className="w-12 h-12 rounded-xl object-cover shrink-0" />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
                             <p className={`font-semibold text-xs leading-tight ${tx}`}>{dish.name}</p>
                             <span className="text-[9px] text-rose-500 bg-rose-500/10 px-1.5 py-0.5 rounded-full border border-rose-300/40">{dish.tag}</span>
                           </div>
                           <p className={`text-[10px] line-clamp-2 leading-relaxed ${txS}`}>{dish.desc}</p>
-                          <p className="text-rose-500/70 text-[10px] mt-1">{dish.restaurants.length} quán · bấm để xem bản đồ</p>
+                          <p className={`text-[10px] mt-0.5 ${expanded ? "text-rose-400" : "text-rose-500/60"}`}>{dish.restaurants.length} quán · bấm để mở danh sách</p>
                         </div>
+                        <ChevronDown size={13} className={`shrink-0 transition-transform duration-200 ${expanded ? "rotate-180 text-rose-400" : txS}`} />
                       </div>
-                    )}
+                    </div>
+                    {/* ─ Restaurant list (accordion) ─ */}
+                    <AnimatePresence>
+                      {expanded && (
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }}
+                          className="overflow-hidden">
+                          <div className="mt-1 space-y-1 pl-3 pr-0.5 pb-1">
+                            {dish.restaurants.map(r => {
+                              const sel = selectedId === r.id;
+                              return (
+                                <div key={r.id}
+                                  onClick={() => { setSelectedId(sel ? null : r.id); if (!sel) panTo(r.lat, r.lng, 17); }}
+                                  role="button"
+                                  className={`rounded-lg border cursor-pointer p-2 flex gap-2 items-center transition-all ${sel
+                                    ? D ? "border-rose-400/40 bg-rose-500/10" : "border-rose-300 bg-rose-50"
+                                    : D ? "border-white/5 hover:border-white/15 bg-white/[0.02]" : "bg-white border-gray-100 hover:border-gray-300 shadow-sm"}`}>
+                                  <img src={r.image} alt={r.name} className="w-10 h-10 rounded-lg object-cover shrink-0" />
+                                  <div className="flex-1 min-w-0">
+                                    <p className={`font-semibold text-[11px] leading-tight ${sel ? "text-rose-400" : tx}`}>{r.name}</p>
+                                    <p className={`text-[10px] truncate mt-0.5 ${txS}`}>{r.address}</p>
+                                    <div className="flex items-center gap-2 mt-0.5">
+                                      <span className="text-amber-500 text-[10px] font-semibold">⭐ {r.rating}</span>
+                                      <span className={`text-[10px] ${txS}`}>{r.priceRange}</span>
+                                    </div>
+                                  </div>
+                                  <ChevronRight size={11} className={sel ? "text-rose-400" : txS} />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </motion.div>
                 );
               })}
