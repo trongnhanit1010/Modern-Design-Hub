@@ -261,14 +261,23 @@ export default function HeroSlider() {
 
   useEffect(() => {
     if (!showSuggestions) return;
-    const update = () => updateDropdownRect();
+    const update = () => {
+      if (searchRef.current) {
+        const r = searchRef.current.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > window.innerHeight) {
+          setShowSuggestions(false);
+        } else {
+          setDropdownRect({ top: r.bottom + 8, left: r.left, width: r.width });
+        }
+      }
+    };
     window.addEventListener("scroll", update, true);
     window.addEventListener("resize", update);
     return () => {
       window.removeEventListener("scroll", update, true);
       window.removeEventListener("resize", update);
     };
-  }, [showSuggestions, updateDropdownRect]);
+  }, [showSuggestions]);
 
   const filteredTop = searchVal
     ? topSearches.filter((s) => s.title.toLowerCase().includes(searchVal.toLowerCase()))
