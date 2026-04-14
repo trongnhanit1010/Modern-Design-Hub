@@ -281,7 +281,7 @@ export default function TouristMapPage() {
     const svgClock = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${iconClr}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
     iw.setContent(`
       <div style="position:relative;background:${bg};border:${border};border-radius:16px;overflow:hidden;width:256px;font-family:system-ui,-apple-system,sans-serif;box-shadow:0 16px 48px rgba(0,0,0,0.22)">
-        <button onclick="window.__closeIW()" style="position:absolute;top:8px;right:8px;z-index:10;width:26px;height:26px;border-radius:50%;border:none;background:rgba(0,0,0,0.52);color:#fff;font-size:15px;line-height:26px;text-align:center;cursor:pointer">×</button>
+        <button onclick="window.__closeIW()" style="position:absolute;top:8px;right:8px;z-index:10;width:26px;height:26px;border-radius:50%;border:none;outline:none;box-shadow:none;background:rgba(0,0,0,0.52);color:#fff;font-size:15px;line-height:26px;text-align:center;cursor:pointer;-webkit-appearance:none;appearance:none">×</button>
         <div style="height:118px;overflow:hidden">
           <img src="${selLoc.image}" style="width:100%;height:100%;object-fit:cover;display:block" />
         </div>
@@ -333,7 +333,7 @@ export default function TouristMapPage() {
     const svgMoney = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${iconD}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`;
     iw.setContent(`
       <div style="position:relative;background:${bg};border:${bdr};border-radius:16px;overflow:hidden;width:256px;font-family:system-ui,-apple-system,sans-serif;box-shadow:0 16px 48px rgba(0,0,0,0.22)">
-        <button onclick="window.__closeIW()" style="position:absolute;top:8px;right:8px;z-index:10;width:26px;height:26px;border-radius:50%;border:none;background:rgba(0,0,0,0.52);color:#fff;font-size:15px;line-height:26px;text-align:center;cursor:pointer">×</button>
+        <button onclick="window.__closeIW()" style="position:absolute;top:8px;right:8px;z-index:10;width:26px;height:26px;border-radius:50%;border:none;outline:none;box-shadow:none;background:rgba(0,0,0,0.52);color:#fff;font-size:15px;line-height:26px;text-align:center;cursor:pointer;-webkit-appearance:none;appearance:none">×</button>
         <div style="height:110px;overflow:hidden">
           <img src="${selDishRest.image}" style="width:100%;height:100%;object-fit:cover;display:block" />
         </div>
