@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
-import { Star, MapPin, Wifi, Waves, Utensils, Car, Heart, Filter, Search, Sparkles, SlidersHorizontal, Hotel, X, ChevronRight } from "lucide-react";
+import { Star, MapPin, Wifi, Waves, Utensils, Car, Heart, Filter, Search, Sparkles, SlidersHorizontal, Hotel, X, ChevronRight, Loader2, BedDouble, Trophy, TrendingUp } from "lucide-react";
 import { Link } from "wouter";
 
 const hotels = [
@@ -27,6 +27,18 @@ const starOptions = [5, 4, 3];
 const typeOptions = [{ value: "resort", label: "Resort" }, { value: "hotel", label: "Khách sạn" }, { value: "boutique", label: "Boutique" }];
 const cityOptions = ["Đà Nẵng", "Hội An"];
 
+const heroImages = [
+  "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1600&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1600&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=1600&auto=format&fit=crop",
+];
+
+const stats = [
+  { icon: BedDouble, label: "Chỗ nghỉ", value: "128+" },
+  { icon: Trophy, label: "Đánh giá 5 sao", value: "4.8" },
+  { icon: TrendingUp, label: "Đặt phòng / tháng", value: "3.2K" },
+];
+
 export default function Hotels() {
   const [search, setSearch] = useState("");
   const [selectedStars, setSelectedStars] = useState<number[]>([]);
@@ -36,6 +48,7 @@ export default function Hotels() {
   const [liked, setLiked] = useState<number[]>([]);
   const [showFilter, setShowFilter] = useState(false);
   const [visibleCount, setVisibleCount] = useState(6);
+  const [loadingMore, setLoadingMore] = useState(false);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
 
@@ -43,6 +56,14 @@ export default function Hotels() {
   const toggleStar = (s: number) => setSelectedStars((p) => p.includes(s) ? p.filter((x) => x !== s) : [...p, s]);
   const toggleType = (t: string) => setSelectedTypes((p) => p.includes(t) ? p.filter((x) => x !== t) : [...p, t]);
   const toggleCity = (c: string) => setSelectedCities((p) => p.includes(c) ? p.filter((x) => x !== c) : [...p, c]);
+
+  const handleLoadMore = () => {
+    setLoadingMore(true);
+    setTimeout(() => {
+      setVisibleCount((v) => v + 3);
+      setLoadingMore(false);
+    }, 900);
+  };
 
   let filtered = hotels.filter((h) => {
     if (search && !h.name.toLowerCase().includes(search.toLowerCase()) && !h.location.toLowerCase().includes(search.toLowerCase())) return false;
@@ -58,31 +79,87 @@ export default function Hotels() {
 
   const visible = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;
+  const remaining = filtered.length - visibleCount;
   const activeFilterCount = selectedStars.length + selectedTypes.length + selectedCities.length;
 
   return (
     <div className="min-h-screen bg-gray-50" ref={ref}>
-      <div className="relative h-72 overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1600&auto=format&fit=crop" alt="Hotels" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-gray-50" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center pb-8">
-          <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65 }}>
-            <div className="inline-flex items-center gap-2 bg-amber-500/90 text-white rounded-full px-4 py-1.5 text-sm mb-4 shadow-md">
-              <Sparkles size={13} />128 Khách sạn tại Đà Nẵng
+
+      {/* ── Hero ── */}
+      <div className="relative h-[78vh] min-h-[520px] overflow-hidden">
+        {/* layered background images */}
+        <div className="absolute inset-0 grid grid-cols-3 gap-0">
+          {heroImages.map((src, i) => (
+            <div key={i} className="relative overflow-hidden">
+              <img
+                src={src}
+                alt=""
+                className="w-full h-full object-cover scale-105"
+                style={{ filter: "brightness(0.72)" }}
+              />
             </div>
-            <h1 className="font-serif text-5xl md:text-6xl font-bold text-white mb-3 drop-shadow-lg">Chỗ Nghỉ Cao Cấp</h1>
-            <p className="text-white/90 text-base max-w-xl drop-shadow">Trải nghiệm những khách sạn đẳng cấp nhất tại thành phố biển Đà Nẵng</p>
+          ))}
+        </div>
+
+        {/* unified overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/35 to-black/70" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30" />
+
+        {/* content */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 36 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+            className="max-w-3xl w-full"
+          >
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white/90 rounded-full px-4 py-1.5 text-sm mb-6 shadow-lg">
+              <Sparkles size={13} className="text-amber-400" />
+              <span>128 Chỗ nghỉ cao cấp tại Đà Nẵng & Hội An</span>
+            </div>
+
+            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 leading-tight drop-shadow-xl">
+              Tìm Nơi <span className="text-amber-400">Nghỉ Ngơi</span><br />Hoàn Hảo
+            </h1>
+            <p className="text-white/75 text-base md:text-lg max-w-xl mx-auto mb-10 leading-relaxed">
+              Từ resort biển đẳng cấp đến boutique hotel quyến rũ — khám phá không gian nghỉ dưỡng ưng ý nhất cho chuyến đi của bạn
+            </p>
+
+            {/* stats row */}
+            <div className="flex items-center justify-center gap-6 md:gap-12">
+              {stats.map(({ icon: Icon, label, value }) => (
+                <div key={label} className="flex flex-col items-center gap-1">
+                  <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center mb-1">
+                    <Icon size={18} className="text-amber-400" />
+                  </div>
+                  <span className="text-white font-bold text-xl">{value}</span>
+                  <span className="text-white/60 text-xs">{label}</span>
+                </div>
+              ))}
+            </div>
           </motion.div>
         </div>
+
+        {/* bottom fade into page */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-gray-50 to-transparent" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 -mt-6 relative z-10">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white rounded-2xl p-4 mb-6 flex flex-wrap items-center gap-3 shadow-xl border border-gray-100">
+      {/* ── Filters & Content ── */}
+      <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="bg-white rounded-2xl p-4 mb-6 flex flex-wrap items-center gap-3 shadow-xl border border-gray-100"
+        >
           <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 flex-1 min-w-48">
             <Search size={15} className="text-gray-400 shrink-0" />
             <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Tìm khách sạn..." className="bg-transparent text-gray-800 text-sm placeholder:text-gray-400 focus:outline-none flex-1" />
           </div>
-          <button onClick={() => setShowFilter(!showFilter)} className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all border ${showFilter ? "bg-amber-500 border-amber-400 text-white" : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"}`}>
+          <button
+            onClick={() => setShowFilter(!showFilter)}
+            className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all border ${showFilter ? "bg-amber-500 border-amber-400 text-white" : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"}`}
+          >
             <SlidersHorizontal size={15} />Bộ lọc
             {activeFilterCount > 0 && <span className="w-5 h-5 bg-amber-500 text-white rounded-full text-xs font-bold flex items-center justify-center">{activeFilterCount}</span>}
           </button>
@@ -200,13 +277,40 @@ export default function Hotels() {
         </div>
 
         {hasMore && (
-          <div className="flex justify-center pb-12">
-            <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} onClick={() => setVisibleCount((v) => v + 3)} className="px-8 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-2xl shadow-lg shadow-amber-200 hover:from-amber-400 hover:to-orange-400 transition-all text-sm">
-              Xem thêm {filtered.length - visibleCount} khách sạn
+          <div className="flex flex-col items-center gap-3 pb-12">
+            <p className="text-gray-400 text-sm">
+              Đang hiển thị <span className="text-gray-700 font-semibold">{visible.length}</span> / <span className="text-gray-700 font-semibold">{filtered.length}</span> khách sạn
+              {" — "}còn <span className="text-amber-600 font-semibold">{remaining}</span> chỗ nghỉ chưa hiển thị
+            </p>
+            <motion.button
+              whileHover={{ scale: loadingMore ? 1 : 1.04 }}
+              whileTap={{ scale: loadingMore ? 1 : 0.97 }}
+              onClick={handleLoadMore}
+              disabled={loadingMore}
+              className="flex items-center gap-2.5 px-8 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-2xl shadow-lg shadow-amber-200 hover:from-amber-400 hover:to-orange-400 transition-all text-sm disabled:opacity-80 disabled:cursor-not-allowed min-w-52 justify-center"
+            >
+              <AnimatePresence mode="wait">
+                {loadingMore ? (
+                  <motion.span key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-2">
+                    <Loader2 size={16} className="animate-spin" />
+                    Đang tải...
+                  </motion.span>
+                ) : (
+                  <motion.span key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-2">
+                    Xem thêm {remaining} khách sạn
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </motion.button>
           </div>
         )}
-        {!hasMore && filtered.length > 0 && <div className="pb-12 text-center text-gray-400 text-sm">Đã hiển thị tất cả {filtered.length} khách sạn</div>}
+
+        {!hasMore && filtered.length > 0 && (
+          <div className="pb-12 text-center text-gray-400 text-sm">
+            Đã hiển thị tất cả <span className="text-gray-600 font-semibold">{filtered.length}</span> khách sạn
+          </div>
+        )}
+
         {filtered.length === 0 && (
           <div className="pb-12 flex flex-col items-center justify-center py-16 text-center">
             <Hotel size={40} className="text-gray-300 mb-3" />
