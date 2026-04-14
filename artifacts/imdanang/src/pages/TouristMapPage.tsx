@@ -142,9 +142,10 @@ export default function TouristMapPage() {
   const mapsReady = useGoogleMaps(import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "");
   const { isDark } = useDarkMode();
 
-  const mapDivRef = useRef<HTMLDivElement>(null);
-  const gmapRef   = useRef<google.maps.Map | null>(null);
-  const markersRef = useRef<google.maps.Marker[]>([]);
+  const mapDivRef    = useRef<HTMLDivElement>(null);
+  const gmapRef      = useRef<google.maps.Map | null>(null);
+  const markersRef   = useRef<google.maps.Marker[]>([]);
+  const infoWinRef   = useRef<google.maps.InfoWindow | null>(null);
 
   const [activeCategory, setActiveCategory] = useState("hotel");
   const [search, setSearch] = useState("");
@@ -219,6 +220,45 @@ export default function TouristMapPage() {
     gmapRef.current.setOptions({ styles: isDark ? MAP_STYLES : [] });
   }, [isDark]);
 
+  // ── InfoWindow for selected regular location ──
+  useEffect(() => {
+    if (!mapsReady || !gmapRef.current) return;
+    if (!infoWinRef.current) {
+      infoWinRef.current = new google.maps.InfoWindow({ disableAutoPan: false });
+    }
+    const iw = infoWinRef.current;
+    iw.close();
+    if (!selLoc || selDishRest) return;
+
+    const bg   = isDark ? "#0d0d1a"             : "#ffffff";
+    const border = isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e5e7eb";
+    const name = isDark ? "#f1f5f9"             : "#111827";
+    const sub  = isDark ? "rgba(255,255,255,0.4)" : "#6b7280";
+    const btn  = `linear-gradient(135deg,${cat.g1},${cat.g2})`;
+
+    iw.setContent(`
+      <div style="background:${bg};border:${border};border-radius:14px;overflow:hidden;width:220px;font-family:system-ui,sans-serif;box-shadow:0 8px 32px rgba(0,0,0,0.18)">
+        <div style="position:relative;height:90px">
+          <img src="${selLoc.image}" style="width:100%;height:100%;object-fit:cover" />
+          <div style="position:absolute;inset:0;background:linear-gradient(to top,${bg} 0%,transparent 60%)"></div>
+          <span style="position:absolute;bottom:6px;left:10px;font-size:9px;font-weight:700;color:#fff;background:${btn};padding:2px 8px;border-radius:99px">${selLoc.tag || cat.label}</span>
+        </div>
+        <div style="padding:10px 12px 12px">
+          <div style="font-weight:700;font-size:13px;color:${name};margin-bottom:4px;line-height:1.3">${selLoc.name}</div>
+          <div style="font-size:10px;color:${sub};margin-bottom:3px">⭐ ${selLoc.rating} &nbsp;·&nbsp; 🕐 ${selLoc.hours}</div>
+          <div style="font-size:10px;color:${sub};line-height:1.5;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${selLoc.desc}</div>
+          ${selLoc.slug
+            ? `<a href="/luu-tru-khach-san/${selLoc.slug}" style="display:flex;align-items:center;justify-content:center;gap:4px;padding:7px;background:${btn};color:#fff;border-radius:9px;font-size:11px;font-weight:700;text-decoration:none">Xem chi tiết →</a>`
+            : `<div style="display:flex;align-items:center;justify-content:center;gap:4px;padding:7px;background:${btn};color:#fff;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer">Xem chi tiết →</div>`}
+        </div>
+      </div>`);
+    iw.setOptions({ pixelOffset: new google.maps.Size(0, -8) });
+    iw.setPosition({ lat: selLoc.lat, lng: selLoc.lng });
+    google.maps.event.clearListeners(iw, "closeclick");
+    iw.addListener("closeclick", () => setSelectedId(null));
+    iw.open(gmapRef.current);
+  }, [mapsReady, selectedId, isDark]);
+
   // ── rebuild markers ──
   useEffect(() => {
     if (!mapsReady || !gmapRef.current) return;
@@ -288,23 +328,23 @@ export default function TouristMapPage() {
         </div>
 
         {/* circular category icons */}
-        <div className={`px-3 py-3 border-b ${sbB}`}>
-          <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1 justify-between">
+        <div className={`px-3 pt-5 pb-4 border-b ${sbB}`}>
+          <div className="flex justify-between">
             {categories.map(c => {
               const active = activeCategory === c.id;
               return (
                 <button key={c.id} onClick={() => { setActiveCategory(c.id); setShowFilters(false); }}
-                  className="shrink-0 flex flex-col items-center gap-1.5 group">
+                  className="flex flex-col items-center gap-1.5 group">
                   <div className={`rounded-full flex items-center justify-center transition-all duration-300 ${
-                    active ? "w-14 h-14" : "w-9 h-9 opacity-40 grayscale group-hover:opacity-65 group-hover:grayscale-0 group-hover:scale-110"
+                    active ? "w-14 h-14" : "w-10 h-10 opacity-65 group-hover:opacity-90 group-hover:scale-110"
                   }`}
                     style={{
                       background: `linear-gradient(135deg, ${c.g1}, ${c.g2})`,
-                      boxShadow: active ? `0 0 22px ${c.g1}80, 0 4px 16px ${c.g1}50` : undefined,
+                      boxShadow: active ? `0 0 22px ${c.g1}80, 0 4px 16px ${c.g1}50` : `0 2px 8px ${c.g1}30`,
                     }}>
-                    <c.icon size={active ? 22 : 15} className="text-white transition-all duration-300" />
+                    <c.icon size={active ? 22 : 17} className="text-white transition-all duration-300" />
                   </div>
-                  <span className={`text-[9px] font-semibold leading-tight text-center max-w-[60px] transition-colors ${active ? tx : `${txS} group-hover:text-gray-500`}`}>
+                  <span className={`text-[9px] font-semibold leading-tight text-center max-w-[58px] transition-colors ${active ? tx : txS}`}>
                     {c.label}
                   </span>
                 </button>
@@ -553,47 +593,6 @@ export default function TouristMapPage() {
           <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
           <span className="text-[11px]">{filteredList.length} {cat.label} · Đà Nẵng &amp; Hội An</span>
         </div>
-
-        {/* detail card - regular location */}
-        <AnimatePresence>
-          {selLoc && !selDishRest && (
-            <motion.div key={selLoc.id} initial={{ opacity: 0, y: 16, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 16, scale: 0.96 }} transition={{ duration: 0.2 }}
-              className="absolute bottom-4 right-4 z-10 w-[270px]">
-              <div className={`rounded-2xl overflow-hidden shadow-2xl border ${D ? "border-white/8" : "border-gray-200 shadow-xl"}`}
-                style={{ background: D ? "rgba(12,12,26,0.96)" : "rgba(255,255,255,0.97)", backdropFilter: "blur(20px)" }}>
-                <div className="relative h-32">
-                  <img src={selLoc.image} alt={selLoc.name} className="w-full h-full object-cover" />
-                  <div className={`absolute inset-0 bg-gradient-to-t ${D ? "from-[#0c0c1a]" : "from-black/50"} via-transparent to-transparent`} />
-                  <button onClick={() => setSelectedId(null)} className="absolute top-2.5 right-2.5 w-7 h-7 bg-black/60 rounded-full flex items-center justify-center text-white/70 hover:text-white"><X size={12} /></button>
-                  <span className="absolute bottom-2 left-3 text-[10px] font-bold text-white px-2 py-0.5 rounded-full" style={{ background: `linear-gradient(135deg, ${cat.g1}, ${cat.g2})` }}>{selLoc.tag || cat.label}</span>
-                </div>
-                <div className="p-4">
-                  <div className="flex items-start justify-between mb-1.5">
-                    <h3 className={`font-bold text-sm leading-tight flex-1 pr-2 ${tx}`}>{selLoc.name}</h3>
-                    <div className="flex items-center gap-1 bg-amber-400/10 rounded-full px-2 py-0.5 shrink-0">
-                      <Star size={10} className="text-amber-500 fill-amber-500" />
-                      <span className="text-amber-500 text-xs font-bold">{selLoc.rating}</span>
-                    </div>
-                  </div>
-                  <p className={`text-[11px] mb-1 flex items-center gap-1 ${txS}`}><MapPin size={9} className="shrink-0" />{selLoc.address}</p>
-                  <p className={`text-[11px] mb-3 line-clamp-2 leading-relaxed ${txM}`}>{selLoc.desc}</p>
-                  {selLoc.slug ? (
-                    <a href={`/luu-tru-khach-san/${selLoc.slug}`}
-                      className="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl text-white text-xs font-bold no-underline"
-                      style={{ background: `linear-gradient(135deg, ${cat.g1}, ${cat.g2})` }}>
-                      Xem chi tiết <ChevronRight size={13} />
-                    </a>
-                  ) : (
-                    <div className="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-xl text-white text-xs font-bold cursor-pointer"
-                      style={{ background: `linear-gradient(135deg, ${cat.g1}, ${cat.g2})` }}>
-                      Xem chi tiết <ChevronRight size={13} />
-                    </div>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* detail card - dish + restaurants */}
         <AnimatePresence>
