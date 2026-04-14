@@ -140,11 +140,6 @@ function markerIcon(color: string, emoji: string, selected: boolean) {
   // white ring
   ctx.beginPath(); ctx.arc(r, r, r * 0.48, 0, Math.PI * 2);
   ctx.strokeStyle = "rgba(255,255,255,0.95)"; ctx.lineWidth = selected ? 2.2 : 1.6; ctx.stroke();
-  // emoji
-  const fs = selected ? 18 : 14;
-  ctx.font = `${fs}px 'Apple Color Emoji','Noto Color Emoji','Segoe UI Emoji',serif`;
-  ctx.textAlign = "center"; ctx.textBaseline = "middle";
-  ctx.fillText(emoji, r, r + 1);
   return {
     url: canvas.toDataURL(),
     scaledSize: { width: s, height: s } as google.maps.Size,
@@ -279,21 +274,32 @@ export default function TouristMapPage() {
     const btn  = `linear-gradient(135deg,${cat.g1},${cat.g2})`;
 
     (window as any).__closeIW = () => setSelectedId(null);
+    const accent = cat.g1;
+    const divider = isDark ? "rgba(255,255,255,0.07)" : "#f3f4f6";
+    const iconClr = isDark ? "rgba(255,255,255,0.38)" : "#9ca3af";
+    const svgStar = `<svg width="12" height="12" viewBox="0 0 24 24" fill="#f59e0b" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+    const svgClock = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${iconClr}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
     iw.setContent(`
-      <div style="position:relative;background:${bg};border:${border};border-radius:14px;overflow:hidden;width:220px;font-family:system-ui,sans-serif;box-shadow:0 8px 32px rgba(0,0,0,0.18)">
-        <button onclick="window.__closeIW()" style="position:absolute;top:6px;right:6px;z-index:10;width:22px;height:22px;border-radius:50%;border:none;background:rgba(0,0,0,0.45);color:#fff;font-size:13px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)">×</button>
-        <div style="position:relative;height:90px">
-          <img src="${selLoc.image}" style="width:100%;height:100%;object-fit:cover" />
-          <div style="position:absolute;inset:0;background:linear-gradient(to top,${bg} 0%,transparent 60%)"></div>
-          <span style="position:absolute;bottom:6px;left:10px;font-size:9px;font-weight:700;color:#fff;background:${btn};padding:2px 8px;border-radius:99px">${selLoc.tag || cat.label}</span>
+      <div style="position:relative;background:${bg};border:${border};border-radius:16px;overflow:hidden;width:256px;font-family:system-ui,-apple-system,sans-serif;box-shadow:0 16px 48px rgba(0,0,0,0.22)">
+        <button onclick="window.__closeIW()" style="position:absolute;top:8px;right:8px;z-index:10;width:26px;height:26px;border-radius:50%;border:none;background:rgba(0,0,0,0.52);color:#fff;font-size:15px;line-height:26px;text-align:center;cursor:pointer">×</button>
+        <div style="height:118px;overflow:hidden">
+          <img src="${selLoc.image}" style="width:100%;height:100%;object-fit:cover;display:block" />
         </div>
-        <div style="padding:10px 12px 12px">
-          <div style="font-weight:700;font-size:13px;color:${name};margin-bottom:4px;line-height:1.3">${selLoc.name}</div>
-          <div style="font-size:10px;color:${sub};margin-bottom:3px">⭐ ${selLoc.rating} &nbsp;·&nbsp; 🕐 ${selLoc.hours}</div>
-          <div style="font-size:10px;color:${sub};line-height:1.5;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${selLoc.desc}</div>
+        <div style="padding:12px 14px 4px;border-bottom:1px solid ${divider}">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:6px">
+            <div style="font-weight:800;font-size:14px;color:${name};line-height:1.35;flex:1">${selLoc.name}</div>
+            <span style="flex-shrink:0;font-size:9px;font-weight:700;color:#fff;background:${accent};padding:3px 9px;border-radius:99px;white-space:nowrap;margin-top:2px">${selLoc.tag || cat.label}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px">
+            <div style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#f59e0b">${svgStar} ${selLoc.rating}</div>
+            <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:${iconClr}">${svgClock} ${selLoc.hours}</div>
+          </div>
+          <div style="font-size:11px;color:${sub};line-height:1.6;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${selLoc.desc}</div>
+        </div>
+        <div style="padding:10px 14px">
           ${selLoc.slug
-            ? `<a href="/luu-tru-khach-san/${selLoc.slug}" style="display:flex;align-items:center;justify-content:center;gap:4px;padding:7px;background:${btn};color:#fff;border-radius:9px;font-size:11px;font-weight:700;text-decoration:none">Xem chi tiết →</a>`
-            : `<div style="display:flex;align-items:center;justify-content:center;gap:4px;padding:7px;background:${btn};color:#fff;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer">Xem chi tiết →</div>`}
+            ? `<a href="/luu-tru-khach-san/${selLoc.slug}" style="display:block;text-align:center;padding:8px;background:${accent};color:#fff;border-radius:10px;font-size:12px;font-weight:700;text-decoration:none">Xem chi tiết</a>`
+            : `<div style="text-align:center;padding:8px;background:${accent};color:#fff;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">Xem chi tiết</div>`}
         </div>
       </div>`);
     iw.setOptions({ pixelOffset: new google.maps.Size(0, -8) });
@@ -319,19 +325,34 @@ export default function TouristMapPage() {
     const subC  = isDark ? "rgba(255,255,255,0.42)" : "#6b7280";
 
     (window as any).__closeIW = () => setSelectedId(null);
+    const dividerD = isDark ? "rgba(255,255,255,0.07)" : "#f3f4f6";
+    const iconD = isDark ? "rgba(255,255,255,0.38)" : "#9ca3af";
+    const svgPin  = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${iconD}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`;
+    const svgClkD = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${iconD}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+    const svgStar2 = `<svg width="12" height="12" viewBox="0 0 24 24" fill="#f59e0b" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+    const svgMoney = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${iconD}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`;
     iw.setContent(`
-      <div style="position:relative;background:${bg};border:${bdr};border-radius:14px;overflow:hidden;width:220px;font-family:system-ui,sans-serif;box-shadow:0 8px 32px rgba(0,0,0,0.20)">
-        <button onclick="window.__closeIW()" style="position:absolute;top:6px;right:6px;z-index:10;width:22px;height:22px;border-radius:50%;border:none;background:rgba(0,0,0,0.45);color:#fff;font-size:13px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)">×</button>
-        <div style="position:relative;height:80px">
-          <img src="${selDishRest.image}" style="width:100%;height:100%;object-fit:cover" />
-          <div style="position:absolute;inset:0;background:linear-gradient(to top,${bg},transparent 60%)"></div>
-          <span style="position:absolute;bottom:7px;left:10px;font-size:9px;font-weight:700;color:#fff;background:linear-gradient(135deg,#f43f5e,#ec4899);padding:2px 8px;border-radius:99px">${selDish.name}</span>
+      <div style="position:relative;background:${bg};border:${bdr};border-radius:16px;overflow:hidden;width:256px;font-family:system-ui,-apple-system,sans-serif;box-shadow:0 16px 48px rgba(0,0,0,0.22)">
+        <button onclick="window.__closeIW()" style="position:absolute;top:8px;right:8px;z-index:10;width:26px;height:26px;border-radius:50%;border:none;background:rgba(0,0,0,0.52);color:#fff;font-size:15px;line-height:26px;text-align:center;cursor:pointer">×</button>
+        <div style="height:110px;overflow:hidden">
+          <img src="${selDishRest.image}" style="width:100%;height:100%;object-fit:cover;display:block" />
         </div>
-        <div style="padding:10px 12px 12px">
-          <div style="font-weight:700;font-size:13px;color:${nameC};margin-bottom:5px;line-height:1.3">${selDishRest.name}</div>
-          <div style="font-size:10px;color:${subC};margin-bottom:2px">📍 ${selDishRest.address}</div>
-          <div style="font-size:10px;color:${subC};margin-bottom:2px">🕐 ${selDishRest.hours}</div>
-          <div style="font-size:10px;color:${subC}">⭐ ${selDishRest.rating} &nbsp;·&nbsp; 💰 ${selDishRest.priceRange}</div>
+        <div style="padding:12px 14px 4px;border-bottom:1px solid ${dividerD}">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:8px">
+            <div style="font-weight:800;font-size:14px;color:${nameC};line-height:1.35;flex:1">${selDishRest.name}</div>
+            <span style="flex-shrink:0;font-size:9px;font-weight:700;color:#fff;background:#f43f5e;padding:3px 9px;border-radius:99px;white-space:nowrap;margin-top:2px">${selDish.name}</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:10px">
+            <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:${subC}">${svgPin} ${selDishRest.address}</div>
+            <div style="display:flex;align-items:center;gap:14px">
+              <div style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#f59e0b">${svgStar2} ${selDishRest.rating}</div>
+              <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:${iconD}">${svgClkD} ${selDishRest.hours}</div>
+              <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:${iconD}">${svgMoney} ${selDishRest.priceRange}</div>
+            </div>
+          </div>
+        </div>
+        <div style="padding:10px 14px">
+          <div style="text-align:center;padding:8px;background:#f43f5e;color:#fff;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer" onclick="window.__closeIW()">Đóng</div>
         </div>
       </div>`);
     iw.setOptions({ pixelOffset: new google.maps.Size(0, -8) });
