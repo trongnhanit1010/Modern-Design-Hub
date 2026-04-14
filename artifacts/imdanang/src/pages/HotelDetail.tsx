@@ -128,10 +128,13 @@ export default function HotelDetail() {
               <img src={img} alt={`${hotel.name} ${i + 1}`}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-107" />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/12 transition-colors duration-300" />
-              {i === 4 && hotel.images.length > 5 && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/45 backdrop-blur-sm gap-1.5">
-                  <Images size={22} className="text-white/80" />
-                  <span className="text-white font-semibold text-sm">+{hotel.images.length - 5} ảnh</span>
+              {i === 4 && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 backdrop-blur-sm gap-2">
+                  <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                    <Images size={20} className="text-white" />
+                  </div>
+                  <span className="text-white font-semibold text-sm">Xem tất cả</span>
+                  <span className="text-white/75 text-xs">{hotel.images.length} ảnh</span>
                 </div>
               )}
             </div>
@@ -186,7 +189,7 @@ export default function HotelDetail() {
         <div className="grid lg:grid-cols-3 gap-8 items-start">
 
           {/* ── Left (main) ──────────────────────────────────── */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-6 min-w-0">
 
             {/* Header */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
@@ -249,8 +252,7 @@ export default function HotelDetail() {
             {/* Tab content */}
             <AnimatePresence mode="wait">
               {activeTab === 0 && (
-                <motion.div key="overview" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-5">
-                  {/* Description */}
+                <motion.div key="overview" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
                   <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
                     <h2 className="text-slate-900 font-bold text-lg mb-4 flex items-center gap-2">
                       <span className="w-1 h-5 rounded-full bg-amber-500 inline-block" />
@@ -259,29 +261,6 @@ export default function HotelDetail() {
                     {hotel.description.split("\n\n").map((para, i) => (
                       <p key={i} className="text-slate-600 leading-relaxed mb-3 last:mb-0 text-[15px]">{para}</p>
                     ))}
-                  </div>
-
-                  {/* OTA links */}
-                  <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
-                    <h2 className="text-slate-900 font-bold text-lg mb-4 flex items-center gap-2">
-                      <span className="w-1 h-5 rounded-full bg-blue-500 inline-block" />
-                      Đặt phòng qua
-                    </h2>
-                    <div className="grid grid-cols-3 gap-3">
-                      {[
-                        { name: "Booking.com", bg: "from-[#003580] to-[#0071c2]", sub: "Hơn 6 triệu đánh giá" },
-                        { name: "Agoda",       bg: "from-[#c0392b] to-[#e74c3c]", sub: "Giá tốt nhất" },
-                        { name: "TripAdvisor", bg: "from-[#00aa6c] to-[#00b87d]", sub: "Đánh giá du khách" },
-                      ].map((ota) => (
-                        <motion.a key={ota.name} href="#" whileHover={{ y: -3 }} whileTap={{ scale: 0.97 }}
-                          className={`relative bg-gradient-to-br ${ota.bg} rounded-2xl p-4 text-white flex flex-col items-center gap-1.5 text-center overflow-hidden shadow-md`}>
-                          <div className="absolute inset-0 bg-white/0 hover:bg-white/5 transition-colors" />
-                          <span className="font-bold text-sm">{ota.name}</span>
-                          <span className="text-[11px] text-white/70">{ota.sub}</span>
-                          <ExternalLink size={11} className="text-white/50 mt-0.5" />
-                        </motion.a>
-                      ))}
-                    </div>
                   </div>
                 </motion.div>
               )}
@@ -336,112 +315,6 @@ export default function HotelDetail() {
               )}
             </AnimatePresence>
 
-            {/* Reviews */}
-            <div ref={reviewRef} className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <h2 className="text-slate-900 font-bold text-lg flex items-center gap-2 mb-0.5">
-                    <span className="w-1 h-5 rounded-full bg-amber-400 inline-block" />
-                    Đánh giá TripAdvisor
-                  </h2>
-                  <p className="text-slate-400 text-xs">{hotel.reviews.toLocaleString()} đánh giá từ du khách</p>
-                </div>
-                <div className="text-right">
-                  <div className="text-4xl font-bold text-slate-900">{hotel.rating}</div>
-                  <div className="flex gap-0.5 justify-end mt-1">
-                    {[...Array(5)].map((_, i) => <Star key={i} size={11} className={i < Math.round(hotel.rating) ? "text-amber-400 fill-amber-400" : "text-slate-300"} />)}
-                  </div>
-                  <span className="text-xs text-slate-400">/ 5</span>
-                </div>
-              </div>
-
-              {/* Rating bars */}
-              <div className="space-y-2 mb-7">
-                {ratingBars.map((r) => (
-                  <div key={r.label} className="flex items-center gap-3 text-xs">
-                    <span className="text-slate-500 w-20 shrink-0 text-right">{r.label}</span>
-                    <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={reviewsInView ? { width: `${r.pct}%` } : {}}
-                        transition={{ delay: 0.2, duration: 0.9, ease: "easeOut" }}
-                        className="h-full rounded-full"
-                        style={{ background: r.color }}
-                      />
-                    </div>
-                    <span className="text-slate-400 w-8 shrink-0">{r.pct}%</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Review cards */}
-              <div className="space-y-4">
-                {reviews.map((rv, idx) => (
-                  <motion.div key={rv.id}
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={reviewsInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ delay: 0.1 + idx * 0.1 }}
-                    className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
-                    <div className="flex items-start gap-3 mb-2.5">
-                      <img src={rv.avatar} alt={rv.name} className="w-10 h-10 rounded-full object-cover ring-2 ring-white shadow-sm" />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-slate-800 font-semibold text-sm">{rv.name}</span>
-                          <span className="text-slate-400 text-xs shrink-0">{rv.date}</span>
-                        </div>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <div className="flex gap-0.5">
-                            {[...Array(5)].map((_, i) => <Star key={i} size={10} className={i < rv.rating ? "text-amber-400 fill-amber-400" : "text-slate-300"} />)}
-                          </div>
-                          <span className="text-slate-400 text-xs">· {rv.trip}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <p className="text-slate-800 font-semibold text-sm mb-1.5">{rv.title}</p>
-                    <p className="text-slate-500 text-[13px] leading-relaxed">{rv.text}</p>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-
-            {/* Nearby */}
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-slate-900 font-bold text-lg flex items-center gap-2">
-                  <span className="w-1 h-5 rounded-full bg-sky-500 inline-block" />
-                  Khách sạn lân cận
-                </h2>
-                <div className="flex gap-2">
-                  <button onClick={scrollPrev} className="p-2 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-colors text-slate-600 shadow-sm"><ChevronLeft size={16} /></button>
-                  <button onClick={scrollNext} className="p-2 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-colors text-slate-600 shadow-sm"><ChevronRight size={16} /></button>
-                </div>
-              </div>
-              <div className="overflow-hidden" ref={emblaRef}>
-                <div className="flex gap-4">
-                  {nearbyHotels.map((h) => (
-                    <Link key={h.id} href={`/luu-tru-khach-san/${h.slug}`}>
-                      <motion.div whileHover={{ y: -4 }}
-                        className="shrink-0 w-52 bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm cursor-pointer group">
-                        <div className="relative h-32 overflow-hidden">
-                          <img src={h.image} alt={h.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                          <div className="absolute bottom-2 left-2 right-2 flex items-end justify-between">
-                            <div className="flex gap-0.5">{[...Array(h.stars)].map((_, i) => <Star key={i} size={9} className="text-amber-400 fill-amber-400" />)}</div>
-                            <span className="text-white/70 text-[10px]">{h.distance}</span>
-                          </div>
-                        </div>
-                        <div className="p-3">
-                          <p className="text-slate-800 font-semibold text-xs leading-tight mb-1.5 line-clamp-2">{h.name}</p>
-                          <div className="flex items-center gap-1 text-amber-500 text-xs">
-                            <Star size={10} className="fill-amber-400" />{h.rating}
-                          </div>
-                        </div>
-                      </motion.div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* ── Right sidebar ────────────────────────────────── */}
@@ -511,9 +384,12 @@ export default function HotelDetail() {
                     </motion.a>
                     <motion.a href={`https://${hotel.website}`} target="_blank" rel="noopener noreferrer"
                       whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                      className="flex items-center justify-center gap-2 w-full py-3 border border-slate-200 text-slate-500 rounded-2xl hover:bg-slate-50 transition-all text-sm">
-                      <Globe size={13} />Website chính thức
-                      <ExternalLink size={10} className="text-slate-300 ml-auto" />
+                      className="flex items-center gap-3 w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl transition-all text-sm font-medium shadow-sm">
+                      <div className="w-7 h-7 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+                        <Globe size={14} className="text-white/80" />
+                      </div>
+                      <span className="flex-1">Website chính thức</span>
+                      <ExternalLink size={12} className="text-white/40 shrink-0" />
                     </motion.a>
                   </div>
                 </div>
@@ -542,6 +418,201 @@ export default function HotelDetail() {
                 </div>
               </motion.div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── OTA — full width ──────────────────────────────────── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-2 mb-8">
+        <h2 className="text-slate-900 font-bold text-xl mb-5 flex items-center gap-2">
+          <span className="w-1 h-6 rounded-full bg-blue-500 inline-block" />
+          Đặt phòng qua
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[
+            {
+              name: "Booking.com",
+              color: "#003580",
+              accent: "#0071c2",
+              img: hotel.images[1],
+              sub: "Hơn 6 triệu đánh giá",
+              badge: "Ưu đãi hôm nay",
+              features: ["Đặt phòng linh hoạt", "Hủy miễn phí", "Thanh toán sau"],
+            },
+            {
+              name: "Agoda",
+              color: "#b20710",
+              accent: "#e02020",
+              img: hotel.images[2],
+              sub: "Giá tốt nhất",
+              badge: "Giảm đến 25%",
+              features: ["Giá thành viên", "Điểm thưởng AgodaCash", "Đặt ngay xác nhận"],
+            },
+            {
+              name: "TripAdvisor",
+              color: "#007a52",
+              accent: "#00aa6c",
+              img: hotel.images[3],
+              sub: "So sánh giá tốt nhất",
+              badge: "Top đánh giá",
+              features: ["So sánh nhiều OTA", "Đánh giá du khách thực", "Gợi ý cá nhân hoá"],
+            },
+          ].map((ota, idx) => (
+            <motion.a key={ota.name} href="#"
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.08 }}
+              whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }}
+              className="relative rounded-3xl overflow-hidden block group cursor-pointer shadow-lg hover:shadow-xl transition-shadow"
+            >
+              {/* Background image */}
+              <div className="absolute inset-0">
+                <img src={ota.img} alt={ota.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0" style={{ background: `linear-gradient(160deg, ${ota.color}ee 0%, ${ota.accent}cc 100%)` }} />
+              </div>
+
+              {/* Content */}
+              <div className="relative p-6 flex flex-col gap-4 min-h-[200px]">
+                {/* Badge */}
+                <span className="self-start bg-white/20 backdrop-blur-sm text-white text-[11px] font-semibold px-3 py-1 rounded-full border border-white/25">
+                  {ota.badge}
+                </span>
+
+                {/* Name */}
+                <div>
+                  <h3 className="text-white font-extrabold text-2xl tracking-tight leading-none">{ota.name}</h3>
+                  <p className="text-white/70 text-sm mt-1">{ota.sub}</p>
+                </div>
+
+                {/* Features */}
+                <ul className="space-y-1.5 flex-1">
+                  {ota.features.map((f) => (
+                    <li key={f} className="flex items-center gap-2 text-white/85 text-xs">
+                      <CheckCircle2 size={12} className="text-white/60 shrink-0" />{f}
+                    </li>
+                  ))}
+                </ul>
+
+                {/* CTA */}
+                <div className="flex items-center justify-between pt-3 border-t border-white/20">
+                  <span className="text-white font-semibold text-sm">Xem trên {ota.name}</span>
+                  <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/35 transition-colors">
+                    <ExternalLink size={14} className="text-white" />
+                  </div>
+                </div>
+              </div>
+            </motion.a>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Reviews — full width ───────────────────────────────── */}
+      <div ref={reviewRef} className="max-w-7xl mx-auto px-4 sm:px-6 mb-8">
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8">
+            <div>
+              <h2 className="text-slate-900 font-bold text-xl flex items-center gap-2 mb-1">
+                <span className="w-1 h-6 rounded-full bg-amber-400 inline-block" />
+                Đánh giá TripAdvisor
+              </h2>
+              <p className="text-slate-400 text-sm">{hotel.reviews.toLocaleString()} đánh giá từ du khách thực</p>
+            </div>
+            <div className="flex items-center gap-6">
+              <div className="text-center">
+                <div className="text-5xl font-bold text-slate-900 leading-none">{hotel.rating}</div>
+                <div className="flex gap-0.5 justify-center mt-1.5">
+                  {[...Array(5)].map((_, i) => <Star key={i} size={13} className={i < Math.round(hotel.rating) ? "text-amber-400 fill-amber-400" : "text-slate-300"} />)}
+                </div>
+                <span className="text-xs text-slate-400 mt-0.5 block">Xuất sắc</span>
+              </div>
+              {/* Bars */}
+              <div className="space-y-1.5 w-52">
+                {ratingBars.map((r) => (
+                  <div key={r.label} className="flex items-center gap-2 text-xs">
+                    <span className="text-slate-500 w-20 shrink-0 text-right">{r.label}</span>
+                    <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={reviewsInView ? { width: `${r.pct}%` } : {}}
+                        transition={{ delay: 0.2, duration: 0.9, ease: "easeOut" }}
+                        className="h-full rounded-full"
+                        style={{ background: r.color }}
+                      />
+                    </div>
+                    <span className="text-slate-400 w-8 shrink-0">{r.pct}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Review cards grid */}
+          <div className="grid md:grid-cols-3 gap-4">
+            {reviews.map((rv, idx) => (
+              <motion.div key={rv.id}
+                initial={{ opacity: 0, y: 16 }}
+                animate={reviewsInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: 0.1 + idx * 0.1 }}
+                className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col">
+                <div className="flex items-start gap-3 mb-3">
+                  <img src={rv.avatar} alt={rv.name} className="w-11 h-11 rounded-full object-cover ring-2 ring-white shadow-sm shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <span className="text-slate-800 font-semibold text-sm block">{rv.name}</span>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <div className="flex gap-0.5">
+                        {[...Array(5)].map((_, i) => <Star key={i} size={10} className={i < rv.rating ? "text-amber-400 fill-amber-400" : "text-slate-300"} />)}
+                      </div>
+                      <span className="text-slate-400 text-[11px]">· {rv.trip}</span>
+                    </div>
+                  </div>
+                  <span className="text-slate-400 text-[11px] shrink-0">{rv.date}</span>
+                </div>
+                <p className="text-slate-800 font-semibold text-sm mb-1.5">{rv.title}</p>
+                <p className="text-slate-500 text-[13px] leading-relaxed flex-1">{rv.text}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Nearby — full width ────────────────────────────────── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-12">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-slate-900 font-bold text-xl flex items-center gap-2">
+            <span className="w-1 h-6 rounded-full bg-sky-500 inline-block" />
+            Khách sạn lân cận
+          </h2>
+          <div className="flex gap-2">
+            <button onClick={scrollPrev} className="p-2.5 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-colors text-slate-600 shadow-sm"><ChevronLeft size={16} /></button>
+            <button onClick={scrollNext} className="p-2.5 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-colors text-slate-600 shadow-sm"><ChevronRight size={16} /></button>
+          </div>
+        </div>
+        <div className="overflow-hidden" ref={emblaRef}>
+          <div className="flex gap-4">
+            {nearbyHotels.map((h) => (
+              <Link key={h.id} href={`/luu-tru-khach-san/${h.slug}`}>
+                <motion.div whileHover={{ y: -5 }}
+                  className="shrink-0 w-72 bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm cursor-pointer group">
+                  <div className="relative h-44 overflow-hidden">
+                    <img src={h.image} alt={h.name} className="w-full h-full object-cover transition-transform duration-600 group-hover:scale-110" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent" />
+                    <div className="absolute bottom-3 left-3 right-3">
+                      <div className="flex gap-0.5 mb-1">{[...Array(h.stars)].map((_, i) => <Star key={i} size={10} className="text-amber-400 fill-amber-400" />)}</div>
+                      <p className="text-white font-semibold text-sm leading-tight line-clamp-2">{h.name}</p>
+                    </div>
+                  </div>
+                  <div className="p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-amber-500 text-sm font-bold">
+                      <Star size={12} className="fill-amber-400" />{h.rating}
+                      <span className="text-slate-400 font-normal text-xs">/ 5</span>
+                    </div>
+                    <span className="flex items-center gap-1 text-slate-400 text-xs">
+                      <MapPin size={10} />{h.distance}
+                    </span>
+                  </div>
+                </motion.div>
+              </Link>
+            ))}
           </div>
         </div>
       </div>
