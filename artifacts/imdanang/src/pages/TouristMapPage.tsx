@@ -174,6 +174,8 @@ export default function TouristMapPage() {
   const gmapRef      = useRef<google.maps.Map | null>(null);
   const markersRef   = useRef<google.maps.Marker[]>([]);
   const infoWinRef   = useRef<google.maps.InfoWindow | null>(null);
+  const dirRendererRef = useRef<google.maps.DirectionsRenderer | null>(null);
+  const userMarkerRef  = useRef<google.maps.Marker | null>(null);
 
   const [activeCategory, setActiveCategory] = useState("hotel");
   const [search, setSearch] = useState("");
@@ -189,6 +191,9 @@ export default function TouristMapPage() {
   const [rf, setRf] = useState({ cuisine: [] as string[] });
   const [bf, setBf] = useState({ district: [] as string[] });
   const [df, setDf] = useState({ dishType: [] as string[], area: [] as string[] });
+
+  interface RouteInfo { destName: string; distance: string; duration: string; loading: boolean; error?: string; }
+  const [routeInfo, setRouteInfo] = useState<RouteInfo | null>(null);
 
   const cat = categories.find(c => c.id === activeCategory)!;
   const toggle = <T,>(arr: T[], v: T): T[] => arr.includes(v) ? arr.filter(x => x !== v) : [...arr, v];
@@ -296,10 +301,13 @@ export default function TouristMapPage() {
           </div>
           <div style="font-size:11px;color:${sub};line-height:1.6;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${selLoc.desc}</div>
         </div>
-        <div style="padding:10px 14px">
+        <div style="padding:10px 14px;display:flex;gap:6px">
+          <div onclick="window.__startDirections(${selLoc.lat},${selLoc.lng},'${selLoc.name.replace(/'/g, "\\'")}');window.__closeIW();" style="flex:0 0 auto;display:flex;align-items:center;gap:5px;padding:8px 12px;background:#6366f1;color:#fff;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>Chỉ đường
+          </div>
           ${selLoc.slug
-            ? `<a href="/luu-tru-khach-san/${selLoc.slug}" style="display:block;text-align:center;padding:8px;background:${accent};color:#fff;border-radius:10px;font-size:12px;font-weight:700;text-decoration:none">Xem chi tiết</a>`
-            : `<div style="text-align:center;padding:8px;background:${accent};color:#fff;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">Xem chi tiết</div>`}
+            ? `<a href="/luu-tru-khach-san/${selLoc.slug}" style="flex:1;display:block;text-align:center;padding:8px;background:${accent};color:#fff;border-radius:10px;font-size:12px;font-weight:700;text-decoration:none">Chi tiết</a>`
+            : `<div style="flex:1;text-align:center;padding:8px;background:${accent};color:#fff;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">Chi tiết</div>`}
         </div>
       </div>`);
     iw.setOptions({ pixelOffset: new google.maps.Size(0, -8) });
@@ -351,8 +359,11 @@ export default function TouristMapPage() {
             </div>
           </div>
         </div>
-        <div style="padding:10px 14px">
-          <div style="text-align:center;padding:8px;background:#f43f5e;color:#fff;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer" onclick="window.__closeIW()">Đóng</div>
+        <div style="padding:10px 14px;display:flex;gap:6px">
+          <div onclick="window.__startDirections(${selDishRest.lat},${selDishRest.lng},'${selDishRest.name.replace(/'/g, "\\'")}');window.__closeIW();" style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px;background:#6366f1;color:#fff;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>Chỉ đường
+          </div>
+          <div style="flex:0 0 auto;padding:8px 12px;background:${isDark ? "rgba(255,255,255,0.08)" : "#f3f4f6"};color:${isDark ? "rgba(255,255,255,0.6)" : "#6b7280"};border-radius:10px;font-size:12px;font-weight:700;cursor:pointer" onclick="window.__closeIW()">Đóng</div>
         </div>
       </div>`);
     iw.setOptions({ pixelOffset: new google.maps.Size(0, -8) });
@@ -405,6 +416,60 @@ export default function TouristMapPage() {
   }, [mapsReady, filteredList, activeCategory, expandedDishId, selectedId, selDish, cat]);
 
   const panTo = (lat: number, lng: number, zoom = 16) => { gmapRef.current?.panTo({ lat, lng }); gmapRef.current?.setZoom(zoom); };
+
+  const clearDirections = useCallback(() => {
+    dirRendererRef.current?.setMap(null);
+    dirRendererRef.current = null;
+    userMarkerRef.current?.setMap(null);
+    userMarkerRef.current = null;
+    setRouteInfo(null);
+  }, []);
+
+  const startDirections = useCallback((destLat: number, destLng: number, destName: string) => {
+    if (!mapsReady || !gmapRef.current) return;
+    setRouteInfo({ destName, distance: "", duration: "", loading: true });
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const origin = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        const svc = new google.maps.DirectionsService();
+        svc.route(
+          { origin, destination: { lat: destLat, lng: destLng }, travelMode: google.maps.TravelMode.DRIVING },
+          (result, status) => {
+            if (status === "OK" && result) {
+              // clear old renderer
+              dirRendererRef.current?.setMap(null);
+              const renderer = new google.maps.DirectionsRenderer({
+                suppressMarkers: false,
+                polylineOptions: { strokeColor: "#6366f1", strokeWeight: 5, strokeOpacity: 0.85 },
+              });
+              renderer.setMap(gmapRef.current!);
+              renderer.setDirections(result);
+              dirRendererRef.current = renderer;
+              // user position marker
+              userMarkerRef.current?.setMap(null);
+              const leg = result.routes[0].legs[0];
+              setRouteInfo({ destName, distance: leg.distance?.text || "", duration: leg.duration?.text || "", loading: false });
+              // fit bounds
+              const bounds = result.routes[0].bounds;
+              gmapRef.current!.fitBounds(bounds, 60);
+            } else {
+              setRouteInfo({ destName, distance: "", duration: "", loading: false, error: "Không thể tìm tuyến đường" });
+            }
+          }
+        );
+      },
+      () => {
+        setRouteInfo({ destName, distance: "", duration: "", loading: false, error: "Không truy cập được vị trí của bạn" });
+      },
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  }, [mapsReady]);
+
+  // expose to InfoWindow
+  useEffect(() => {
+    (window as any).__startDirections = startDirections;
+    (window as any).__clearDirections = clearDirections;
+  }, [startDirections, clearDirections]);
 
   // ── render ──
   const filterLabel = D ? "text-white/30" : "text-gray-400";
@@ -599,7 +664,9 @@ export default function TouristMapPage() {
                             </div>
                             {sel
                               ? <div className="w-2 h-2 rounded-full bg-rose-400 shrink-0" />
-                              : <ChevronRight size={12} className={`shrink-0 ${txS}`} />}
+                              : <button onClick={e => { e.stopPropagation(); startDirections(r.lat, r.lng, r.name); }} className="shrink-0 p-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 transition-all border border-indigo-400/20">
+                                  <Navigation size={10} />
+                                </button>}
                           </div>
                         </motion.div>
                       );
@@ -714,6 +781,14 @@ export default function TouristMapPage() {
                               <MapPin size={8} className="shrink-0" /><span className="truncate">{item.address}</span>
                             </div>
                           </div>
+                          <button
+                            onClick={e => { e.stopPropagation(); startDirections(item.lat, item.lng, item.name); }}
+                            title="Chỉ đường"
+                            className="shrink-0 flex items-center gap-1 px-2 py-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-500 transition-all text-[10px] font-bold border border-indigo-400/20"
+                          >
+                            <Navigation size={10} />
+                            <span className="hidden group-hover:inline">Đường</span>
+                          </button>
                         </div>
                       )}
                     </motion.div>
@@ -775,6 +850,53 @@ export default function TouristMapPage() {
             <Navigation size={14} />
           </button>
         </div>
+
+        {/* Route info bar */}
+        <AnimatePresence>
+          {routeInfo && (
+            <motion.div
+              initial={{ opacity: 0, y: -16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16 }}
+              transition={{ duration: 0.25 }}
+              className="absolute top-4 left-4 right-16 z-20"
+            >
+              <div className={`backdrop-blur border rounded-2xl px-4 py-3 flex items-center gap-3 shadow-lg ${D ? "bg-[#0f0f1e]/90 border-white/10" : "bg-white/95 border-gray-200 shadow-md"}`}>
+                <div className="w-8 h-8 rounded-xl bg-indigo-500 flex items-center justify-center shrink-0">
+                  <Navigation size={15} className="text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  {routeInfo.loading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full border-2 border-indigo-400 border-t-transparent animate-spin" />
+                      <span className={`text-xs ${txM}`}>Đang tìm đường tới <span className="font-semibold">{routeInfo.destName}</span>...</span>
+                    </div>
+                  ) : routeInfo.error ? (
+                    <span className="text-xs text-red-500">{routeInfo.error}</span>
+                  ) : (
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <div className="flex items-center gap-1.5">
+                        <MapPin size={11} className="text-indigo-400 shrink-0" />
+                        <span className={`text-xs font-semibold ${tx} truncate max-w-[180px]`}>{routeInfo.destName}</span>
+                      </div>
+                      <div className={`flex items-center gap-3 text-xs ${txM}`}>
+                        <span className="font-bold text-indigo-500">{routeInfo.distance}</span>
+                        <span className="text-slate-400">·</span>
+                        <span className="font-bold">{routeInfo.duration}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={clearDirections}
+                  className={`shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${D ? "hover:bg-white/10 text-white/40 hover:text-white/70" : "hover:bg-gray-100 text-gray-400 hover:text-gray-700"}`}
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* status */}
         <div className={`absolute bottom-4 left-4 z-10 flex items-center gap-2 backdrop-blur border rounded-xl px-3 py-2 ${statusBar}`}>
