@@ -12,6 +12,7 @@ import Hotels from "@/pages/Hotels";
 import HotelDetail from "@/pages/HotelDetail";
 import TouristMapPage from "@/pages/TouristMapPage";
 import Destinations from "@/pages/Destinations";
+import DestinationDetail from "@/pages/DestinationDetail";
 import Restaurants from "@/pages/Restaurants";
 import Transport from "@/pages/Transport";
 import Events from "@/pages/Events";
@@ -62,6 +63,7 @@ function Layout() {
           <Route path="/luu-tru-khach-san" component={Hotels} />
           <Route path="/luu-tru-khach-san/:slug" component={HotelDetail} />
           <Route path="/ban-do" component={TouristMapPage} />
+          <Route path="/destinations/:slug" component={DestinationDetail} />
           <Route path="/destinations" component={Destinations} />
           <Route path="/restaurants" component={Restaurants} />
           <Route path="/mon-ngon" component={LocalFood} />
