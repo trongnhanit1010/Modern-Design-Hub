@@ -26,7 +26,7 @@ export default function Shopping() {
     <div className="min-h-screen bg-gray-50" ref={ref}>
       <div className="relative h-56 overflow-hidden">
         <img src="https://images.unsplash.com/photo-1555529669-2269763671c0?w=1400&auto=format&fit=crop" alt="Shopping" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-gray-50" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60" />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pb-6">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <div className="inline-flex items-center gap-2 bg-pink-500 text-white rounded-full px-4 py-1.5 text-sm mb-3 shadow-md">
