@@ -298,6 +298,7 @@ export default function HeroSlider() {
   const filteredDest = searchVal
     ? trendingDest.filter((s) => s.title.toLowerCase().includes(searchVal.toLowerCase()))
     : trendingDest;
+  const hasSearchResults = !searchVal || filteredTop.length > 0 || filteredDest.length > 0;
 
   return (
     <section
@@ -425,7 +426,7 @@ export default function HeroSlider() {
           </motion.div>
 
           <SearchDropdown
-            show={showSuggestions}
+            show={showSuggestions && hasSearchResults}
             rect={dropdownRect}
             searchVal={searchVal}
             setSearchVal={setSearchVal}
