@@ -23,6 +23,7 @@ import LocalFood from "@/pages/LocalFood";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import BottomNav from "@/components/layout/BottomNav";
+import BackToTopButton from "@/components/layout/BackToTopButton";
 import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
 import { DarkModeProvider } from "@/context/DarkModeContext";
 
@@ -54,6 +55,7 @@ function Layout() {
       <Header />
       <Sidebar />
       <BottomNav />
+      <BackToTopButton />
       <motion.div
         animate={{ marginLeft: isMobile ? 0 : isExpanded ? 224 : 60 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
