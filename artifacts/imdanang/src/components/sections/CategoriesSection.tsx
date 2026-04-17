@@ -119,12 +119,10 @@ export default function CategoriesSection() {
                   >
                     <img src={cat.img} alt={cat.label} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                     <div className="absolute inset-0 bg-black/50" />
-                    <div className="absolute inset-0 flex flex-col items-center justify-start gap-1.5 pt-4">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5">
                       <cat.icon size={22} className="text-white drop-shadow" />
                       <span className="text-white text-[11px] font-semibold text-center leading-tight drop-shadow px-1">{cat.label}</span>
-                    </div>
-                    <div className="absolute bottom-2.5 left-3">
-                      <span className="text-white text-[11px] font-bold drop-shadow">{cat.count}</span>
+                      <span className="text-white/80 text-[10px] font-medium drop-shadow">{cat.count}</span>
                     </div>
                   </motion.button>
                 ))}
@@ -140,12 +138,10 @@ export default function CategoriesSection() {
                 >
                   <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&auto=format&fit=crop" alt="Tất cả" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                   <div className="absolute inset-0 bg-black/55" />
-                  <div className="absolute inset-0 flex flex-col items-center justify-start gap-1.5 pt-4">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5">
                     <LayoutGrid size={22} className="text-white drop-shadow" />
                     <span className="text-white text-[11px] font-semibold drop-shadow">Tất cả</span>
-                  </div>
-                  <div className="absolute bottom-2.5 left-3">
-                    <span className="text-white text-[11px] font-bold drop-shadow">1.5k+</span>
+                    <span className="text-white/80 text-[10px] font-medium drop-shadow">1.5k+</span>
                   </div>
                 </motion.button>
               </div>
@@ -210,12 +206,10 @@ export default function CategoriesSection() {
                       >
                         <img src={cat.img} alt={cat.label} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                         <div className="absolute inset-0 bg-black/50" />
-                        <div className="absolute inset-0 flex flex-col items-center justify-start gap-1.5 pt-3">
+                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5">
                           <cat.icon size={20} className="text-white drop-shadow" />
                           <span className="text-white text-[11px] font-semibold text-center leading-tight px-1">{cat.label}</span>
-                        </div>
-                        <div className="absolute bottom-2 left-2.5">
-                          <span className="text-white text-[11px] font-bold drop-shadow">{cat.count}</span>
+                          <span className="text-white/80 text-[10px] font-medium drop-shadow">{cat.count}</span>
                         </div>
                       </motion.button>
                     ))}
