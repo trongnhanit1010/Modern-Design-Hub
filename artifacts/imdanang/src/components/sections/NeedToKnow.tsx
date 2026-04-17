@@ -1,13 +1,11 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Shield, Banknote, PhoneCall, Plane, ArrowRight } from "lucide-react";
+import { Shield, Banknote, PhoneCall, Plane, ArrowRight, CheckCircle2 } from "lucide-react";
 
 const mainTip = {
   title: "Visa & Nhập cảnh",
   badge: "Cần biết",
-  badgeColor: "bg-blue-500",
   desc: "Công dân từ hơn 45 quốc gia được miễn thị thực khi đến Việt Nam. E-visa có thể xin online trong 3 ngày làm việc với chi phí 25 USD. Hộ chiếu cần còn hiệu lực ít nhất 6 tháng.",
-  image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&auto=format&fit=crop",
 };
 
 const tips = [
@@ -15,28 +13,24 @@ const tips = [
     id: 1,
     title: "Tiền tệ & Thanh toán",
     desc: "Đồng Việt Nam (VND). Tỷ giá: 1 USD ≈ 25,000 VND. ATM có sẵn khắp nơi. Thẻ tín dụng được chấp nhận tại hầu hết khách sạn.",
-    image: "https://images.unsplash.com/photo-1580519542036-c47de6196ba5?w=500&auto=format&fit=crop",
     icon: Banknote,
   },
   {
     id: 2,
     title: "An toàn & Sức khỏe",
     desc: "Đà Nẵng rất an toàn. Nên có bảo hiểm du lịch. Uống nước đóng chai. Thoa kem chống nắng SPF 50+ khi ra biển.",
-    image: "https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?w=500&auto=format&fit=crop",
     icon: Shield,
   },
   {
     id: 3,
     title: "Liên lạc khẩn cấp",
     desc: "Cảnh sát: 113 · Cứu hỏa: 114 · Cấp cứu: 115. Đường dây hỗ trợ du lịch: 1800 599 954 (miễn phí).",
-    image: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=500&auto=format&fit=crop",
     icon: PhoneCall,
   },
   {
     id: 4,
     title: "Di chuyển & Giao thông",
     desc: "Grab là ứng dụng gọi xe phổ biến nhất. Thuê xe máy ~150K VND/ngày. Sân bay cách trung tâm chỉ 3km.",
-    image: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=500&auto=format&fit=crop",
     icon: Plane,
   },
 ];
@@ -58,98 +52,99 @@ export default function NeedToKnow() {
           </a>
         </div>
 
-        <div
-          className="hidden md:grid gap-3"
-          style={{ gridTemplateColumns: "2fr 1fr 1fr", gridTemplateRows: "280px 180px" }}
-        >
+        <div className="hidden md:grid grid-cols-[1.15fr_1.85fr] gap-5">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6 }}
-            className="relative col-span-1 row-span-2 rounded-2xl overflow-hidden group cursor-pointer shadow-md"
+            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-sky-600 via-blue-600 to-cyan-500 p-7 text-white shadow-xl shadow-sky-900/15"
             data-testid="card-needtoknow-main"
           >
-            <img src={mainTip.image} alt={mainTip.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-            <div className="absolute inset-0 p-6 flex flex-col justify-between">
-              <span className={`inline-block self-start ${mainTip.badgeColor} text-white text-xs px-3 py-1 rounded-full font-medium`}>
-                {mainTip.badge}
-              </span>
+            <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-white/15 blur-2xl" />
+            <div className="absolute -bottom-20 -left-12 h-52 w-52 rounded-full bg-cyan-200/20 blur-3xl" />
+            <div className="relative z-10 flex h-full min-h-[390px] flex-col justify-between">
               <div>
-                <h3 className="text-white font-bold text-2xl mb-2 font-serif">{mainTip.title}</h3>
-                <p className="text-white/80 text-sm leading-relaxed mb-4">{mainTip.desc}</p>
-                <button className="flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors">
-                  Tìm hiểu thêm <ArrowRight size={13} />
-                </button>
+                <span className="inline-flex items-center rounded-full bg-white/20 px-3 py-1 text-xs font-semibold backdrop-blur">
+                  {mainTip.badge}
+                </span>
+                <h3 className="mt-5 font-serif text-3xl font-bold leading-tight">{mainTip.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-white/80">{mainTip.desc}</p>
               </div>
+
+              <div className="mt-6 space-y-3">
+                {["Kiểm tra hộ chiếu còn hạn 6 tháng", "Xin e-visa online trước chuyến đi", "Lưu bản mềm giấy tờ quan trọng"].map((item) => (
+                  <div key={item} className="flex items-center gap-2.5 rounded-2xl bg-white/15 p-3 backdrop-blur">
+                    <CheckCircle2 size={17} className="shrink-0 text-emerald-200" />
+                    <span className="text-sm font-medium text-white/90">{item}</span>
+                  </div>
+                ))}
+              </div>
+
+              <button className="mt-6 inline-flex w-fit items-center gap-2 rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-blue-700 shadow-lg shadow-blue-950/15 transition-transform hover:-translate-y-0.5">
+                Tìm hiểu thêm <ArrowRight size={14} />
+              </button>
             </div>
           </motion.div>
 
-          {tips.map((tip, i) => (
-            <motion.div
-              key={tip.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: i * 0.1 + 0.2, duration: 0.5 }}
-              whileHover={{ scale: 1.02, y: -4 }}
-              className="relative rounded-2xl overflow-hidden group cursor-pointer shadow-md"
-              data-testid={`card-needtoknow-${tip.id}`}
-            >
-              <img src={tip.image} alt={tip.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-4">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <div className="w-7 h-7 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                    <tip.icon size={14} className="text-white" />
+          <div className="grid grid-cols-2 gap-4">
+            {tips.map((tip, i) => (
+              <motion.div
+                key={tip.id}
+                initial={{ opacity: 0, y: 26 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: i * 0.1 + 0.15, duration: 0.5 }}
+                whileHover={{ y: -5 }}
+                className="group rounded-3xl border border-border bg-card p-5 shadow-sm transition-all hover:border-primary/25 hover:shadow-xl hover:shadow-slate-900/10"
+                data-testid={`card-needtoknow-${tip.id}`}
+              >
+                <div className="mb-4 flex items-start justify-between gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                    <tip.icon size={22} />
                   </div>
-                  <h4 className="text-white font-bold text-sm">{tip.title}</h4>
+                  <span className="rounded-full bg-muted px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    0{tip.id}
+                  </span>
                 </div>
-                <p className="text-white/70 text-xs leading-relaxed line-clamp-3">{tip.desc}</p>
-              </div>
-            </motion.div>
-          ))}
+                <h4 className="text-base font-bold text-foreground">{tip.title}</h4>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{tip.desc}</p>
+                <button className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
+                  Chi tiết <ArrowRight size={13} className="transition-transform group-hover:translate-x-1" />
+                </button>
+              </motion.div>
+            ))}
+          </div>
         </div>
 
-        <div className="md:hidden space-y-4">
+        <div className="md:hidden space-y-3">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5 }}
-            className="relative rounded-2xl overflow-hidden group cursor-pointer shadow-md h-64"
+            className="rounded-3xl bg-gradient-to-br from-sky-600 via-blue-600 to-cyan-500 p-5 text-white shadow-lg"
           >
-            <img src={mainTip.image} alt={mainTip.title} className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-            <div className="absolute inset-0 p-5 flex flex-col justify-between">
-              <span className={`inline-block self-start ${mainTip.badgeColor} text-white text-xs px-3 py-1 rounded-full font-medium`}>{mainTip.badge}</span>
-              <div>
-                <h3 className="text-white font-bold text-xl font-serif mb-1">{mainTip.title}</h3>
-                <p className="text-white/75 text-sm line-clamp-2">{mainTip.desc}</p>
-              </div>
-            </div>
+            <span className="inline-flex rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">{mainTip.badge}</span>
+            <h3 className="mt-4 font-serif text-2xl font-bold">{mainTip.title}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-white/80 line-clamp-4">{mainTip.desc}</p>
           </motion.div>
 
-          <div className="overflow-x-auto -mx-4 px-4">
-            <div className="flex gap-3" style={{ width: "max-content" }}>
-              {tips.map((tip, i) => (
-                <motion.div
-                  key={tip.id}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ delay: i * 0.08, duration: 0.4 }}
-                  className="relative w-52 h-52 rounded-2xl overflow-hidden shrink-0 cursor-pointer shadow-md"
-                >
-                  <img src={tip.image} alt={tip.title} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-3">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center"><tip.icon size={12} className="text-white" /></div>
-                      <h4 className="text-white font-bold text-sm">{tip.title}</h4>
-                    </div>
-                    <p className="text-white/70 text-xs mt-1 line-clamp-2">{tip.desc}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+          <div className="grid gap-3">
+            {tips.map((tip, i) => (
+              <motion.div
+                key={tip.id}
+                initial={{ opacity: 0, y: 18 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: i * 0.08, duration: 0.4 }}
+                className="flex gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm"
+              >
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <tip.icon size={20} />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-foreground">{tip.title}</h4>
+                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{tip.desc}</p>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </div>
