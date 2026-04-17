@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Send, MapPin, Utensils, Hotel, Waves, Mountain,
+  Send, Utensils, Hotel, Waves, Mountain,
   RefreshCw, ChevronRight, Mic, Plane, CreditCard, Sun, Zap,
-  Globe, Heart, Brain, X,
+  Heart, Brain, X,
 } from "lucide-react";
 import { useDarkMode } from "@/context/DarkModeContext";
 
@@ -12,7 +12,7 @@ type Message = { role: "user" | "bot"; text: string; time: string };
 const features = [
   { icon: Brain, label: "Thông minh", color: "#a855f7" },
   { icon: Zap, label: "Nhanh chóng", color: "#eab308" },
-  { icon: Globe, label: "Địa phương", color: "#22c55e" },
+  { icon: Heart, label: "Đáng yêu", color: "#fb7185" },
   { icon: Heart, label: "Tận tâm", color: "#f43f5e" },
 ];
 
@@ -95,31 +95,31 @@ function DaNaMascot() {
 
       {/* Head */}
       <div
-        className="relative w-20 h-20 rounded-full flex flex-col items-center justify-center gap-2"
+        className="relative w-16 h-16 rounded-full flex flex-col items-center justify-center gap-1.5"
         style={{
           background: "linear-gradient(145deg, #4f46e5 0%, #3b82f6 50%, #0ea5e9 100%)",
           boxShadow: "0 8px 32px rgba(79,70,229,0.5), 0 2px 8px rgba(0,0,0,0.15), inset 0 1px 2px rgba(255,255,255,0.2)",
         }}
       >
         {/* Eyes */}
-        <div className="flex gap-4 mt-1">
+        <div className="flex gap-3 mt-1">
           {[0, 1].map((i) => (
             <div key={i} className="relative">
               <div
-                className={`bg-white rounded-full transition-all duration-100 ${blink ? "w-4 h-[3px]" : "w-4 h-4"}`}
+                className={`bg-white rounded-full transition-all duration-100 ${blink ? "w-3 h-[3px]" : "w-3 h-3"}`}
                 style={{ boxShadow: blink ? "none" : "0 0 8px rgba(255,255,255,0.8)" }}
               />
               {!blink && (
-                <div className="absolute top-1 left-1 w-1.5 h-1.5 rounded-full bg-[#3b82f6]" />
+                <div className="absolute top-0.5 left-0.5 w-1.5 h-1.5 rounded-full bg-[#3b82f6]" />
               )}
             </div>
           ))}
         </div>
 
         {/* Smile */}
-        <div className="flex gap-[3px] items-end mb-1">
+        <div className="flex gap-[3px] items-end mb-0.5">
           {[2, 1, 0, 1, 2].map((d, i) => (
-            <div key={i} className="w-1.5 h-1.5 rounded-full bg-white/60" style={{ marginTop: `${d}px` }} />
+            <div key={i} className="w-1 h-1 rounded-full bg-white/60" style={{ marginTop: `${d}px` }} />
           ))}
         </div>
 
@@ -208,59 +208,50 @@ export default function AIAssistant() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
-              className="flex-1 overflow-y-auto px-5 py-6 flex flex-col items-center text-center"
+              className="flex-1 overflow-hidden px-5 py-4 flex flex-col items-center text-center"
             >
               {/* Mascot */}
               <DaNaMascot />
 
               {/* Title */}
-              <div className="mt-5 mb-4">
-                <h1 className={`text-2xl font-bold tracking-tight ${txPrimary}`}>
+              <div className="mt-3 mb-3">
+                <h1 className={`text-xl md:text-2xl font-bold tracking-tight ${txPrimary}`}>
                   Xin chào! Tôi là{" "}
                   <span style={{ background: "linear-gradient(135deg,#f97316,#eab308)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                     DaNa
                   </span>
                 </h1>
-                <p className={`text-sm mt-1.5 ${txMid}`}>Trợ lý AI du lịch thông minh của bạn tại Đà Nẵng</p>
+                <p className={`text-xs md:text-sm mt-1 ${txMid}`}>Trợ lý AI du lịch thông minh của bạn tại Đà Nẵng</p>
               </div>
 
               {/* Feature pills */}
-              <div className="flex items-center gap-3 flex-wrap justify-center mb-4">
+              <div className="flex items-center gap-3 flex-wrap justify-center mb-3">
                 {features.map((f) => (
                   <div key={f.label} className="flex flex-col items-center gap-1">
-                    <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: `${f.color}18` }}>
-                      <f.icon size={16} style={{ color: f.color }} />
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: `${f.color}18` }}>
+                      <f.icon size={15} style={{ color: f.color }} />
                     </div>
                     <span className={`text-[10px] font-medium ${txMid}`}>{f.label}</span>
                   </div>
                 ))}
               </div>
 
-              {/* Location pill */}
-              <motion.div
-                whileHover={{ scale: 1.03 }}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium bg-white border border-slate-200 shadow-sm text-slate-600 mb-6 cursor-default"
-              >
-                <MapPin size={12} className="text-blue-500" />
-                Sân bay Quốc tế Đà Nẵng
-              </motion.div>
-
               {/* Category cards */}
-              <div className="grid grid-cols-4 gap-3 w-full max-w-[480px] mb-6">
+              <div className="grid grid-cols-4 gap-2.5 w-full max-w-[760px] mb-4">
                 {categories.map((c) => (
                   <motion.button
                     key={c.label}
                     whileHover={{ y: -4, scale: 1.04 }}
                     whileTap={{ scale: 0.96 }}
                     onClick={() => sendMessage(categoryMessages[c.label] || c.label)}
-                    className={`flex flex-col items-center gap-2.5 p-3.5 rounded-2xl ${card} transition-all`}
+                    className={`flex flex-col items-center gap-2 p-3 rounded-2xl ${card} transition-all`}
                     data-testid={`button-ai-cat-${c.label}`}
                   >
                     <div
-                      className="w-12 h-12 rounded-2xl flex items-center justify-center"
+                      className="w-10 h-10 rounded-2xl flex items-center justify-center"
                       style={{ background: c.bg, boxShadow: `0 4px 12px ${c.color}35` }}
                     >
-                      <c.icon size={22} className="text-white" />
+                      <c.icon size={20} className="text-white" />
                     </div>
                     <div>
                       <p className={`text-xs font-semibold leading-tight ${txPrimary}`}>{c.label}</p>
@@ -271,37 +262,37 @@ export default function AIAssistant() {
               </div>
 
               {/* FAQ */}
-              <div className="w-full max-w-[480px]">
-                <div className={`flex items-center gap-2 mb-3 ${txSub}`}>
+              <div className="w-full max-w-[920px]">
+                <div className={`flex items-center gap-2 mb-2 ${txSub}`}>
                   <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center shrink-0">
                     <span className="text-white text-[8px] font-bold">?</span>
                   </div>
                   <span className="text-[11px] font-semibold uppercase tracking-wider">Câu hỏi thường gặp</span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2.5">
                   {faqs.map((faq) => (
                     <motion.button
                       key={faq.q}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => sendMessage(faq.msg)}
-                      className={`flex items-start gap-2.5 p-3.5 rounded-2xl text-left transition-all ${card} hover:border-blue-200`}
+                      className={`flex items-center gap-2 p-3 rounded-2xl text-left transition-all ${card} hover:border-blue-200`}
                       data-testid={`button-ai-faq`}
                     >
-                      <div className="w-7 h-7 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 mt-0.5">
+                      <div className="w-7 h-7 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
                         <faq.icon size={13} className="text-slate-500" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className={`text-xs font-medium leading-snug ${txMid}`}>{faq.q}</p>
+                        <p className={`text-xs font-medium leading-snug whitespace-nowrap overflow-hidden text-ellipsis ${txMid}`}>{faq.q}</p>
                       </div>
-                      <ChevronRight size={13} className={`shrink-0 mt-0.5 ${txSub}`} />
+                      <ChevronRight size={13} className={`shrink-0 ${txSub}`} />
                     </motion.button>
                   ))}
                 </div>
               </div>
 
-              <div className="h-4" />
+              <div className="h-2" />
             </motion.div>
 
           ) : (
@@ -371,8 +362,8 @@ export default function AIAssistant() {
       </div>
 
       {/* ── Input bar ── */}
-      <div className={`shrink-0 px-4 pt-3 pb-4 ${isDark ? "border-t border-white/8" : "border-t border-slate-200/60"}`}>
-        <div className={`flex items-center gap-3 rounded-2xl px-5 py-3.5 shadow-md transition-colors ${isDark ? "bg-white/8 border border-white/10" : "bg-white border border-slate-200"}`}>
+      <div className={`shrink-0 px-4 pt-2 pb-3 ${isDark ? "border-t border-white/8" : "border-t border-slate-200/60"}`}>
+        <div className={`flex items-center gap-3 rounded-2xl px-5 py-3 shadow-md transition-colors ${isDark ? "bg-white/8 border border-white/10" : "bg-white border border-slate-200"}`}>
           <input
             ref={inputRef}
             type="text"
