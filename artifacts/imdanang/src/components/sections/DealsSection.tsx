@@ -1,13 +1,69 @@
 import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
-import { Clock, Star, ArrowRight, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
+import { Clock, Star, ArrowRight, ChevronLeft, ChevronRight, MapPin, CheckCircle } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 
 const deals = [
-  { id: 1, destination: "Bà Nà Hills", tagline: "Thiên đường trên mây", totalPrice: "$299", originalPrice: "$399", days: "03 ngày", flatColor: "bg-blue-600", image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&auto=format&fit=crop", thumb: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&auto=format&fit=crop", badge: "Best Seller", badgeColor: "bg-amber-400", rating: 4.9 },
-  { id: 2, destination: "Hội An", tagline: "Phố cổ huyền bí đầy sắc màu", totalPrice: "$599", originalPrice: "$799", days: "07 ngày", flatColor: "bg-amber-500", image: "https://images.unsplash.com/photo-1548013146-72479768bada?w=600&auto=format&fit=crop", thumb: "https://images.unsplash.com/photo-1548013146-72479768bada?w=200&auto=format&fit=crop", badge: "07 Days Deal", badgeColor: "bg-blue-500", rating: 4.8 },
-  { id: 3, destination: "Đảo Lý Sơn", tagline: "Maldives của Việt Nam", totalPrice: "$398", originalPrice: "$520", days: "04 ngày", flatColor: "bg-teal-600", image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&auto=format&fit=crop", thumb: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=200&auto=format&fit=crop", badge: "Hot Deal", badgeColor: "bg-pink-500", rating: 4.7 },
-  { id: 4, destination: "Đà Nẵng City", tagline: "Thành phố biển hiện đại", totalPrice: "$189", originalPrice: "$250", days: "02 ngày", flatColor: "bg-violet-600", image: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=600&auto=format&fit=crop", thumb: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=200&auto=format&fit=crop", badge: "Weekend", badgeColor: "bg-violet-500", rating: 4.8 },
+  {
+    id: 1,
+    title: "Combo Bà Nà Hills 2 Ngày",
+    price: "1.299.000đ/người",
+    gradient: "from-violet-600 to-fuchsia-500",
+    days: "02 Ngày, 01 Đêm",
+    include: "*Bao gồm vé cáp treo & buffet trưa",
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&auto=format&fit=crop",
+    thumb: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&auto=format&fit=crop",
+    rating: 4.9,
+    badge: "HOT DEAL",
+    badgeColor: "bg-pink-500",
+    tagline: "Thiên đường trên mây",
+    destination: "Bà Nà Hills",
+  },
+  {
+    id: 2,
+    title: "Nghỉ Dưỡng Mỹ Khê 3N2Đ",
+    price: "2.499.000đ/phòng",
+    gradient: "from-teal-500 to-cyan-400",
+    days: "03 Ngày, 02 Đêm",
+    include: "*Dành cho 2 người lớn, ăn sáng",
+    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&auto=format&fit=crop",
+    thumb: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=200&auto=format&fit=crop",
+    rating: 4.8,
+    badge: "HOT DEAL",
+    badgeColor: "bg-teal-600",
+    tagline: "Nghỉ dưỡng view biển",
+    destination: "Mỹ Khê",
+  },
+  {
+    id: 3,
+    title: "Du Thuyền Sông Hàn",
+    price: "350.000đ/người",
+    gradient: "from-orange-500 to-amber-400",
+    days: "120 Phút",
+    include: "*Kèm cocktail và đồ ăn nhẹ",
+    image: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=600&auto=format&fit=crop",
+    thumb: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=200&auto=format&fit=crop",
+    rating: 4.7,
+    badge: "HOT DEAL",
+    badgeColor: "bg-orange-600",
+    tagline: "Trải nghiệm sông Hàn về đêm",
+    destination: "Sông Hàn",
+  },
+  {
+    id: 4,
+    title: "Tour Hội An – Phố Cổ",
+    price: "450.000đ/người",
+    gradient: "from-rose-500 to-pink-400",
+    days: "01 Ngày",
+    include: "*Bao gồm hướng dẫn viên & vé tham quan",
+    image: "https://images.unsplash.com/photo-1548013146-72479768bada?w=600&auto=format&fit=crop",
+    thumb: "https://images.unsplash.com/photo-1548013146-72479768bada?w=200&auto=format&fit=crop",
+    rating: 4.9,
+    badge: "HOT DEAL",
+    badgeColor: "bg-rose-600",
+    tagline: "Di sản văn hóa thế giới",
+    destination: "Hội An",
+  },
 ];
 
 export default function DealsSection() {
@@ -36,45 +92,73 @@ export default function DealsSection() {
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex gap-4">
               {deals.map((deal, i) => (
-                <motion.div key={deal.id} initial={{ opacity: 0, y: 20 }} animate={isInView ? { opacity: 1, y: 0 } : {}} transition={{ delay: i * 0.08, duration: 0.4 }} className="shrink-0 w-72 md:w-80" data-testid={`card-deal-${deal.id}`}>
+                <motion.div
+                  key={deal.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: i * 0.08, duration: 0.4 }}
+                  className="shrink-0 w-72 md:w-80"
+                  data-testid={`card-deal-${deal.id}`}
+                >
                   <AnimatePresence mode="wait">
                     {subMode === "color" ? (
-                      <motion.div key="color" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className={`rounded-2xl overflow-hidden h-44 ${deal.flatColor} relative`}>
-                        <div className="absolute top-3 right-3 w-20 h-20 rounded-2xl overflow-hidden shadow-xl border-2 border-white/30">
-                          <img src={deal.thumb} alt={deal.destination} className="w-full h-full object-cover" />
+                      <motion.div
+                        key="color"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className={`rounded-2xl overflow-hidden h-48 bg-gradient-to-br ${deal.gradient} relative cursor-pointer`}
+                      >
+                        <div className="absolute top-4 right-4 w-[72px] h-[72px] rounded-xl overflow-hidden shadow-lg border-2 border-white/30 shrink-0">
+                          <img src={deal.thumb} alt={deal.title} className="w-full h-full object-cover" />
                         </div>
-                        <div className="absolute inset-0 p-5 flex flex-col justify-between pr-28">
+
+                        <div className="absolute inset-0 p-4 pr-24 flex flex-col justify-between">
                           <div>
-                            <span className="inline-block bg-white/25 text-white text-xs px-2.5 py-0.5 rounded-full font-medium mb-2">{deal.badge}</span>
-                            <h3 className="text-white font-bold text-lg leading-snug">{deal.destination}</h3>
-                            <p className="text-white/70 text-xs mt-0.5">{deal.tagline}</p>
+                            <span className="inline-block bg-white/25 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full mb-2 tracking-wide">{deal.badge}</span>
+                            <h3 className="text-white font-bold text-base leading-snug line-clamp-2">{deal.title}</h3>
+                            <p className="text-white font-bold text-lg mt-1">{deal.price}</p>
                           </div>
-                          <div className="flex items-end justify-between">
-                            <div>
-                              <p className="text-white/60 text-xs">Từ</p>
-                              <p className="text-white text-2xl font-bold">{deal.totalPrice}</p>
-                              <p className="text-white/40 text-xs line-through">{deal.originalPrice}</p>
+
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-1.5 text-white/80 text-xs">
+                              <Clock size={11} className="shrink-0" />
+                              <span>{deal.days}</span>
                             </div>
-                            <div className="text-right">
-                              <div className="flex items-center gap-1 text-white/60 text-xs mb-1.5"><Clock size={10} />{deal.days}</div>
-                              <button className="bg-white/25 hover:bg-white/40 text-white text-xs px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">Đặt <ArrowRight size={10} /></button>
+                            <div className="flex items-start gap-1.5 text-white/80 text-xs">
+                              <CheckCircle size={11} className="shrink-0 mt-0.5" />
+                              <span className="leading-tight">{deal.include}</span>
                             </div>
                           </div>
                         </div>
                       </motion.div>
                     ) : (
-                      <motion.div key="image" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="relative rounded-2xl overflow-hidden h-44 group cursor-pointer">
+                      <motion.div
+                        key="image"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="relative rounded-2xl overflow-hidden h-48 group cursor-pointer"
+                      >
                         <img src={deal.image} alt={deal.destination} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                         <div className="absolute top-3 left-3">
                           <span className={`inline-block ${deal.badgeColor} text-white text-xs px-2.5 py-0.5 rounded-full font-medium`}>{deal.badge}</span>
                         </div>
                         <div className="absolute bottom-0 left-0 right-0 p-4">
-                          <div className="flex items-center gap-1.5 mb-0.5"><MapPin size={10} className="text-white/60" /><span className="text-white/60 text-xs">{deal.destination}</span></div>
+                          <div className="flex items-center gap-1.5 mb-0.5">
+                            <MapPin size={10} className="text-white/60" />
+                            <span className="text-white/60 text-xs">{deal.destination}</span>
+                          </div>
                           <h3 className="text-white font-bold text-sm">{deal.tagline}</h3>
                           <div className="flex items-center justify-between mt-1.5">
-                            <p className="text-white font-bold">{deal.totalPrice}<span className="text-xs font-normal text-white/60">/pp</span></p>
-                            <div className="flex items-center gap-1"><Star size={11} className="text-amber-400 fill-amber-400" /><span className="text-amber-400 text-xs font-semibold">{deal.rating}</span></div>
+                            <p className="text-white font-bold">{deal.price}</p>
+                            <div className="flex items-center gap-1">
+                              <Star size={11} className="text-amber-400 fill-amber-400" />
+                              <span className="text-amber-400 text-xs font-semibold">{deal.rating}</span>
+                            </div>
                           </div>
                         </div>
                       </motion.div>
