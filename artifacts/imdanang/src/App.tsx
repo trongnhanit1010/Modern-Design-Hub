@@ -18,6 +18,7 @@ import Transport from "@/pages/Transport";
 import Events from "@/pages/Events";
 import Shopping from "@/pages/Shopping";
 import AIAssistant from "@/pages/AIAssistant";
+import WeatherDetail from "@/pages/WeatherDetail";
 import LocalFood from "@/pages/LocalFood";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
@@ -71,6 +72,7 @@ function Layout() {
           <Route path="/events" component={Events} />
           <Route path="/shopping" component={Shopping} />
           <Route path="/ai" component={AIAssistant} />
+          <Route path="/thoi-tiet/:slug" component={WeatherDetail} />
           <Route component={NotFound} />
         </Switch>
       </motion.div>

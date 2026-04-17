@@ -1,6 +1,15 @@
 import { useState, useRef } from "react";
+import { useLocation } from "wouter";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import { Sun, Cloud, CloudRain, Wind, Droplets, Eye, Thermometer, MapPin } from "lucide-react";
+
+const locationSlugMap: Record<number, string> = {
+  1: "da-nang",
+  2: "hoi-an",
+  3: "ba-na-hills",
+  4: "my-khe",
+  5: "cu-lao-cham",
+};
 
 const weatherData = {
   city: "Đà Nẵng",
@@ -123,12 +132,16 @@ function AnimatedWeatherBg({ type }: { type: WeatherType }) {
 }
 
 function LocationWeatherCard({ loc, subMode, isInView, index }: { loc: typeof locationsWeather[0]; subMode: "color" | "image"; isInView: boolean; index: number }) {
+  const [, navigate] = useLocation();
+  const slug = locationSlugMap[loc.id] || "da-nang";
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ delay: index * 0.1, duration: 0.5 }}
       whileHover={{ scale: 1.03, y: -4 }}
+      onClick={() => navigate(`/thoi-tiet/${slug}`)}
       className="relative rounded-2xl overflow-hidden cursor-pointer shadow-lg"
       data-testid={`card-weather-loc-${loc.id}`}
     >
