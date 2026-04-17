@@ -185,8 +185,7 @@ function LocationWeatherCard({ loc, subMode, isInView, index }: { loc: typeof lo
 }
 
 export default function WeatherSection() {
-  const [option, setOption] = useState<"A" | "B" | "C">("A");
-  const [locSub, setLocSub] = useState<"color" | "image">("color");
+  const [option, setOption] = useState<"A" | "C">("A");
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
   const uv = uvLabel(weatherData.uvIndex);
@@ -201,7 +200,6 @@ export default function WeatherSection() {
           </div>
           <div className="flex items-center gap-2 bg-muted rounded-full p-1">
             <button onClick={() => setOption("A")} className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${option === "A" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`} data-testid="button-weather-option-a">Icons</button>
-            <button onClick={() => setOption("B")} className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${option === "B" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`} data-testid="button-weather-option-b">Image</button>
             <button onClick={() => setOption("C")} className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${option === "C" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`} data-testid="button-weather-option-c">4 Vùng</button>
           </div>
         </div>
@@ -262,77 +260,10 @@ export default function WeatherSection() {
             </motion.div>
           )}
 
-          {option === "B" && (
-            <motion.div key="B" initial={{ opacity: 0, y: 15 }} animate={isInView ? { opacity: 1, y: 0 } : {}} exit={{ opacity: 0, y: -15 }} transition={{ duration: 0.4 }} className="relative rounded-3xl overflow-hidden shadow-xl">
-              <div className="absolute inset-0">
-                <img src={weatherData.image} alt="Weather background" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/30" />
-              </div>
-              <div className="relative z-10 p-6 md:p-8">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <p className="text-white/60 text-sm font-medium mb-4">{weatherData.city}, {weatherData.country}</p>
-                    <div className="flex items-center gap-5 mb-4">
-                      <motion.div animate={{ rotate: [0, 12, 0, -12, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}>
-                        <Sun size={72} className="text-yellow-300 drop-shadow-lg" />
-                      </motion.div>
-                      <div>
-                        <div className="flex items-start gap-1">
-                          <span className="text-white font-bold" style={{ fontSize: "4.5rem", lineHeight: 1 }}>{weatherData.temp}</span>
-                          <span className="text-white/70 text-2xl mt-3">°C</span>
-                        </div>
-                        <p className="text-white text-lg font-medium">{weatherData.conditionVi}</p>
-                        <p className="text-white/50 text-sm mt-0.5">Cảm giác như {weatherData.feelsLike}°C</p>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2.5">
-                      {[
-                        { icon: Droplets, label: "Độ ẩm", value: `${weatherData.humidity}%` },
-                        { icon: Wind, label: "Gió", value: `${weatherData.wind} km/h` },
-                        { icon: Sun, label: "UV Index", value: `${weatherData.uvIndex} (${uv.label})` },
-                        { icon: Eye, label: "Tầm nhìn", value: `${weatherData.visibility} km` },
-                        { icon: Thermometer, label: "Áp suất", value: `${weatherData.pressure} hPa` },
-                        { icon: Cloud, label: "Điều kiện", value: weatherData.conditionVi },
-                      ].map((stat) => (
-                        <div key={stat.label} className="bg-white/10 backdrop-blur-sm rounded-xl p-2.5 flex items-center gap-2">
-                          <stat.icon size={14} className="text-white/70 shrink-0" />
-                          <div><p className="text-white/50 text-xs">{stat.label}</p><p className="text-white text-xs font-semibold">{stat.value}</p></div>
-                        </div>
-                      ))}
-                    </div>
-                    <p className="text-white/30 text-xs mt-3">Powered by AccuWeather • Cập nhật lúc 14:30</p>
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="text-white/50 text-xs uppercase tracking-wide font-semibold mb-3">Dự báo 5 ngày</p>
-                    <div className="flex flex-col gap-2">
-                      {weatherData.forecast.map((day, i) => (
-                        <motion.div key={day.day} initial={{ opacity: 0, x: 20 }} animate={isInView ? { opacity: 1, x: 0 } : {}} transition={{ delay: i * 0.08 + 0.3 }} className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2.5">
-                          <span className="text-white/60 text-sm font-medium w-6">{day.day}</span>
-                          <day.icon size={22} className={`shrink-0 ${day.type === "sunny" ? "text-yellow-300" : day.type === "rainy" ? "text-blue-200" : "text-white/80"}`} />
-                          <span className="text-white/60 text-xs flex-1">{day.condition}</span>
-                          <div className="flex items-center gap-2">
-                            <span className="text-white font-bold text-sm">{day.high}°</span>
-                            <span className="text-white/40 text-xs">{day.low}°</span>
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
           {option === "C" && (
             <motion.div key="C" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} transition={{ duration: 0.4 }}>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="flex items-center gap-1 bg-muted rounded-full p-1">
-                  <button onClick={() => setLocSub("color")} className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${locSub === "color" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`} data-testid="button-weather-4loc-color">Màu sắc</button>
-                  <button onClick={() => setLocSub("image")} className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${locSub === "image" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`} data-testid="button-weather-4loc-image">Hình ảnh</button>
-                </div>
-              </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                {locationsWeather.map((loc, i) => <LocationWeatherCard key={loc.id} loc={loc} subMode={locSub} isInView={isInView} index={i} />)}
+                {locationsWeather.map((loc, i) => <LocationWeatherCard key={loc.id} loc={loc} subMode="color" isInView={isInView} index={i} />)}
               </div>
               <p className="text-center text-muted-foreground text-xs mt-4">Powered by AccuWeather • Cập nhật lúc 14:30</p>
             </motion.div>
