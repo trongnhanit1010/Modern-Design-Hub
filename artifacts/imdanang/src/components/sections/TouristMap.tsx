@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
-import { MapPin, Hotel, UtensilsCrossed, Camera, Compass, Navigation, Star, Clock, X } from "lucide-react";
+import { MapPin, Hotel, UtensilsCrossed, Camera, Compass, Navigation, Star, Clock, X, Wifi, Layers, DownloadCloud, Cpu } from "lucide-react";
 
 const locations = [
   { id: 1, x: 10, y: 35, name: "Bãi biển Mỹ Khê", type: "Bãi biển", icon: Navigation, color: "bg-sky-500", border: "border-sky-300", accent: "#0ea5e9", desc: "Bãi biển đẹp nhất hành tinh, cát trắng mịn dài 9km", rating: 4.9, img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&auto=format&fit=crop" },
@@ -10,6 +10,207 @@ const locations = [
   { id: 5, x: 90, y: 25, name: "Nhà hàng Hải sản", type: "Ẩm thực", icon: UtensilsCrossed, color: "bg-orange-500", border: "border-orange-300", accent: "#f97316", desc: "Hải sản tươi sống ngon nhất Đà Nẵng, view biển", rating: 4.7, img: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=300&auto=format&fit=crop" },
   { id: 6, x: 50, y: 92, name: "Phố cổ Hội An", type: "Di sản", icon: Compass, color: "bg-rose-500", border: "border-rose-300", accent: "#f43f5e", desc: "Di sản văn hóa UNESCO, phố cổ đèn lồng rực rỡ", rating: 4.9, img: "https://images.unsplash.com/photo-1548013146-72479768bada?w=300&auto=format&fit=crop" },
 ];
+
+const smartDots = [
+  { id: 1, x: 32, y: 22, name: "Bà Nà Hills", color: "#f59e0b", size: 10 },
+  { id: 2, x: 62, y: 38, name: "Mỹ Khê", color: "#22c55e", size: 9 },
+  { id: 3, x: 55, y: 52, name: "Cầu Rồng", color: "#3b82f6", size: 14 },
+  { id: 4, x: 68, y: 68, name: "Ngũ Hành Sơn", color: "#06b6d4", size: 8 },
+  { id: 5, x: 75, y: 82, name: "Hội An", color: "#f97316", size: 10 },
+  { id: 6, x: 80, y: 18, name: "Sơn Trà", color: "#a78bfa", size: 8 },
+];
+
+const stats = [
+  { value: "134+", label: "Địa điểm tham quan" },
+  { value: "248+", label: "Khách sạn & Resort" },
+  { value: "512+", label: "Nhà hàng ẩm thực" },
+  { value: "86+", label: "Tour trải nghiệm" },
+];
+
+const features = [
+  { icon: Navigation, label: "Chỉ đường thời gian thực" },
+  { icon: Layers, label: "Đa lớp bản đồ" },
+  { icon: Wifi, label: "Offline mode" },
+  { icon: DownloadCloud, label: "GPS chính xác" },
+];
+
+function CornerBracket({ position }: { position: "tl" | "tr" | "bl" | "br" }) {
+  const size = 24;
+  const strokeW = 2;
+  const color = "#22d3ee";
+  const isTL = position === "tl", isTR = position === "tr";
+  const isBL = position === "bl";
+  return (
+    <div
+      className="absolute"
+      style={{
+        top: position.startsWith("t") ? 12 : "auto",
+        bottom: position.startsWith("b") ? 12 : "auto",
+        left: position.endsWith("l") ? 12 : "auto",
+        right: position.endsWith("r") ? 12 : "auto",
+        width: size + 4,
+        height: size + 4,
+        borderTop: (isTL || isTR) ? `${strokeW}px solid ${color}` : "none",
+        borderBottom: (isBL || position === "br") ? `${strokeW}px solid ${color}` : "none",
+        borderLeft: (isTL || isBL) ? `${strokeW}px solid ${color}` : "none",
+        borderRight: (isTR || position === "br") ? `${strokeW}px solid ${color}` : "none",
+      }}
+    />
+  );
+}
+
+function SmartMap({ isInView }: { isInView: boolean }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6 }}
+      className="relative rounded-3xl overflow-hidden shadow-2xl"
+      style={{ minHeight: 480, background: "linear-gradient(135deg, #0a1628 0%, #0f2040 40%, #0d1f3c 70%, #111827 100%)" }}
+      data-testid="section-tourist-map-smart"
+    >
+      {/* World map image overlay */}
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/World_map_-_low_resolution.svg/1280px-World_map_-_low_resolution.svg.png"
+        alt="World map"
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{ filter: "grayscale(1) brightness(0.15) sepia(0.6) hue-rotate(190deg)", opacity: 0.7, mixBlendMode: "screen" }}
+        draggable={false}
+      />
+
+      {/* Grid overlay */}
+      <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "linear-gradient(rgba(34,211,238,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(34,211,238,0.8) 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
+
+      {/* Corner brackets */}
+      <CornerBracket position="tl" />
+      <CornerBracket position="tr" />
+      <CornerBracket position="bl" />
+      <CornerBracket position="br" />
+
+      {/* Scanning line */}
+      <motion.div
+        className="absolute left-0 right-0 z-10 pointer-events-none"
+        style={{ height: 2, background: "linear-gradient(90deg, transparent, rgba(34,211,238,0.6), rgba(34,211,238,0.9), rgba(34,211,238,0.6), transparent)" }}
+        animate={{ top: ["10%", "90%", "10%"] }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+      />
+      {/* Scan glow */}
+      <motion.div
+        className="absolute left-0 right-0 z-10 pointer-events-none"
+        style={{ height: 40, background: "linear-gradient(180deg, transparent, rgba(34,211,238,0.04), transparent)" }}
+        animate={{ top: ["8%", "88%", "8%"] }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      <div className="relative z-20 grid md:grid-cols-5 min-h-[480px]">
+        {/* Left panel */}
+        <div className="md:col-span-2 flex flex-col justify-center p-8 md:pr-4">
+          <motion.div initial={{ opacity: 0, x: -30 }} animate={isInView ? { opacity: 1, x: 0 } : {}} transition={{ delay: 0.3, duration: 0.6 }}>
+            {/* Online badge */}
+            <div className="inline-flex items-center gap-2 border border-green-500/40 bg-green-500/10 text-green-400 rounded-full px-4 py-1.5 text-xs font-semibold tracking-widest mb-5">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+              HỆ THỐNG TRỰC TUYẾN
+            </div>
+
+            <h2 className="font-serif text-4xl md:text-5xl font-bold text-white leading-tight mb-1">Bản Đồ</h2>
+            <h2 className="font-serif text-4xl md:text-5xl font-bold leading-tight mb-4" style={{ background: "linear-gradient(90deg, #22d3ee, #06b6d4, #38bdf8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+              Thông Minh
+            </h2>
+
+            <p className="text-white/60 text-sm leading-relaxed mb-6 max-w-xs">
+              Khám phá điểm đến, tìm đường đi và theo dõi hành trình của bạn trên bản đồ tương tác thời gian thực.
+            </p>
+
+            {/* Feature pills */}
+            <div className="flex flex-wrap gap-2 mb-7">
+              {features.map((f) => (
+                <div key={f.label} className="flex items-center gap-1.5 bg-white/8 border border-white/10 text-white/70 text-xs px-3 py-1.5 rounded-full">
+                  <f.icon size={11} className="text-cyan-400" />
+                  {f.label}
+                </div>
+              ))}
+            </div>
+
+            <motion.button
+              whileHover={{ scale: 1.04, boxShadow: "0 0 24px rgba(34,211,238,0.4)" }}
+              whileTap={{ scale: 0.96 }}
+              className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-2xl font-semibold text-sm w-fit transition-all"
+              style={{ background: "linear-gradient(135deg, #0891b2, #0284c7)" }}
+              data-testid="button-smart-map-open"
+            >
+              <MapPin size={16} />Mở bản đồ
+              <span className="ml-1 text-white/60">→</span>
+            </motion.button>
+          </motion.div>
+        </div>
+
+        {/* Right: map dots + stats */}
+        <div className="md:col-span-3 relative flex items-center p-6">
+          {/* Dots */}
+          <div className="absolute inset-0">
+            {smartDots.map((dot, i) => (
+              <motion.div
+                key={dot.id}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={isInView ? { scale: 1, opacity: 1 } : {}}
+                transition={{ delay: i * 0.15 + 0.5, type: "spring", stiffness: 260 }}
+                className="absolute"
+                style={{ left: `${dot.x}%`, top: `${dot.y}%`, transform: "translate(-50%, -50%)" }}
+              >
+                {/* Ripple rings */}
+                <motion.div
+                  className="absolute rounded-full"
+                  style={{ border: `1.5px solid ${dot.color}`, width: dot.size * 3.5, height: dot.size * 3.5, top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}
+                  animate={{ scale: [0.6, 1.4, 0.6], opacity: [0.6, 0, 0.6] }}
+                  transition={{ duration: 2.2, repeat: Infinity, delay: i * 0.35 }}
+                />
+                <motion.div
+                  className="absolute rounded-full"
+                  style={{ border: `1px solid ${dot.color}`, width: dot.size * 2.2, height: dot.size * 2.2, top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}
+                  animate={{ scale: [0.8, 1.6, 0.8], opacity: [0.4, 0, 0.4] }}
+                  transition={{ duration: 2.2, repeat: Infinity, delay: i * 0.35 + 0.4 }}
+                />
+                {/* Core dot */}
+                <div
+                  className="relative rounded-full shadow-lg"
+                  style={{ width: dot.size, height: dot.size, background: dot.color, boxShadow: `0 0 ${dot.size * 1.5}px ${dot.color}80` }}
+                />
+                {/* Label */}
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 whitespace-nowrap">
+                  <span className="text-white/75 text-[9px] font-medium bg-black/50 backdrop-blur-sm px-2 py-0.5 rounded-full">
+                    {dot.name}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Stats grid — positioned bottom-right */}
+          <div className="absolute bottom-5 right-5 grid grid-cols-2 gap-2 z-10">
+            {stats.map((s, i) => (
+              <motion.div
+                key={s.label}
+                initial={{ opacity: 0, y: 12 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: i * 0.1 + 0.7, duration: 0.4 }}
+                className="bg-black/50 backdrop-blur-md border border-white/10 rounded-xl px-4 py-3 text-center min-w-[110px]"
+              >
+                <p className="text-white font-bold text-xl leading-tight">{s.value}</p>
+                <p className="text-white/50 text-[10px] mt-0.5">{s.label}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom status bar */}
+      <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-black/30 backdrop-blur-sm border border-white/10 rounded-xl px-3 py-1.5 z-20">
+        <Cpu size={11} className="text-cyan-400" />
+        <span className="text-white/60 text-xs">AI-powered • Cập nhật thời gian thực</span>
+      </div>
+    </motion.div>
+  );
+}
 
 function WorldMapBg() {
   return (
@@ -154,15 +355,45 @@ function ModernMap({ isInView }: { isInView: boolean }) {
 export default function TouristMap() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const [mapMode, setMapMode] = useState<"modern" | "smart">("modern");
 
   return (
     <section className="py-16 px-4" id="map" ref={ref} data-testid="section-tourist-map">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground">Tourist Map</h2>
-          <p className="text-muted-foreground text-sm mt-1">Khám phá bản đồ du lịch Đà Nẵng</p>
+        <div className="flex items-center justify-between mb-8 flex-wrap gap-3">
+          <div>
+            <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground">Tourist Map</h2>
+            <p className="text-muted-foreground text-sm mt-1">Khám phá bản đồ du lịch Đà Nẵng</p>
+          </div>
+          <div className="flex items-center gap-1.5 bg-muted rounded-full p-1">
+            <button
+              onClick={() => setMapMode("modern")}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${mapMode === "modern" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`}
+              data-testid="button-map-mode-modern"
+            >
+              Bản đồ
+            </button>
+            <button
+              onClick={() => setMapMode("smart")}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${mapMode === "smart" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`}
+              data-testid="button-map-mode-smart"
+            >
+              Thông minh
+            </button>
+          </div>
         </div>
-        <ModernMap isInView={isInView} />
+
+        <AnimatePresence mode="wait">
+          {mapMode === "modern" ? (
+            <motion.div key="modern" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.35 }}>
+              <ModernMap isInView={isInView} />
+            </motion.div>
+          ) : (
+            <motion.div key="smart" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.35 }}>
+              <SmartMap isInView={isInView} />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </section>
   );
