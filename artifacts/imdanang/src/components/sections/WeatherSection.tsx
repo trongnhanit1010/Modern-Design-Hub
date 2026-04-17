@@ -25,10 +25,11 @@ const weatherData = {
 };
 
 const locationsWeather = [
-  { id: 1, name: "Hội An", temp: 30, condition: "Nắng nhẹ", type: "sunny" as const, icon: Sun, humidity: 72, wind: 12, image: "https://images.unsplash.com/photo-1548013146-72479768bada?w=600&auto=format&fit=crop", gradient: "from-amber-500 to-orange-600" },
-  { id: 2, name: "Đà Nẵng", temp: 32, condition: "Có mây rải rác", type: "partly-cloudy" as const, icon: Cloud, humidity: 78, wind: 15, image: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=600&auto=format&fit=crop", gradient: "from-sky-500 to-blue-600" },
-  { id: 3, name: "Bà Nà Hills", temp: 22, condition: "Mát mẻ, sương mù", type: "cloudy" as const, icon: Cloud, humidity: 90, wind: 20, image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&auto=format&fit=crop", gradient: "from-slate-600 to-slate-800" },
-  { id: 4, name: "Cù Lao Chàm", temp: 29, condition: "Nắng đẹp, sóng nhẹ", type: "sunny" as const, icon: Sun, humidity: 75, wind: 18, image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&auto=format&fit=crop", gradient: "from-teal-500 to-cyan-600" },
+  { id: 1, name: "Đà Nẵng", temp: 28, highTemp: 32, lowTemp: 25, condition: "Nhiều mây, nắng nhẹ", type: "partly-cloudy" as const, icon: Cloud, humidity: 75, wind: 12, uv: 8, gradient: "from-sky-400 to-blue-500", image: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=600&auto=format&fit=crop" },
+  { id: 2, name: "Hội An", temp: 30, highTemp: 34, lowTemp: 26, condition: "Nắng nhiều", type: "sunny" as const, icon: Sun, humidity: 68, wind: 8, uv: 9, gradient: "from-orange-400 to-orange-600", image: "https://images.unsplash.com/photo-1548013146-72479768bada?w=600&auto=format&fit=crop" },
+  { id: 3, name: "Bà Nà Hills", temp: 18, highTemp: 22, lowTemp: 14, condition: "Có mây, mát mẻ", type: "cloudy" as const, icon: Cloud, humidity: 88, wind: 15, uv: 4, gradient: "from-slate-500 to-slate-700", image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&auto=format&fit=crop" },
+  { id: 4, name: "Mỹ Khê", temp: 29, highTemp: 33, lowTemp: 26, condition: "Gió nhẹ, nắng đẹp", type: "partly-cloudy" as const, icon: Cloud, humidity: 72, wind: 18, uv: 8, gradient: "from-teal-400 to-teal-600", image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&auto=format&fit=crop" },
+  { id: 5, name: "Cù Lao Chàm", temp: 27, highTemp: 31, lowTemp: 24, condition: "Nắng gió biển", type: "sunny" as const, icon: Sun, humidity: 80, wind: 22, uv: 9, gradient: "from-violet-400 to-indigo-600", image: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=600&auto=format&fit=crop" },
 ];
 
 const uvLabel = (uv: number) => {
@@ -121,40 +122,42 @@ function AnimatedWeatherBg({ type }: { type: WeatherType }) {
   );
 }
 
-function LocationWeatherCard({ loc, subMode, isInView, index }: { loc: typeof locationsWeather[0]; subMode: "color" | "image"; isInView: boolean; index: number }) {
+function LocationWeatherCard({ loc, isInView, index }: { loc: typeof locationsWeather[0]; isInView: boolean; index: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ delay: index * 0.1, duration: 0.5 }}
-      whileHover={{ scale: 1.02, y: -4 }}
-      className="relative rounded-2xl overflow-hidden cursor-pointer shadow-lg"
+      whileHover={{ scale: 1.03, y: -4 }}
+      className={`relative rounded-2xl overflow-hidden cursor-pointer shadow-lg bg-gradient-to-br ${loc.gradient}`}
       data-testid={`card-weather-loc-${loc.id}`}
-      style={{ minHeight: 200 }}
     >
-      {subMode === "image" ? (
-        <>
-          <img src={loc.image} alt={loc.name} className="w-full h-full object-cover absolute inset-0" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-        </>
-      ) : (
-        <div className={`absolute inset-0 bg-gradient-to-br ${loc.gradient}`} />
-      )}
-      <div className="relative z-10 p-5">
-        <div className="flex items-start justify-between mb-3">
+      <div className="p-5 flex flex-col gap-3">
+        <div className="flex items-start justify-between">
           <div>
-            <div className="flex items-center gap-1.5 mb-1"><MapPin size={12} className="text-white/60" /><span className="text-white/70 text-xs">{loc.name}, Việt Nam</span></div>
-            <p className="text-white/80 text-sm">{loc.condition}</p>
+            <p className="text-white font-bold text-sm tracking-wide leading-tight">{loc.name.toUpperCase()}</p>
+            <p className="text-white/75 text-xs mt-0.5 leading-snug">{loc.condition}</p>
           </div>
-          <loc.icon size={32} className="text-yellow-300 drop-shadow" />
+          <loc.icon size={28} className="text-white/90 drop-shadow shrink-0" />
         </div>
-        <div className="flex items-end gap-1 mt-2">
-          <span className="text-white font-bold" style={{ fontSize: "3.5rem", lineHeight: 1 }}>{loc.temp}</span>
-          <span className="text-white/70 text-2xl mb-2">°C</span>
+
+        <div>
+          <div className="flex items-start gap-0.5">
+            <span className="text-white font-bold leading-none" style={{ fontSize: "3.2rem" }}>{loc.temp}°</span>
+          </div>
+          <p className="text-white/65 text-sm mt-1">{loc.highTemp}° / {loc.lowTemp}°</p>
         </div>
-        <div className="flex items-center gap-4 mt-4 pt-3 border-t border-white/20">
-          <div className="flex items-center gap-1 text-white/60 text-xs"><Droplets size={11} /><span>{loc.humidity}%</span></div>
-          <div className="flex items-center gap-1 text-white/60 text-xs"><Wind size={11} /><span>{loc.wind} km/h</span></div>
+
+        <div className="flex items-center gap-3 pt-2 border-t border-white/20">
+          <div className="flex items-center gap-1 text-white/70 text-xs">
+            <Droplets size={11} /><span>{loc.humidity}%</span>
+          </div>
+          <div className="flex items-center gap-1 text-white/70 text-xs">
+            <Wind size={11} /><span>{loc.wind} km/h</span>
+          </div>
+          <div className="flex items-center gap-1 text-white/70 text-xs">
+            <Sun size={11} /><span>UV {loc.uv}</span>
+          </div>
         </div>
       </div>
     </motion.div>
@@ -163,7 +166,6 @@ function LocationWeatherCard({ loc, subMode, isInView, index }: { loc: typeof lo
 
 export default function WeatherSection() {
   const [option, setOption] = useState<"A" | "B" | "C">("A");
-  const [locSub, setLocSub] = useState<"color" | "image">("color");
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
   const uv = uvLabel(weatherData.uvIndex);
@@ -302,14 +304,8 @@ export default function WeatherSection() {
 
           {option === "C" && (
             <motion.div key="C" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} transition={{ duration: 0.4 }}>
-              <div className="flex items-center gap-2 mb-5">
-                <div className="flex items-center gap-1.5 bg-muted rounded-full p-1">
-                  <button onClick={() => setLocSub("color")} className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${locSub === "color" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`} data-testid="button-weather-4loc-color">Hiệu ứng</button>
-                  <button onClick={() => setLocSub("image")} className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${locSub === "image" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`} data-testid="button-weather-4loc-image">Hình ảnh</button>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4" style={{ minHeight: 220 }}>
-                {locationsWeather.map((loc, i) => <LocationWeatherCard key={loc.id} loc={loc} subMode={locSub} isInView={isInView} index={i} />)}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                {locationsWeather.map((loc, i) => <LocationWeatherCard key={loc.id} loc={loc} isInView={isInView} index={i} />)}
               </div>
               <p className="text-center text-muted-foreground text-xs mt-4">Powered by AccuWeather • Cập nhật lúc 14:30</p>
             </motion.div>
