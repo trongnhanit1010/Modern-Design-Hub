@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Send, Utensils, Hotel, Waves, Mountain,
   RefreshCw, ChevronRight, Mic, Plane, CreditCard, Sun, Zap,
-  Heart, Brain, X,
+  Heart, Brain, BadgeCheck, X,
 } from "lucide-react";
 import { useDarkMode } from "@/context/DarkModeContext";
 
@@ -12,7 +12,7 @@ type Message = { role: "user" | "bot"; text: string; time: string };
 const features = [
   { icon: Brain, label: "Thông minh", color: "#a855f7" },
   { icon: Zap, label: "Nhanh chóng", color: "#eab308" },
-  { icon: Heart, label: "Đáng yêu", color: "#fb7185" },
+  { icon: BadgeCheck, label: "Chính xác", color: "#14b8a6" },
   { icon: Heart, label: "Tận tâm", color: "#f43f5e" },
 ];
 
