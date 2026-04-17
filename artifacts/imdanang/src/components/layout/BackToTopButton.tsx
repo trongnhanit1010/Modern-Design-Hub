@@ -25,16 +25,16 @@ export default function BackToTopButton() {
           initial={{ opacity: 0, y: 18, scale: 0.85 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 18, scale: 0.85 }}
-          whileHover={{ y: -4, scale: 1.05 }}
+          whileHover={{ y: -3, scale: 1.03 }}
           whileTap={{ scale: 0.94 }}
           transition={{ type: "spring", stiffness: 360, damping: 24 }}
-          className="group fixed bottom-24 right-5 md:bottom-7 md:right-7 z-50 flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-sky-500 via-blue-600 to-cyan-500 text-white shadow-2xl shadow-sky-500/30 ring-1 ring-white/30 backdrop-blur focus:outline-none focus:ring-4 focus:ring-sky-300/50"
+          className="group fixed bottom-24 right-5 md:bottom-7 md:right-7 z-50 flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-amber-300/45 bg-white/85 text-amber-600 shadow-xl shadow-amber-900/10 backdrop-blur-xl transition-colors duration-300 hover:border-amber-400/70 hover:bg-amber-50/95 hover:text-amber-700 focus:outline-none focus:ring-4 focus:ring-amber-300/30 dark:border-amber-300/25 dark:bg-slate-950/70 dark:text-amber-300 dark:shadow-black/30 dark:hover:bg-slate-900/85"
           aria-label="Quay lại đầu trang"
           data-testid="button-back-to-top"
         >
-          <span className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.45),transparent_32%)] opacity-90" />
-          <span className="absolute inset-x-2 bottom-1 h-px bg-white/40" />
-          <ArrowUp className="relative z-10 h-6 w-6 transition-transform duration-300 group-hover:-translate-y-1" strokeWidth={2.6} />
+          <span className="absolute inset-1 rounded-full bg-gradient-to-br from-amber-100/70 via-white/35 to-transparent opacity-80 dark:from-amber-300/10 dark:via-white/5" />
+          <span className="absolute bottom-2 h-1 w-5 rounded-full bg-amber-400/25 blur-sm transition-opacity duration-300 group-hover:opacity-80" />
+          <ArrowUp className="relative z-10 h-5 w-5 transition-transform duration-300 group-hover:-translate-y-0.5" strokeWidth={2.4} />
         </motion.button>
       )}
     </AnimatePresence>
