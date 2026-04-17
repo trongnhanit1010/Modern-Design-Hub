@@ -122,17 +122,26 @@ function AnimatedWeatherBg({ type }: { type: WeatherType }) {
   );
 }
 
-function LocationWeatherCard({ loc, isInView, index }: { loc: typeof locationsWeather[0]; isInView: boolean; index: number }) {
+function LocationWeatherCard({ loc, subMode, isInView, index }: { loc: typeof locationsWeather[0]; subMode: "color" | "image"; isInView: boolean; index: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ delay: index * 0.1, duration: 0.5 }}
       whileHover={{ scale: 1.03, y: -4 }}
-      className={`relative rounded-2xl overflow-hidden cursor-pointer shadow-lg bg-gradient-to-br ${loc.gradient}`}
+      className="relative rounded-2xl overflow-hidden cursor-pointer shadow-lg"
       data-testid={`card-weather-loc-${loc.id}`}
     >
-      <div className="p-5 flex flex-col gap-3">
+      {subMode === "image" ? (
+        <>
+          <img src={loc.image} alt={loc.name} className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-black/45" />
+        </>
+      ) : (
+        <div className={`absolute inset-0 bg-gradient-to-br ${loc.gradient}`} />
+      )}
+
+      <div className="relative z-10 p-5 flex flex-col gap-3">
         <div className="flex items-start justify-between">
           <div>
             <p className="text-white font-bold text-sm tracking-wide leading-tight">{loc.name.toUpperCase()}</p>
@@ -142,9 +151,7 @@ function LocationWeatherCard({ loc, isInView, index }: { loc: typeof locationsWe
         </div>
 
         <div>
-          <div className="flex items-start gap-0.5">
-            <span className="text-white font-bold leading-none" style={{ fontSize: "3.2rem" }}>{loc.temp}°</span>
-          </div>
+          <span className="text-white font-bold leading-none" style={{ fontSize: "3.2rem" }}>{loc.temp}°</span>
           <p className="text-white/65 text-sm mt-1">{loc.highTemp}° / {loc.lowTemp}°</p>
         </div>
 
@@ -166,6 +173,7 @@ function LocationWeatherCard({ loc, isInView, index }: { loc: typeof locationsWe
 
 export default function WeatherSection() {
   const [option, setOption] = useState<"A" | "B" | "C">("A");
+  const [locSub, setLocSub] = useState<"color" | "image">("color");
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
   const uv = uvLabel(weatherData.uvIndex);
@@ -304,8 +312,14 @@ export default function WeatherSection() {
 
           {option === "C" && (
             <motion.div key="C" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} transition={{ duration: 0.4 }}>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="flex items-center gap-1 bg-muted rounded-full p-1">
+                  <button onClick={() => setLocSub("color")} className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${locSub === "color" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`} data-testid="button-weather-4loc-color">Màu sắc</button>
+                  <button onClick={() => setLocSub("image")} className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${locSub === "image" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`} data-testid="button-weather-4loc-image">Hình ảnh</button>
+                </div>
+              </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                {locationsWeather.map((loc, i) => <LocationWeatherCard key={loc.id} loc={loc} isInView={isInView} index={i} />)}
+                {locationsWeather.map((loc, i) => <LocationWeatherCard key={loc.id} loc={loc} subMode={locSub} isInView={isInView} index={i} />)}
               </div>
               <p className="text-center text-muted-foreground text-xs mt-4">Powered by AccuWeather • Cập nhật lúc 14:30</p>
             </motion.div>
