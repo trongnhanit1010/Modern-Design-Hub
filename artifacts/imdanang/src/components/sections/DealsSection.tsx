@@ -1,7 +1,6 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
-import { Clock, ArrowRight, ChevronLeft, ChevronRight, CheckCircle, MapPin, Star } from "lucide-react";
-import useEmblaCarousel from "embla-carousel-react";
+import { Clock, ArrowRight, CheckCircle } from "lucide-react";
 
 const imageDeals = [
   {
@@ -109,9 +108,6 @@ export default function DealsSection() {
   const [subMode, setSubMode] = useState<"color" | "image">("color");
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: "start" });
-  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
-  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
   return (
     <section className="py-12 px-4 bg-background" ref={ref} data-testid="section-deals">
@@ -135,48 +131,49 @@ export default function DealsSection() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25 }}
-              className="relative"
-              data-testid="deals-carousel"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+              data-testid="deals-color-grid"
             >
-              <div className="overflow-hidden" ref={emblaRef}>
-                <div className="flex gap-4">
-                  {deals.map((deal, i) => (
-                    <motion.div
-                      key={deal.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={isInView ? { opacity: 1, y: 0 } : {}}
-                      transition={{ delay: i * 0.08, duration: 0.4 }}
-                      className="shrink-0 w-72 md:w-80"
-                      data-testid={`card-deal-${deal.id}`}
-                    >
-                      <div className={`rounded-2xl overflow-hidden h-48 bg-gradient-to-br ${deal.gradient} relative cursor-pointer`}>
-                        <div className="absolute top-4 right-4 w-[72px] h-[72px] rounded-xl overflow-hidden shadow-lg border-2 border-white/30 shrink-0">
-                          <img src={deal.thumb} alt={deal.title} className="w-full h-full object-cover" />
-                        </div>
-                        <div className="absolute inset-0 p-4 pr-24 flex flex-col justify-between">
-                          <div>
-                            <span className="inline-block bg-white/25 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full mb-2 tracking-wide">{deal.badge}</span>
-                            <h3 className="text-white font-bold text-base leading-snug line-clamp-2">{deal.title}</h3>
-                            <p className="text-white font-bold text-lg mt-1">{deal.price}</p>
-                          </div>
-                          <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-1.5 text-white/80 text-xs">
-                              <Clock size={11} className="shrink-0" />
-                              <span>{deal.days}</span>
-                            </div>
-                            <div className="flex items-start gap-1.5 text-white/80 text-xs">
-                              <CheckCircle size={11} className="shrink-0 mt-0.5" />
-                              <span className="leading-tight">{deal.include}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-              <button onClick={scrollPrev} className="absolute -left-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white shadow-lg border border-border hover:bg-muted transition-colors z-10"><ChevronLeft size={18} /></button>
-              <button onClick={scrollNext} className="absolute -right-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white shadow-lg border border-border hover:bg-muted transition-colors z-10"><ChevronRight size={18} /></button>
+              {deals.slice(0, 3).map((deal, i) => (
+                <motion.div
+                  key={deal.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: i * 0.08, duration: 0.4 }}
+                  whileHover={{ scale: 1.02, y: -3 }}
+                  className={`rounded-3xl overflow-hidden bg-gradient-to-br ${deal.gradient} cursor-pointer shadow-lg`}
+                  data-testid={`card-deal-${deal.id}`}
+                >
+                  {/* Top section: badge + title + price + thumb */}
+                  <div className="p-5 flex gap-3 justify-between items-start">
+                    <div className="flex-1 min-w-0">
+                      <span className="inline-block bg-white/25 text-white text-[10px] font-bold px-2.5 py-1 rounded-full mb-3 tracking-widest">
+                        {deal.badge}
+                      </span>
+                      <h3 className="text-white font-bold text-lg leading-snug">{deal.title}</h3>
+                      <p className="text-white font-bold text-xl mt-1">{deal.price}</p>
+                    </div>
+                    <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-lg border-2 border-white/25 shrink-0">
+                      <img src={deal.thumb} alt={deal.title} className="w-full h-full object-cover" />
+                    </div>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="mx-5 border-t border-white/25" />
+
+                  {/* Bottom section: details */}
+                  <div className="px-5 py-4 flex flex-col gap-2">
+                    <div className="flex items-center gap-2 text-white/85 text-sm">
+                      <Clock size={13} className="shrink-0" />
+                      <span>{deal.days}</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-white/85 text-sm">
+                      <CheckCircle size={13} className="shrink-0 mt-0.5" />
+                      <span className="leading-snug">{deal.include}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
             </motion.div>
           ) : (
             <motion.div
