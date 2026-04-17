@@ -1,25 +1,25 @@
 import { useState } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import { useRef } from "react";
-import { Hotel, MapPin, UtensilsCrossed, Bus, CalendarDays, ShoppingBag, LayoutGrid, X, Coffee, Waves, Compass, Gamepad2 } from "lucide-react";
+import { Hotel, Compass, UtensilsCrossed, Car, CalendarDays, Camera, ShoppingBag, LayoutGrid, X, Coffee, Waves, Gamepad2, MapPin } from "lucide-react";
 
 const categories = [
-  { icon: Hotel, label: "Hotels", color: "from-blue-500 to-blue-700", img: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400&auto=format&fit=crop" },
-  { icon: MapPin, label: "Địa điểm tham quan", color: "from-emerald-500 to-teal-700", img: "https://images.unsplash.com/photo-1548013146-72479768bada?w=400&auto=format&fit=crop" },
-  { icon: UtensilsCrossed, label: "Restaurants", color: "from-orange-500 to-red-600", img: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&auto=format&fit=crop" },
-  { icon: Bus, label: "Giao thông / Di chuyển", color: "from-violet-500 to-purple-700", img: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&auto=format&fit=crop" },
-  { icon: CalendarDays, label: "Sự kiện - Lễ hội", color: "from-pink-500 to-rose-700", img: "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400&auto=format&fit=crop" },
-  { icon: ShoppingBag, label: "Mua sắm", color: "from-amber-500 to-yellow-600", img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&auto=format&fit=crop" },
+  { icon: Hotel, label: "Khách sạn", count: "248", img: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&auto=format&fit=crop", color: "from-blue-500 to-blue-700" },
+  { icon: Compass, label: "Tham quan", count: "134", img: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=400&auto=format&fit=crop", color: "from-emerald-500 to-teal-700" },
+  { icon: UtensilsCrossed, label: "Nhà hàng", count: "512", img: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&auto=format&fit=crop", color: "from-orange-500 to-red-600" },
+  { icon: Car, label: "Di chuyển", count: "86", img: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&auto=format&fit=crop", color: "from-violet-500 to-purple-700" },
+  { icon: CalendarDays, label: "Sự kiện", count: "42", img: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&auto=format&fit=crop", color: "from-pink-500 to-rose-700" },
+  { icon: Camera, label: "Check-in", count: "318", img: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&auto=format&fit=crop", color: "from-sky-500 to-blue-700" },
+  { icon: ShoppingBag, label: "Mua sắm", count: "195", img: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=400&auto=format&fit=crop", color: "from-amber-500 to-yellow-600" },
 ];
 
 const allCategories = [
   ...categories,
-  { icon: Waves, label: "Bãi biển", color: "from-sky-500 to-blue-700", img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&auto=format&fit=crop" },
-  { icon: Coffee, label: "Cafe & Bakery", color: "from-amber-700 to-amber-900", img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&auto=format&fit=crop" },
-  { icon: Hotel, label: "Spa & Wellness", color: "from-teal-500 to-cyan-700", img: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=400&auto=format&fit=crop" },
-  { icon: Compass, label: "Tour du lịch", color: "from-indigo-500 to-blue-700", img: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=400&auto=format&fit=crop" },
-  { icon: Gamepad2, label: "Vui chơi giải trí", color: "from-lime-500 to-green-600", img: "https://images.unsplash.com/photo-1548013146-72479768bada?w=400&auto=format&fit=crop" },
-  { icon: MapPin, label: "Bảo tàng", color: "from-slate-500 to-slate-700", img: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&auto=format&fit=crop" },
+  { icon: Waves, label: "Bãi biển", count: "67", img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&auto=format&fit=crop", color: "from-cyan-500 to-blue-600" },
+  { icon: Coffee, label: "Cafe & Bakery", count: "203", img: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&auto=format&fit=crop", color: "from-amber-700 to-amber-900" },
+  { icon: Hotel, label: "Spa & Wellness", count: "89", img: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=400&auto=format&fit=crop", color: "from-teal-500 to-cyan-700" },
+  { icon: Gamepad2, label: "Vui chơi", count: "55", img: "https://images.unsplash.com/photo-1548013146-72479768bada?w=400&auto=format&fit=crop", color: "from-lime-500 to-green-600" },
+  { icon: MapPin, label: "Bảo tàng", count: "28", img: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&auto=format&fit=crop", color: "from-slate-500 to-slate-700" },
 ];
 
 export default function CategoriesSection() {
@@ -62,7 +62,7 @@ export default function CategoriesSection() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-4 sm:grid-cols-7 gap-3"
+              className="grid grid-cols-4 sm:grid-cols-8 gap-3"
             >
               {categories.map((cat, i) => (
                 <motion.button
@@ -106,7 +106,7 @@ export default function CategoriesSection() {
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-2">
                 {categories.map((cat, i) => (
                   <motion.button
                     key={cat.label}
@@ -118,10 +118,13 @@ export default function CategoriesSection() {
                     data-testid={`button-category-img-${i}`}
                   >
                     <img src={cat.img} alt={cat.label} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
-                    <div className="absolute inset-0 flex flex-col items-center justify-end gap-1.5 p-3">
-                      <cat.icon size={20} className="text-white drop-shadow" />
-                      <span className="text-white text-xs font-semibold text-center leading-tight drop-shadow">{cat.label}</span>
+                    <div className="absolute inset-0 bg-black/50" />
+                    <div className="absolute inset-0 flex flex-col items-center justify-start gap-1.5 pt-4">
+                      <cat.icon size={22} className="text-white drop-shadow" />
+                      <span className="text-white text-[11px] font-semibold text-center leading-tight drop-shadow px-1">{cat.label}</span>
+                    </div>
+                    <div className="absolute bottom-2.5 left-3">
+                      <span className="text-white text-[11px] font-bold drop-shadow">{cat.count}</span>
                     </div>
                   </motion.button>
                 ))}
@@ -135,11 +138,14 @@ export default function CategoriesSection() {
                   className="relative group h-32 rounded-2xl overflow-hidden shadow-sm"
                   data-testid="button-category-img-all"
                 >
-                  <img src="https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=400&auto=format&fit=crop" alt="Tất cả" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                  <div className="absolute inset-0 flex flex-col items-center justify-end gap-1.5 p-3">
-                    <LayoutGrid size={20} className="text-white" />
-                    <span className="text-white text-xs font-semibold">Tất cả</span>
+                  <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&auto=format&fit=crop" alt="Tất cả" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                  <div className="absolute inset-0 bg-black/55" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-start gap-1.5 pt-4">
+                    <LayoutGrid size={22} className="text-white drop-shadow" />
+                    <span className="text-white text-[11px] font-semibold drop-shadow">Tất cả</span>
+                  </div>
+                  <div className="absolute bottom-2.5 left-3">
+                    <span className="text-white text-[11px] font-bold drop-shadow">1.5k+</span>
                   </div>
                 </motion.button>
               </div>
@@ -203,10 +209,13 @@ export default function CategoriesSection() {
                         className="relative group h-28 rounded-2xl overflow-hidden shadow-sm"
                       >
                         <img src={cat.img} alt={cat.label} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
-                        <div className="absolute inset-0 flex flex-col items-center justify-end gap-1.5 p-3">
-                          <cat.icon size={18} className="text-white" />
-                          <span className="text-white text-xs font-semibold text-center leading-tight">{cat.label}</span>
+                        <div className="absolute inset-0 bg-black/50" />
+                        <div className="absolute inset-0 flex flex-col items-center justify-start gap-1.5 pt-3">
+                          <cat.icon size={20} className="text-white drop-shadow" />
+                          <span className="text-white text-[11px] font-semibold text-center leading-tight px-1">{cat.label}</span>
+                        </div>
+                        <div className="absolute bottom-2 left-2.5">
+                          <span className="text-white text-[11px] font-bold drop-shadow">{cat.count}</span>
                         </div>
                       </motion.button>
                     ))}
