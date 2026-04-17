@@ -1,71 +1,79 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
-import { MapPin, Eye, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { MapPin, Eye, Star, ChevronLeft, ChevronRight, Clock, Users } from "lucide-react";
 
 const destinations = [
   {
     id: 1,
-    name: "Crowne Plaza Danang",
-    location: "Mỹ Khê Beach",
-    listings: "41 Listing",
-    rating: 4.9,
-    image: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=600&auto=format&fit=crop",
+    name: "Bà Nà Hills",
+    category: "KHU VUI CHƠI",
+    location: "Đà Nẵng, Việt Nam",
+    description: "Thiên đường giữa mây với cáp treo dài nhất thế giới và Cầu Vàng huyền thoại nâng đỡ bàn tay khổng lồ.",
+    rating: 9.2,
+    season: "Quanh năm",
+    visitors: "3.2 triệu/năm",
+    tags: ["CẦU VÀNG", "LÀNG PHÁP", "CÁP TREO KỶ LỤC"],
+    image: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=600&auto=format&fit=crop",
   },
   {
     id: 2,
-    name: "Grand Tourane Hotel",
-    location: "City Center",
-    listings: "35 Listing",
-    rating: 4.7,
-    image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=600&auto=format&fit=crop",
-  },
-  {
-    id: 3,
-    name: "Happy Day Riverside",
-    location: "Hàn River",
-    listings: "27 Listing",
-    rating: 4.6,
-    image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&auto=format&fit=crop",
-  },
-  {
-    id: 4,
-    name: "Moonlight Hotel",
-    location: "Dragon Bridge",
-    listings: "19 Listing",
-    rating: 4.8,
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop",
-  },
-  {
-    id: 5,
-    name: "La Siesta Hoi An",
-    location: "Hội An Ancient Town",
-    listings: "42 Listing",
-    rating: 4.9,
-    image: "https://images.unsplash.com/photo-1548013146-72479768bada?w=600&auto=format&fit=crop",
-  },
-  {
-    id: 6,
-    name: "Brilliant Hotel",
-    location: "Bạch Đằng Street",
-    listings: "33 Listing",
-    rating: 4.5,
-    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&auto=format&fit=crop",
-  },
-  {
-    id: 7,
-    name: "KOI Resort Da Nang",
-    location: "Ngũ Hành Sơn",
-    listings: "28 Listing",
-    rating: 4.8,
+    name: "Bãi biển Mỹ Khê",
+    category: "BÃI BIỂN",
+    location: "Đà Nẵng, Việt Nam",
+    description: "Một trong 6 bãi biển quyến rũ nhất hành tinh theo Forbes. Cát trắng mịn trải dài hơn 30km.",
+    rating: 9.5,
+    season: "Tháng 3 – 8",
+    visitors: "5 triệu/năm",
+    tags: ["LƯỚT SÓNG", "THỂ THAO BIỂN", "HOÀNG HÔN"],
     image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&auto=format&fit=crop",
   },
   {
-    id: 8,
-    name: "Vinpearl Resort",
-    location: "Non Nước Beach",
-    listings: "52 Listing",
-    rating: 4.9,
-    image: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=600&auto=format&fit=crop",
+    id: 3,
+    name: "Phố cổ Hội An",
+    category: "DI SẢN UNESCO",
+    location: "Đà Nẵng, Việt Nam",
+    description: "Thành phố cổ kính với đèn lồng lung linh, hội tụ văn hóa Nhật – Hoa – Việt hơn 400 năm lịch sử.",
+    rating: 9.7,
+    season: "Tháng 2 – 4",
+    visitors: "4.5 triệu/năm",
+    tags: ["ĐÈN LỒNG", "RỪNG DỪA", "ẨM THỰC"],
+    image: "https://images.unsplash.com/photo-1548013146-72479768bada?w=600&auto=format&fit=crop",
+  },
+  {
+    id: 4,
+    name: "Ngũ Hành Sơn",
+    category: "TÂM LINH",
+    location: "Đà Nẵng, Việt Nam",
+    description: "Quần thể 5 ngọn núi đá cẩm thạch huyền bí với hang động chứa chùa cổ và làng nghề điêu khắc.",
+    rating: 8.9,
+    season: "Quanh năm",
+    visitors: "1.8 triệu/năm",
+    tags: ["CHÙA LINH ỨNG", "HANG ĐỘNG", "ĐIÊU KHẮC ĐÁ"],
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&auto=format&fit=crop",
+  },
+  {
+    id: 5,
+    name: "Bán Đảo Sơn Trà",
+    category: "THIÊN NHIÊN",
+    location: "Đà Nẵng, Việt Nam",
+    description: "Lá phổi xanh của thành phố với rừng nguyên sinh, voọc chà vá chân nâu và bãi biển hoang sơ.",
+    rating: 9.1,
+    season: "Quanh năm",
+    visitors: "2.1 triệu/năm",
+    tags: ["VOỌC CHÀ VÁ", "RỪNG NGUYÊN SINH", "BIỂN HOANG SƠ"],
+    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&auto=format&fit=crop",
+  },
+  {
+    id: 6,
+    name: "Làng Chài Nam Ô",
+    category: "VĂN HÓA",
+    location: "Đà Nẵng, Việt Nam",
+    description: "Ngôi làng chài cổ hơn 600 năm tuổi với nghề làm nước mắm truyền thống và bãi đá san hô kỳ bí.",
+    rating: 8.6,
+    season: "Tháng 4 – 9",
+    visitors: "0.5 triệu/năm",
+    tags: ["NƯỚC MẮM", "BÃI ĐÁ", "VĂN HÓA CỔ"],
+    image: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&auto=format&fit=crop",
   },
 ];
 
@@ -77,7 +85,7 @@ const accordionDestinations = [
   { id: 5, name: "Lăng Cô", listings: "29 Listing", image: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&auto=format&fit=crop" },
 ];
 
-const VISIBLE = 3;
+const VISIBLE = 4;
 
 function CarouselOption() {
   const [current, setCurrent] = useState(0);
@@ -87,11 +95,11 @@ function CarouselOption() {
   const next = () => setCurrent((c) => Math.min(maxIndex, c + 1));
 
   return (
-    <div className="relative px-2">
+    <div className="relative px-6">
       <div className="overflow-hidden">
         <motion.div
-          className="flex gap-5"
-          animate={{ x: `calc(-${current * (100 / VISIBLE)}% - ${current * 20 / VISIBLE}px)` }}
+          className="flex gap-4"
+          animate={{ x: `calc(-${current * (100 / VISIBLE)}% - ${current * 16 / VISIBLE}px)` }}
           transition={{ type: "spring", stiffness: 300, damping: 36 }}
           style={{ width: `${(destinations.length / VISIBLE) * 100}%` }}
         >
@@ -100,44 +108,49 @@ function CarouselOption() {
               key={dest.id}
               whileHover={{ y: -6 }}
               transition={{ duration: 0.25 }}
-              className="group cursor-pointer shrink-0 rounded-3xl overflow-hidden shadow-md bg-white border border-gray-100"
-              style={{ width: `${100 / destinations.length}%` }}
+              className="group cursor-pointer shrink-0 relative rounded-2xl overflow-hidden shadow-md"
+              style={{ width: `${100 / destinations.length}%`, height: "420px" }}
               data-testid={`card-destination-carousel-${dest.id}`}
             >
-              <div className="relative aspect-[4/3] overflow-hidden">
-                <img
-                  src={dest.image}
-                  alt={dest.name}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="absolute top-3 right-3">
-                  <span className="flex items-center gap-1 bg-white/90 backdrop-blur-sm text-gray-800 text-xs font-bold px-2 py-1 rounded-full shadow-sm">
-                    <Star size={10} className="text-amber-400 fill-amber-400" />
-                    {dest.rating}
-                  </span>
-                </div>
-                <motion.div
-                  className="absolute bottom-3 left-0 right-0 flex justify-center"
-                  initial={{ opacity: 0, y: 8 }}
-                  whileHover={{ opacity: 1, y: 0 }}
-                >
-                  <span className="bg-blue-500 text-white text-xs font-semibold px-4 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    <Eye size={11} /> Xem ngay
-                  </span>
-                </motion.div>
+              <img
+                src={dest.image}
+                alt={dest.name}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
+
+              <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+                <span className="inline-block bg-black/40 backdrop-blur-sm text-white text-[10px] font-semibold px-2.5 py-1 rounded-full">
+                  {dest.category}
+                </span>
+                <span className="inline-flex items-center gap-1 bg-amber-500 text-white text-[11px] font-bold px-2 py-0.5 rounded-full">
+                  <Star size={9} className="fill-white" />
+                  {dest.rating}
+                </span>
               </div>
 
-              <div className="p-4">
-                <h3 className="font-semibold text-gray-900 text-sm leading-snug mb-1.5 line-clamp-1">{dest.name}</h3>
-                <div className="flex items-center gap-1 mb-3">
-                  <MapPin size={11} className="text-blue-400 shrink-0" />
-                  <span className="text-xs text-gray-500 line-clamp-1">{dest.location}</span>
+              <div className="absolute bottom-0 left-0 right-0 p-4">
+                <h3 className="text-white font-bold text-xl leading-tight mb-1">{dest.name}</h3>
+                <div className="flex items-center gap-1 mb-2">
+                  <MapPin size={10} className="text-white/60 shrink-0" />
+                  <span className="text-white/60 text-xs">{dest.location}</span>
                 </div>
-                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                  <span className="text-xs text-gray-400">{dest.listings}</span>
-                  <span className="text-xs font-semibold text-blue-500 group-hover:text-blue-600 transition-colors">Đặt ngay →</span>
+                <p className="text-white/70 text-xs leading-snug mb-3 line-clamp-3">{dest.description}</p>
+
+                <div className="border-t border-white/20 pt-2.5 mb-2.5 flex flex-col gap-1.5">
+                  <div className="flex items-center gap-1.5 text-white/70 text-xs">
+                    <Clock size={11} className="shrink-0" />
+                    <span>{dest.season}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-white/70 text-xs">
+                    <Users size={11} className="shrink-0" />
+                    <span>{dest.visitors}</span>
+                  </div>
                 </div>
+
+                <p className="text-amber-400 text-[10px] font-semibold tracking-wide leading-snug">
+                  {dest.tags.join(" • ")}
+                </p>
               </div>
             </motion.div>
           ))}
@@ -147,7 +160,7 @@ function CarouselOption() {
       <button
         onClick={prev}
         disabled={current === 0}
-        className="absolute left-0 top-[40%] -translate-y-1/2 -translate-x-1 z-10 w-9 h-9 rounded-full bg-white shadow-lg border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all disabled:opacity-25 disabled:cursor-not-allowed"
+        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white shadow-lg border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-primary hover:text-white hover:border-primary transition-all disabled:opacity-25 disabled:cursor-not-allowed"
         data-testid="button-carousel-prev"
       >
         <ChevronLeft size={17} />
@@ -155,7 +168,7 @@ function CarouselOption() {
       <button
         onClick={next}
         disabled={current >= maxIndex}
-        className="absolute right-0 top-[40%] -translate-y-1/2 translate-x-1 z-10 w-9 h-9 rounded-full bg-white shadow-lg border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all disabled:opacity-25 disabled:cursor-not-allowed"
+        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white shadow-lg border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-primary hover:text-white hover:border-primary transition-all disabled:opacity-25 disabled:cursor-not-allowed"
         data-testid="button-carousel-next"
       >
         <ChevronRight size={17} />

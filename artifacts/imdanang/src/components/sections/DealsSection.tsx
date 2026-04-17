@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
-import { Clock, ArrowRight, ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
+import { Clock, ArrowRight, ChevronLeft, ChevronRight, CheckCircle, MapPin, Star } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 
 const imageDeals = [
