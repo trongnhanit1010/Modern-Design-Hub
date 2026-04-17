@@ -6,6 +6,7 @@ import DealsSection from "@/components/sections/DealsSection";
 import WhereToGo from "@/components/sections/WhereToGo";
 import WeatherSection from "@/components/sections/WeatherSection";
 import HotelsCarousel from "@/components/sections/HotelsCarousel";
+import ExperiencesSection from "@/components/sections/ExperiencesSection";
 import EventCalendar from "@/components/sections/EventCalendar";
 import TouristMap from "@/components/sections/TouristMap";
 import NeedToKnow from "@/components/sections/NeedToKnow";
@@ -22,6 +23,7 @@ export default function Home() {
       <WhereToGo />
       <WeatherSection />
       <HotelsCarousel />
+      <ExperiencesSection />
       <EventCalendar />
       <TouristMap />
       <NeedToKnow />
