@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
-import { MapPin, Eye, Star, ChevronLeft, ChevronRight, Clock, Users } from "lucide-react";
+import { MapPin, Star, ChevronLeft, ChevronRight, Clock, Users, ArrowRight } from "lucide-react";
 
 const destinations = [
   {
@@ -12,8 +12,9 @@ const destinations = [
     rating: 9.2,
     season: "Quanh năm",
     visitors: "3.2 triệu/năm",
+    spots: "185 điểm tham quan",
     tags: ["CẦU VÀNG", "LÀNG PHÁP", "CÁP TREO KỶ LỤC"],
-    image: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=600&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=800&auto=format&fit=crop",
   },
   {
     id: 2,
@@ -24,8 +25,9 @@ const destinations = [
     rating: 9.5,
     season: "Tháng 3 – 8",
     visitors: "5 triệu/năm",
+    spots: "96 điểm tham quan",
     tags: ["LƯỚT SÓNG", "THỂ THAO BIỂN", "HOÀNG HÔN"],
-    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop",
   },
   {
     id: 3,
@@ -36,8 +38,9 @@ const destinations = [
     rating: 9.7,
     season: "Tháng 2 – 4",
     visitors: "4.5 triệu/năm",
+    spots: "210 điểm tham quan",
     tags: ["ĐÈN LỒNG", "RỪNG DỪA", "ẨM THỰC"],
-    image: "https://images.unsplash.com/photo-1548013146-72479768bada?w=600&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1548013146-72479768bada?w=800&auto=format&fit=crop",
   },
   {
     id: 4,
@@ -48,8 +51,9 @@ const destinations = [
     rating: 8.9,
     season: "Quanh năm",
     visitors: "1.8 triệu/năm",
+    spots: "74 điểm tham quan",
     tags: ["CHÙA LINH ỨNG", "HANG ĐỘNG", "ĐIÊU KHẮC ĐÁ"],
-    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&auto=format&fit=crop",
   },
   {
     id: 5,
@@ -60,8 +64,9 @@ const destinations = [
     rating: 9.1,
     season: "Quanh năm",
     visitors: "2.1 triệu/năm",
+    spots: "58 điểm tham quan",
     tags: ["VOỌC CHÀ VÁ", "RỪNG NGUYÊN SINH", "BIỂN HOANG SƠ"],
-    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&auto=format&fit=crop",
   },
   {
     id: 6,
@@ -72,18 +77,13 @@ const destinations = [
     rating: 8.6,
     season: "Tháng 4 – 9",
     visitors: "0.5 triệu/năm",
+    spots: "32 điểm tham quan",
     tags: ["NƯỚC MẮM", "BÃI ĐÁ", "VĂN HÓA CỔ"],
-    image: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&auto=format&fit=crop",
   },
 ];
 
-const accordionDestinations = [
-  { id: 1, name: "Đà Nẵng", listings: "128 Listing", image: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=800&auto=format&fit=crop" },
-  { id: 2, name: "Hội An", listings: "85 Listing", image: "https://images.unsplash.com/photo-1548013146-72479768bada?w=800&auto=format&fit=crop" },
-  { id: 3, name: "Bà Nà Hills", listings: "42 Listing", image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&auto=format&fit=crop" },
-  { id: 4, name: "Non Nước", listings: "56 Listing", image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop" },
-  { id: 5, name: "Lăng Cô", listings: "29 Listing", image: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&auto=format&fit=crop" },
-];
+const accordionDestinations = destinations.slice(0, 5);
 
 const VISIBLE = 4;
 
@@ -181,42 +181,79 @@ function AccordionOption() {
   const [active, setActive] = useState<number>(3);
 
   return (
-    <div className="flex gap-2 h-[480px]">
+    <div className="flex gap-2 h-[460px]">
       {accordionDestinations.map((dest) => {
         const isActive = active === dest.id;
         return (
           <motion.div
             key={dest.id}
             layout
-            animate={{ flex: isActive ? 4 : 1 }}
-            transition={{ type: "spring", stiffness: 280, damping: 30 }}
+            animate={{ flex: isActive ? 5 : 1 }}
+            transition={{ type: "spring", stiffness: 260, damping: 30 }}
             onClick={() => setActive(dest.id)}
-            className="relative rounded-2xl overflow-hidden cursor-pointer group"
+            className="relative rounded-2xl overflow-hidden cursor-pointer min-w-0"
             data-testid={`card-destination-accordion-${dest.id}`}
           >
-            <img src={dest.image} alt={dest.name} className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+            <img
+              src={dest.image}
+              alt={dest.name}
+              className="w-full h-full object-cover transition-transform duration-700"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/20" />
+
             {isActive ? (
               <motion.div
+                key="active"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="absolute bottom-0 left-0 right-0 p-6"
+                transition={{ duration: 0.3, delay: 0.1 }}
+                className="absolute inset-0 p-6 flex flex-col justify-between"
               >
-                <h3 className="text-white font-serif font-bold text-3xl mb-1">{dest.name}</h3>
-                <p className="text-white/70 text-sm mb-4">{dest.listings}</p>
-                <button className="flex items-center gap-2 bg-white text-foreground px-5 py-2 rounded-full text-sm font-semibold hover:bg-blue-50 transition-colors">
-                  <Eye size={14} /> Book Now
-                </button>
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1 bg-black/40 backdrop-blur-sm text-white text-[10px] font-semibold px-2.5 py-1 rounded-full">
+                    <MapPin size={9} /> {dest.category}
+                  </span>
+                  <span className="inline-flex items-center gap-1 bg-amber-500 text-white text-[11px] font-bold px-2 py-0.5 rounded-full">
+                    <Star size={9} className="fill-white" /> {dest.rating}
+                  </span>
+                </div>
+
+                <div>
+                  <h3 className="text-white font-bold text-3xl leading-tight mb-2">{dest.name}</h3>
+                  <p className="text-white/70 text-sm leading-relaxed mb-4 line-clamp-2">{dest.description}</p>
+
+                  <div className="flex items-center gap-4 mb-3 text-white/70 text-xs">
+                    <span className="flex items-center gap-1.5"><Clock size={12} />{dest.season}</span>
+                    <span className="flex items-center gap-1.5"><Users size={12} />{dest.visitors}</span>
+                    <span className="text-white/50">{dest.spots}</span>
+                  </div>
+
+                  <p className="text-amber-400 text-[10px] font-semibold tracking-wide mb-5">
+                    {dest.tags.join(" • ")}
+                  </p>
+
+                  <button className="inline-flex items-center gap-2 bg-white text-gray-900 px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors">
+                    Khám phá ngay <ArrowRight size={14} />
+                  </button>
+                </div>
               </motion.div>
             ) : (
-              <div className="absolute bottom-6 left-0 right-0 flex items-center justify-center">
+              <motion.div
+                key="collapsed"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.2 }}
+                className="absolute inset-0 flex flex-col items-center justify-between py-5"
+              >
+                <div />
                 <span
                   className="text-white font-semibold text-sm whitespace-nowrap"
                   style={{ writingMode: "vertical-rl", textOrientation: "mixed", transform: "rotate(180deg)" }}
                 >
                   {dest.name}
                 </span>
-              </div>
+                <MapPin size={16} className="text-white/60" />
+              </motion.div>
             )}
           </motion.div>
         );
