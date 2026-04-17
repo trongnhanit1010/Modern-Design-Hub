@@ -1,6 +1,7 @@
 import HeroSlider from "@/components/sections/HeroSlider";
 import LocationSelector from "@/components/sections/LocationSelector";
 import FeaturedGrid from "@/components/sections/FeaturedGrid";
+import AttractiveDestinations from "@/components/sections/AttractiveDestinations";
 import CategoriesSection from "@/components/sections/CategoriesSection";
 import DealsSection from "@/components/sections/DealsSection";
 import WhereToGo from "@/components/sections/WhereToGo";
@@ -18,6 +19,7 @@ export default function Home() {
       <HeroSlider />
       <LocationSelector />
       <FeaturedGrid />
+      <AttractiveDestinations />
       <CategoriesSection />
       <DealsSection />
       <WhereToGo />
