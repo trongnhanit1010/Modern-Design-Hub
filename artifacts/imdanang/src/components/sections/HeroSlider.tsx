@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
-import { ChevronLeft, ChevronRight, Search, MapPin, Utensils, Hotel, X, Clock, TrendingUp, Trash2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, MapPin, Utensils, Hotel, X, Clock, TrendingUp, Trash2, CalendarDays } from "lucide-react";
 
 const slides = [
   {
@@ -39,6 +39,13 @@ const slides = [
     subtitle: "Tận hưởng khoảnh khắc bình yên giữa đại ngàn xanh mướt của núi rừng Việt Nam",
     location: "Vườn Quốc Gia Bạch Mã",
   },
+];
+
+const quickSuggestions = [
+  { icon: Hotel, label: "Khách sạn 5 sao" },
+  { icon: MapPin, label: "Bà Nà Hills" },
+  { icon: Utensils, label: "Nhà hàng hải sản" },
+  { icon: CalendarDays, label: "Tour 1 ngày" },
 ];
 
 const recentSearches = ["Bà Nà Hills", "Nhà hàng hải sản"];
@@ -390,6 +397,32 @@ export default function HeroSlider() {
               Explore
             </button>
           </div>
+
+          {/* Quick suggestion pills */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.85, duration: 0.4 }}
+            className="flex items-center gap-2 mt-3 flex-wrap"
+          >
+            <span className="text-white/55 text-xs font-medium shrink-0">Gợi ý:</span>
+            {quickSuggestions.map((s) => (
+              <motion.button
+                key={s.label}
+                whileHover={{ scale: 1.04, backgroundColor: "rgba(255,255,255,0.22)" }}
+                whileTap={{ scale: 0.96 }}
+                onClick={() => {
+                  setSearchVal(s.label);
+                  inputRef.current?.focus();
+                }}
+                className="flex items-center gap-1.5 bg-white/12 backdrop-blur-sm border border-white/20 text-white/85 text-xs px-3.5 py-2 rounded-full transition-colors hover:text-white cursor-pointer"
+                data-testid={`suggestion-pill-${s.label}`}
+              >
+                <s.icon size={11} className="text-white/60 shrink-0" />
+                {s.label}
+              </motion.button>
+            ))}
+          </motion.div>
 
           <SearchDropdown
             show={showSuggestions}
