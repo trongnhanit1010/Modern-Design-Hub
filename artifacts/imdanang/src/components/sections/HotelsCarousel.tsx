@@ -91,23 +91,26 @@ export default function HotelsCarousel() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground">Khách sạn nổi bật</h2>
-            <p className="text-muted-foreground text-sm mt-1">Lựa chọn chỗ lưu trú hoàn hảo cho chuyến đi</p>
+            <p className="text-muted-foreground text-sm mt-1">Lưu trú đẳng cấp tại Đà Nẵng</p>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={scrollPrev}
-              className="p-2.5 rounded-full bg-muted hover:bg-primary hover:text-white border border-border transition-colors"
+              className="p-2.5 rounded-full border border-border bg-background hover:bg-muted transition-colors"
               data-testid="button-hotels-prev"
             >
-              <ChevronLeft size={18} />
+              <ChevronLeft size={16} />
             </button>
             <button
               onClick={scrollNext}
-              className="p-2.5 rounded-full bg-muted hover:bg-primary hover:text-white border border-border transition-colors"
+              className="p-2.5 rounded-full border border-border bg-background hover:bg-muted transition-colors"
               data-testid="button-hotels-next"
             >
-              <ChevronRight size={18} />
+              <ChevronRight size={16} />
             </button>
+            <a href="/luu-tru-khach-san" className="ml-2 flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors" data-testid="link-hotels-all">
+              Xem tất cả <ChevronRight size={15} />
+            </a>
           </div>
         </div>
 
@@ -125,7 +128,8 @@ export default function HotelsCarousel() {
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ delay: i * 0.08, duration: 0.4 }}
                   whileHover={{ y: -4, boxShadow: "0 12px 32px rgba(0,0,0,0.12)" }}
-                  className="shrink-0 w-[260px] rounded-2xl overflow-hidden bg-white border border-gray-100 shadow-sm cursor-pointer group"
+                  className="shrink-0 rounded-2xl overflow-hidden bg-white border border-gray-100 shadow-sm cursor-pointer group"
+                  style={{ flex: "0 0 calc(25% - 12px)" }}
                   data-testid={`card-hotel-${hotel.id}`}
                 >
                   <div className="relative h-48 overflow-hidden">
