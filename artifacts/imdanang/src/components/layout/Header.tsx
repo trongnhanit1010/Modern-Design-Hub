@@ -5,8 +5,8 @@ import { useSidebar } from "@/context/SidebarContext";
 import { useDarkMode } from "@/context/DarkModeContext";
 
 const LANGUAGES = [
-  { code: "VI", label: "Tiếng Việt", flag: "🇻🇳" },
-  { code: "EN", label: "English", flag: "🇺🇸" },
+  { code: "VI", label: "Tiếng Việt", flagSrc: "https://flagcdn.com/w40/vn.png" },
+  { code: "EN", label: "English", flagSrc: "https://flagcdn.com/w40/us.png" },
 ];
 
 export default function Header() {
@@ -89,7 +89,11 @@ export default function Header() {
               data-testid="button-language"
               aria-label="Switch language"
             >
-              <span className="text-base leading-none">{activeLang.flag}</span>
+              <img
+                src={activeLang.flagSrc}
+                alt={activeLang.code}
+                className="w-5 h-3.5 rounded-sm object-cover shadow-sm"
+              />
               <span className="text-xs font-semibold tracking-wide">{activeLang.code}</span>
               <ChevronDown
                 size={12}
@@ -117,7 +121,11 @@ export default function Header() {
                         activeLang.code === lang.code ? "bg-primary/5 text-primary font-semibold" : "text-foreground"
                       }`}
                     >
-                      <span className="text-xl leading-none">{lang.flag}</span>
+                      <img
+                        src={lang.flagSrc}
+                        alt={lang.code}
+                        className="w-6 h-4 rounded-sm object-cover shadow-sm shrink-0"
+                      />
                       <span className="flex-1 text-left">{lang.label}</span>
                       {activeLang.code === lang.code && (
                         <Check size={14} className="text-primary shrink-0" />
