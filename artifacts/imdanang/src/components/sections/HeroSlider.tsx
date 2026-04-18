@@ -302,7 +302,7 @@ export default function HeroSlider() {
 
   return (
     <section
-      className="relative h-[88vh] min-h-[560px]"
+      className="relative h-[58vh] min-h-[420px] md:h-[88vh] md:min-h-[560px]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       data-testid="section-hero"
@@ -328,7 +328,7 @@ export default function HeroSlider() {
         </AnimatePresence>
       </div>
 
-      <div className="absolute inset-0 flex flex-col justify-end pb-28 px-6 md:px-20 lg:px-28">
+      <div className="absolute inset-0 flex flex-col justify-center md:justify-end md:pb-28 px-6 md:px-20 lg:px-28">
         <AnimatePresence mode="wait">
           <div key={current} className="max-w-2xl">
             <motion.div
@@ -349,7 +349,7 @@ export default function HeroSlider() {
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="font-serif text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-4"
+              className="font-serif text-3xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-4"
             >
               {slides[current].title}
             </motion.h1>
@@ -399,12 +399,12 @@ export default function HeroSlider() {
             </button>
           </div>
 
-          {/* Quick suggestion pills */}
+          {/* Quick suggestion pills — desktop only */}
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.85, duration: 0.4 }}
-            className="flex items-center gap-2 mt-3 flex-wrap"
+            className="hidden md:flex items-center gap-2 mt-3 flex-wrap"
           >
             <span className="text-white/55 text-xs font-medium shrink-0">Gợi ý:</span>
             {quickSuggestions.map((s) => (

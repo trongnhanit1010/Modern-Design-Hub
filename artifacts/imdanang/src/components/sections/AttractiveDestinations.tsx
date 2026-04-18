@@ -100,7 +100,7 @@ export default function AttractiveDestinations() {
           </motion.button>
 
           {/* Side cards: horizontal scroll on mobile, 2-col grid on desktop */}
-          <div className="-mx-4 px-4 md:mx-0 md:px-0">
+          <div className="min-w-0">
             <motion.div
               variants={containerVariants}
               initial="hidden"
