@@ -79,7 +79,7 @@ const hotels = [
 ];
 
 export default function HotelsCarousel() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: "start", slidesToScroll: 1 });
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: "start", slidesToScroll: 1, breakpoints: { "(min-width: 1024px)": { slidesToScroll: 1 } } });
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
   const ref = useRef(null);
@@ -108,8 +108,12 @@ export default function HotelsCarousel() {
             >
               <ChevronRight size={16} />
             </button>
-            <a href="/luu-tru-khach-san" className="ml-2 flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors" data-testid="link-hotels-all">
-              Xem tất cả <ChevronRight size={15} />
+            <a
+              href="/luu-tru-khach-san"
+              className="ml-2 inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:text-primary hover:shadow-md"
+              data-testid="link-hotels-all"
+            >
+              Xem tất cả <ChevronRight size={14} />
             </a>
           </div>
         </div>
@@ -128,8 +132,7 @@ export default function HotelsCarousel() {
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ delay: i * 0.08, duration: 0.4 }}
                   whileHover={{ y: -4, boxShadow: "0 12px 32px rgba(0,0,0,0.12)" }}
-                  className="shrink-0 rounded-2xl overflow-hidden bg-white border border-gray-100 shadow-sm cursor-pointer group"
-                  style={{ flex: "0 0 calc(25% - 12px)" }}
+                  className="shrink-0 rounded-2xl overflow-hidden bg-white border border-gray-100 shadow-sm cursor-pointer group w-[80vw] sm:w-[calc(50%-8px)] lg:w-[calc(25%-12px)]"
                   data-testid={`card-hotel-${hotel.id}`}
                 >
                   <div className="relative h-48 overflow-hidden">

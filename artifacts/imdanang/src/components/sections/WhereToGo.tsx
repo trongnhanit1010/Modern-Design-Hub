@@ -1,6 +1,7 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import { MapPin, Star, ChevronLeft, ChevronRight, Clock, Users, ArrowRight } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const destinations = [
   {
@@ -86,10 +87,13 @@ const destinations = [
 const accordionDestinations = destinations.slice(0, 5);
 
 const VISIBLE = 4;
+const VISIBLE_MOBILE = 1;
 
 function CarouselOption() {
+  const isMobile = useIsMobile();
+  const visible = isMobile ? VISIBLE_MOBILE : VISIBLE;
   const [current, setCurrent] = useState(0);
-  const maxIndex = destinations.length - VISIBLE;
+  const maxIndex = destinations.length - visible;
 
   const prev = () => setCurrent((c) => Math.max(0, c - 1));
   const next = () => setCurrent((c) => Math.min(maxIndex, c + 1));
@@ -99,9 +103,9 @@ function CarouselOption() {
       <div className="overflow-hidden">
         <motion.div
           className="flex gap-4"
-          animate={{ x: `calc(-${current * (100 / VISIBLE)}% - ${current * 16 / VISIBLE}px)` }}
+          animate={{ x: `calc(-${current * (100 / visible)}% - ${current * 16 / visible}px)` }}
           transition={{ type: "spring", stiffness: 300, damping: 36 }}
-          style={{ width: `${(destinations.length / VISIBLE) * 100}%` }}
+          style={{ width: `${(destinations.length / visible) * 100}%` }}
         >
           {destinations.map((dest) => (
             <motion.div
@@ -109,7 +113,7 @@ function CarouselOption() {
               whileHover={{ y: -6 }}
               transition={{ duration: 0.25 }}
               className="group cursor-pointer shrink-0 relative rounded-2xl overflow-hidden shadow-md"
-              style={{ width: `${100 / destinations.length}%`, height: "420px" }}
+              style={{ width: `${100 / destinations.length}%`, height: isMobile ? "360px" : "420px" }}
               data-testid={`card-destination-carousel-${dest.id}`}
             >
               <img
@@ -264,8 +268,13 @@ function AccordionOption() {
 
 export default function WhereToGo() {
   const [option, setOption] = useState<"A" | "B">("B");
+  const isMobile = useIsMobile();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  useEffect(() => {
+    if (isMobile) setOption("A");
+  }, [isMobile]);
 
   return (
     <section className="py-12 px-4 bg-white dark:bg-card" ref={ref} data-testid="section-where-to-go">
@@ -292,7 +301,12 @@ export default function WhereToGo() {
                 Accordion
               </button>
             </div>
-            <a href="#" className="text-primary text-sm font-medium hover:underline">View all</a>
+            <a
+              href="#"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:text-primary hover:shadow-md"
+            >
+              Xem tất cả <ArrowRight size={14} />
+            </a>
           </div>
         </div>
 

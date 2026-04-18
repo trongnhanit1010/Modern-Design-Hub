@@ -191,7 +191,10 @@ export default function FeaturedGrid() {
             <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground">Nội dung nổi bật tại đây</h2>
             <p className="text-muted-foreground text-sm mt-1">Khách sạn, nhà hàng và địa điểm được yêu thích nhất</p>
           </div>
-          <a href="#" className="flex items-center gap-1 text-primary text-sm font-medium hover:underline shrink-0">
+          <a
+            href="#"
+            className="shrink-0 inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:text-primary hover:shadow-md"
+          >
             Xem tất cả <ArrowRight size={14} />
           </a>
         </div>

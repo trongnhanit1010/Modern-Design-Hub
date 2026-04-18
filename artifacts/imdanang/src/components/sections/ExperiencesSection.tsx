@@ -49,23 +49,22 @@ export default function ExperiencesSection() {
             <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground">Trải nghiệm cho mọi người</h2>
             <p className="text-muted-foreground text-sm mt-1">Góc nhìn mới lạ và truyền cảm hứng về Đà Nẵng</p>
           </div>
-          <motion.a
+          <a
             href="#"
-            whileHover={{ x: 3 }}
-            className="flex items-center gap-1.5 text-blue-600 font-medium text-sm hover:underline"
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:text-primary hover:shadow-md"
           >
-            Xem tất cả <ArrowRight size={15} />
-          </motion.a>
+            Xem tất cả <ArrowRight size={14} />
+          </a>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4" style={{ minHeight: 420 }}>
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
           {/* Featured large card */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.5 }}
             whileHover={{ scale: 1.01 }}
-            className="lg:col-span-2 relative rounded-2xl overflow-hidden cursor-pointer group"
+            className="lg:col-span-2 relative rounded-2xl overflow-hidden cursor-pointer group min-h-[280px] lg:min-h-[420px]"
             data-testid="card-exp-featured"
           >
             <img
@@ -74,7 +73,7 @@ export default function ExperiencesSection() {
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-            <div className="relative z-10 h-full flex flex-col justify-end p-6" style={{ minHeight: 420 }}>
+            <div className="relative z-10 h-full flex flex-col justify-end p-5 md:p-6 min-h-[280px] lg:min-h-[420px]">
               <div className="flex items-center gap-1.5 mb-3">
                 <div className="flex items-center gap-1.5 bg-white/15 backdrop-blur-sm border border-white/20 text-white text-[10px] font-semibold px-3 py-1.5 rounded-full tracking-wide">
                   <LayoutGrid size={10} />
@@ -84,7 +83,7 @@ export default function ExperiencesSection() {
               <h3 className="text-white font-bold text-xl md:text-2xl leading-tight mb-2">
                 {featuredPost.title}
               </h3>
-              <p className="text-white/70 text-sm leading-relaxed mb-5">
+              <p className="text-white/70 text-sm leading-relaxed mb-5 line-clamp-3">
                 {featuredPost.description}
               </p>
               <button className="self-start flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/25 text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all">
@@ -93,41 +92,66 @@ export default function ExperiencesSection() {
             </div>
           </motion.div>
 
-          {/* 2x2 grid */}
-          <div className="lg:col-span-3 grid grid-cols-2 gap-4">
-            {gridPosts.map((post, i) => (
-              <motion.div
-                key={post.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: i * 0.1 + 0.15, duration: 0.45 }}
-                whileHover={{ scale: 1.02 }}
-                className="relative rounded-2xl overflow-hidden cursor-pointer group"
-                data-testid={`card-exp-${post.id}`}
-                style={{ minHeight: 200 }}
-              >
-                <img
-                  src={post.image}
-                  alt={post.title}
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <div className="relative z-10 h-full flex flex-col justify-end p-4">
-                  <p className="text-white/60 text-[9px] font-bold tracking-widest uppercase mb-1">
-                    {post.category}
-                  </p>
-                  <h4 className="text-white font-semibold text-sm leading-snug mb-2 line-clamp-2">
-                    {post.title}
-                  </h4>
-                  <motion.span
-                    whileHover={{ x: 3 }}
-                    className="inline-flex items-center gap-1 text-white/80 text-xs font-medium hover:text-white transition-colors"
-                  >
-                    Đọc thêm <ArrowRight size={11} />
-                  </motion.span>
-                </div>
-              </motion.div>
-            ))}
+          {/* Mobile: horizontal scroll; Desktop: 2x2 grid */}
+          <div className="lg:col-span-3">
+            {/* Mobile carousel */}
+            <div className="flex gap-4 overflow-x-auto pb-3 lg:hidden" style={{ scrollbarWidth: "none" }}>
+              {gridPosts.map((post, i) => (
+                <motion.div
+                  key={post.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: i * 0.1 + 0.15, duration: 0.45 }}
+                  className="shrink-0 w-64 h-48 relative rounded-2xl overflow-hidden cursor-pointer group"
+                  data-testid={`card-exp-mobile-${post.id}`}
+                >
+                  <img src={post.image} alt={post.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  <div className="relative z-10 h-full flex flex-col justify-end p-4">
+                    <p className="text-white/60 text-[9px] font-bold tracking-widest uppercase mb-1">{post.category}</p>
+                    <h4 className="text-white font-semibold text-sm leading-snug mb-1 line-clamp-2">{post.title}</h4>
+                    <span className="inline-flex items-center gap-1 text-white/80 text-xs font-medium">Đọc thêm <ArrowRight size={11} /></span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Desktop 2x2 grid */}
+            <div className="hidden lg:grid grid-cols-2 gap-4">
+              {gridPosts.map((post, i) => (
+                <motion.div
+                  key={post.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: i * 0.1 + 0.15, duration: 0.45 }}
+                  whileHover={{ scale: 1.02 }}
+                  className="relative rounded-2xl overflow-hidden cursor-pointer group"
+                  data-testid={`card-exp-${post.id}`}
+                  style={{ minHeight: 200 }}
+                >
+                  <img
+                    src={post.image}
+                    alt={post.title}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  <div className="relative z-10 h-full flex flex-col justify-end p-4">
+                    <p className="text-white/60 text-[9px] font-bold tracking-widest uppercase mb-1">
+                      {post.category}
+                    </p>
+                    <h4 className="text-white font-semibold text-sm leading-snug mb-2 line-clamp-2">
+                      {post.title}
+                    </h4>
+                    <motion.span
+                      whileHover={{ x: 3 }}
+                      className="inline-flex items-center gap-1 text-white/80 text-xs font-medium hover:text-white transition-colors"
+                    >
+                      Đọc thêm <ArrowRight size={11} />
+                    </motion.span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

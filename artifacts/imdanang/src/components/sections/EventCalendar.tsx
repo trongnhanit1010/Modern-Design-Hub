@@ -3,6 +3,7 @@ import { motion, AnimatePresence, useInView } from "framer-motion";
 import { MapPin, Clock, ArrowRight, ChevronLeft, ChevronRight, Sparkles, Dumbbell, Music, Star, PartyPopper, UtensilsCrossed } from "lucide-react";
 import { format, isSameDay } from "date-fns";
 import { vi } from "date-fns/locale";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const events = [
   {
@@ -172,9 +173,14 @@ function GridEventCard({ event, index, isInView }: { event: typeof events[0]; in
 export default function EventCalendar() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const isMobile = useIsMobile();
   const [selected, setSelected] = useState<number>(events[0].id);
   const [paused, setPaused] = useState(false);
   const [viewMode, setViewMode] = useState<"timeline" | "grid">("timeline");
+
+  useEffect(() => {
+    if (isMobile) setViewMode("grid");
+  }, [isMobile]);
 
   const activeEvent = events.find((e) => e.id === selected)!;
   const activeIndex = events.findIndex((e) => e.id === selected);
@@ -208,8 +214,11 @@ export default function EventCalendar() {
             <p className="text-muted-foreground text-sm mt-1">Các sự kiện nổi bật tại Đà Nẵng</p>
           </div>
           <div className="flex items-center gap-3 flex-wrap">
-            <a href="#" className="text-primary text-sm font-medium hover:underline flex items-center gap-1">
-              Xem tất cả lịch <ArrowRight size={14} />
+            <a
+              href="#"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:text-primary hover:shadow-md"
+            >
+              Xem tất cả <ArrowRight size={14} />
             </a>
             <div className="flex items-center gap-1 bg-muted rounded-full p-1">
               <button
@@ -323,11 +332,21 @@ export default function EventCalendar() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
             >
-              {events.map((event, i) => (
-                <GridEventCard key={event.id} event={event} index={i} isInView={isInView} />
-              ))}
+              {/* Mobile horizontal scroll carousel */}
+              <div className="flex sm:hidden gap-4 overflow-x-auto pb-3" style={{ scrollbarWidth: "none" }}>
+                {events.map((event, i) => (
+                  <div key={event.id} className="shrink-0 w-72">
+                    <GridEventCard event={event} index={i} isInView={isInView} />
+                  </div>
+                ))}
+              </div>
+              {/* Desktop grid */}
+              <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {events.map((event, i) => (
+                  <GridEventCard key={event.id} event={event} index={i} isInView={isInView} />
+                ))}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

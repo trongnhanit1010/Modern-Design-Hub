@@ -61,11 +61,12 @@ export default function AttractiveDestinations() {
           animate={isInView ? "visible" : "hidden"}
           className="grid gap-4 lg:grid-cols-[1.18fr_1fr]"
         >
+          {/* Main hero card */}
           <motion.button
             variants={cardVariants}
             whileHover={{ y: -4 }}
             onClick={() => goToPlace(mainPlace.slug)}
-            className="group relative min-h-[430px] overflow-hidden rounded-[2rem] text-left shadow-2xl shadow-slate-900/15"
+            className="group relative min-h-[400px] overflow-hidden rounded-[2rem] text-left shadow-2xl shadow-slate-900/15 md:min-h-[500px]"
             data-testid="card-attractive-main"
           >
             <img
@@ -98,47 +99,65 @@ export default function AttractiveDestinations() {
             </div>
           </motion.button>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            {sidePlaces.map((place, index) => (
-              <motion.button
-                key={place.id}
-                variants={cardVariants}
-                whileHover={{ y: -4 }}
-                onClick={() => goToPlace(place.slug)}
-                className={`group relative overflow-hidden rounded-3xl border border-border bg-card text-left shadow-sm transition-all hover:border-primary/25 hover:shadow-xl hover:shadow-slate-900/10 ${index === 4 ? "sm:col-span-2" : ""}`}
-                data-testid={`card-attractive-${place.id}`}
-              >
-                <div className={`grid ${index === 4 ? "sm:grid-cols-[0.9fr_1.1fr]" : ""}`}>
-                  <div className={`relative overflow-hidden ${index === 4 ? "h-44 sm:h-full" : "h-40"}`}>
-                    <img
-                      src={place.image}
-                      alt={place.name}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/45 to-transparent" />
-                    <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-black/35 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur">
+          {/* Side cards: horizontal scroll on mobile, 2-col grid on desktop */}
+          <div className="-mx-4 px-4 md:mx-0 md:px-0">
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate={isInView ? "visible" : "hidden"}
+              className="flex gap-3 overflow-x-auto pb-3 md:grid md:grid-cols-2 md:overflow-visible md:pb-0"
+              style={{ scrollbarWidth: "none" }}
+            >
+              {sidePlaces.map((place, index) => (
+                <motion.button
+                  key={place.id}
+                  variants={cardVariants}
+                  whileHover={{ y: -4 }}
+                  onClick={() => goToPlace(place.slug)}
+                  className={`group relative shrink-0 overflow-hidden rounded-2xl text-left shadow-md transition-shadow hover:shadow-xl hover:shadow-slate-900/12 w-56 h-52 md:w-auto md:h-48 ${
+                    index === 4 ? "md:col-span-2 md:h-40" : ""
+                  }`}
+                  data-testid={`card-attractive-${place.id}`}
+                >
+                  {/* Full image */}
+                  <img
+                    src={place.image}
+                    alt={place.name}
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                  />
+
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/88 via-black/30 to-transparent" />
+
+                  {/* Top badges */}
+                  <div className="absolute left-3 right-3 top-3 flex items-center justify-between">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-black/40 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur-sm">
                       <Star size={10} className="fill-amber-300 text-amber-300" />
                       {place.rating}
                     </span>
+                    <span className={`rounded-full bg-gradient-to-r ${place.tagColor} px-2.5 py-1 text-[10px] font-bold text-white shadow`}>
+                      {place.tag}
+                    </span>
                   </div>
-                  <div className="p-4">
-                    <div className="mb-2 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                      <MapPin size={12} />
-                      <span>{place.area} · {place.distance}</span>
+
+                  {/* Bottom info */}
+                  <div className="absolute bottom-0 left-0 right-0 p-3.5">
+                    <div className="mb-0.5 flex items-center gap-1 text-white/65 text-[11px]">
+                      <MapPin size={10} className="shrink-0" />
+                      <span className="line-clamp-1">{place.area}</span>
                     </div>
-                    <h3 className="text-base font-bold leading-snug text-foreground">{place.name}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground line-clamp-2">{place.desc}</p>
-                    <div className="mt-4 flex items-center justify-between gap-3">
-                      <span className={`rounded-full bg-gradient-to-r ${place.tagColor} px-2.5 py-1 text-[11px] font-bold text-white`}>
-                        {place.tag}
-                      </span>
-                      <ArrowRight size={15} className="text-primary transition-transform group-hover:translate-x-1" />
-                    </div>
+                    <h3 className="text-sm font-bold leading-snug text-white">{place.name}</h3>
+                    {index !== 4 && (
+                      <p className="mt-1 text-[11px] leading-relaxed text-white/68 line-clamp-2">{place.desc}</p>
+                    )}
+                    <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-white/80 transition-colors group-hover:text-white">
+                      Khám phá <ArrowRight size={10} className="transition-transform group-hover:translate-x-0.5" />
+                    </span>
                   </div>
-                </div>
-              </motion.button>
-            ))}
+                </motion.button>
+              ))}
+            </motion.div>
           </div>
         </motion.div>
       </div>

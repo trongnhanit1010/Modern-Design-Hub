@@ -1,12 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Bell, User, Globe, Menu, Moon, Sun } from "lucide-react";
+import { Search, Bell, User, Menu, Moon, Sun, ChevronDown, Check } from "lucide-react";
 import { useSidebar } from "@/context/SidebarContext";
 import { useDarkMode } from "@/context/DarkModeContext";
+
+const LANGUAGES = [
+  { code: "VI", label: "Tiếng Việt", flag: "🇻🇳" },
+  { code: "EN", label: "English", flag: "🇺🇸" },
+];
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [searchVal, setSearchVal] = useState("");
+  const [langOpen, setLangOpen] = useState(false);
+  const [activeLang, setActiveLang] = useState(LANGUAGES[0]);
+  const langRef = useRef<HTMLDivElement>(null);
   const { toggle } = useSidebar();
   const { isDark, toggle: toggleDark } = useDarkMode();
 
@@ -14,6 +22,16 @@ export default function Header() {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) {
+        setLangOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   return (
@@ -64,13 +82,52 @@ export default function Header() {
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
-          <button
-            className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted text-sm transition-colors"
-            data-testid="button-language"
-          >
-            <Globe size={15} />
-            <span className="hidden sm:inline">VI</span>
-          </button>
+          <div className="relative hidden sm:block" ref={langRef}>
+            <button
+              onClick={() => setLangOpen((v) => !v)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-muted/50 hover:bg-muted text-sm font-medium text-foreground transition-all"
+              data-testid="button-language"
+              aria-label="Switch language"
+            >
+              <span className="text-base leading-none">{activeLang.flag}</span>
+              <span className="text-xs font-semibold tracking-wide">{activeLang.code}</span>
+              <ChevronDown
+                size={12}
+                className={`text-muted-foreground transition-transform duration-200 ${langOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+
+            <AnimatePresence>
+              {langOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 6, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 4, scale: 0.96 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute right-0 top-full mt-2 w-44 rounded-2xl border border-border bg-popover shadow-xl overflow-hidden z-50"
+                >
+                  {LANGUAGES.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => {
+                        setActiveLang(lang);
+                        setLangOpen(false);
+                      }}
+                      className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors hover:bg-muted ${
+                        activeLang.code === lang.code ? "bg-primary/5 text-primary font-semibold" : "text-foreground"
+                      }`}
+                    >
+                      <span className="text-xl leading-none">{lang.flag}</span>
+                      <span className="flex-1 text-left">{lang.label}</span>
+                      {activeLang.code === lang.code && (
+                        <Check size={14} className="text-primary shrink-0" />
+                      )}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           <button
             onClick={toggleDark}
