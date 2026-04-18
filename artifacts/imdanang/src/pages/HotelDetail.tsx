@@ -422,28 +422,6 @@ export default function HotelDetail() {
                 </motion.a>
               </motion.div>
 
-              {/* Top amenities quick-view */}
-              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}
-                className="bg-white border border-slate-200 rounded-3xl p-5 shadow-md shadow-slate-200/50">
-                <h3 className="text-slate-700 font-bold text-sm mb-3 flex items-center gap-2">
-                  <CheckCircle2 size={15} className="text-emerald-500" />Tiện nghi nổi bật
-                </h3>
-                <div className="grid grid-cols-5 gap-2">
-                  {hotel.amenities.slice(0, 10).map((key) => {
-                    const a = amenityMap[key];
-                    if (!a) return null;
-                    return (
-                      <div key={key} title={a.label}
-                        className="flex flex-col items-center gap-1.5 p-2 rounded-xl hover:bg-slate-50 transition-colors cursor-default">
-                        <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: `${a.color}15` }}>
-                          <a.icon size={14} style={{ color: a.color }} />
-                        </div>
-                        <span className="text-[9px] text-slate-400 text-center leading-tight">{a.label.split(" ")[0]}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </motion.div>
             </div>
           </div>
         </div>
