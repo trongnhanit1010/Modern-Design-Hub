@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { ArrowRight, LayoutGrid } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, LayoutGrid } from "lucide-react";
 
 const featuredPost = {
   category: "DU LỊCH CUỐI TUẦN",
@@ -40,6 +40,11 @@ const gridPosts = [
 export default function ExperiencesSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (dir: 1 | -1) => {
+    scrollRef.current?.scrollBy({ left: dir * 280, behavior: "smooth" });
+  };
 
   return (
     <section className="py-12 px-4 bg-background" ref={ref} data-testid="section-experiences">
@@ -92,28 +97,50 @@ export default function ExperiencesSection() {
             </div>
           </motion.div>
 
-          {/* Mobile: horizontal scroll; Desktop: 2x2 grid */}
+          {/* Mobile: horizontal scroll with arrows; Desktop: 2x2 grid */}
           <div className="lg:col-span-3">
-            {/* Mobile carousel */}
-            <div className="flex gap-4 overflow-x-auto pb-3 lg:hidden" style={{ scrollbarWidth: "none" }}>
-              {gridPosts.map((post, i) => (
-                <motion.div
-                  key={post.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: i * 0.1 + 0.15, duration: 0.45 }}
-                  className="shrink-0 w-64 h-48 relative rounded-2xl overflow-hidden cursor-pointer group"
-                  data-testid={`card-exp-mobile-${post.id}`}
-                >
-                  <img src={post.image} alt={post.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  <div className="relative z-10 h-full flex flex-col justify-end p-4">
-                    <p className="text-white/60 text-[9px] font-bold tracking-widest uppercase mb-1">{post.category}</p>
-                    <h4 className="text-white font-semibold text-sm leading-snug mb-1 line-clamp-2">{post.title}</h4>
-                    <span className="inline-flex items-center gap-1 text-white/80 text-xs font-medium">Đọc thêm <ArrowRight size={11} /></span>
-                  </div>
-                </motion.div>
-              ))}
+            {/* Mobile carousel with arrows */}
+            <div className="relative lg:hidden">
+              <div
+                ref={scrollRef}
+                className="flex gap-4 overflow-x-auto pb-3"
+                style={{ scrollbarWidth: "none" }}
+              >
+                {gridPosts.map((post, i) => (
+                  <motion.div
+                    key={post.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ delay: i * 0.1 + 0.15, duration: 0.45 }}
+                    className="shrink-0 w-64 h-52 relative rounded-2xl overflow-hidden cursor-pointer group"
+                    data-testid={`card-exp-mobile-${post.id}`}
+                  >
+                    <img src={post.image} alt={post.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    <div className="relative z-10 h-full flex flex-col justify-end p-4">
+                      <p className="text-white/60 text-[9px] font-bold tracking-widest uppercase mb-1">{post.category}</p>
+                      <h4 className="text-white font-semibold text-sm leading-snug mb-1 line-clamp-2">{post.title}</h4>
+                      <span className="inline-flex items-center gap-1 text-white/80 text-xs font-medium">Đọc thêm <ArrowRight size={11} /></span>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Arrow buttons */}
+              <button
+                onClick={() => scroll(-1)}
+                className="absolute -left-1 top-1/2 -translate-y-4 z-10 w-8 h-8 rounded-full bg-white shadow-md border border-border flex items-center justify-center text-foreground hover:bg-primary hover:text-white hover:border-primary transition-all"
+                data-testid="button-exp-prev"
+              >
+                <ChevronLeft size={15} />
+              </button>
+              <button
+                onClick={() => scroll(1)}
+                className="absolute -right-1 top-1/2 -translate-y-4 z-10 w-8 h-8 rounded-full bg-white shadow-md border border-border flex items-center justify-center text-foreground hover:bg-primary hover:text-white hover:border-primary transition-all"
+                data-testid="button-exp-next"
+              >
+                <ChevronRight size={15} />
+              </button>
             </div>
 
             {/* Desktop 2x2 grid */}
@@ -135,19 +162,10 @@ export default function ExperiencesSection() {
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  <div className="relative z-10 h-full flex flex-col justify-end p-4">
-                    <p className="text-white/60 text-[9px] font-bold tracking-widest uppercase mb-1">
-                      {post.category}
-                    </p>
-                    <h4 className="text-white font-semibold text-sm leading-snug mb-2 line-clamp-2">
-                      {post.title}
-                    </h4>
-                    <motion.span
-                      whileHover={{ x: 3 }}
-                      className="inline-flex items-center gap-1 text-white/80 text-xs font-medium hover:text-white transition-colors"
-                    >
-                      Đọc thêm <ArrowRight size={11} />
-                    </motion.span>
+                  <div className="relative z-10 h-full flex flex-col justify-end p-4" style={{ minHeight: 200 }}>
+                    <p className="text-white/60 text-[9px] font-bold tracking-widest uppercase mb-1">{post.category}</p>
+                    <h4 className="text-white font-semibold text-sm leading-snug mb-1.5 line-clamp-2">{post.title}</h4>
+                    <span className="inline-flex items-center gap-1 text-white/80 text-xs font-medium">Đọc thêm <ArrowRight size={11} /></span>
                   </div>
                 </motion.div>
               ))}

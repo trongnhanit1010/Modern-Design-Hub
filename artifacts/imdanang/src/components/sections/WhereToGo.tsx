@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import { MapPin, Star, ChevronLeft, ChevronRight, Clock, Users, ArrowRight } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -266,41 +266,83 @@ function AccordionOption() {
   );
 }
 
+function MobileList() {
+  return (
+    <div className="flex flex-col gap-3">
+      {destinations.map((dest, i) => (
+        <motion.div
+          key={dest.id}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: i * 0.06, duration: 0.4 }}
+          className="flex gap-3 rounded-2xl overflow-hidden bg-card shadow-sm border border-border/50 cursor-pointer group active:scale-[0.99] transition-transform"
+          data-testid={`card-destination-mobile-${dest.id}`}
+        >
+          <div className="w-28 shrink-0 relative overflow-hidden" style={{ height: "5.5rem" }}>
+            <img
+              src={dest.image}
+              alt={dest.name}
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          </div>
+          <div className="flex flex-col justify-center py-2.5 pr-3 flex-1 min-w-0">
+            <p className="text-[10px] font-bold text-primary tracking-wide mb-0.5">{dest.category}</p>
+            <h3 className="font-bold text-sm text-foreground leading-snug line-clamp-1">{dest.name}</h3>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="inline-flex items-center gap-0.5">
+                <Star size={10} className="fill-amber-400 text-amber-400" />
+                <span className="text-xs font-semibold text-amber-600">{dest.rating}</span>
+              </span>
+              <span className="text-[11px] text-muted-foreground flex items-center gap-0.5">
+                <Clock size={10} className="shrink-0" />
+                {dest.season}
+              </span>
+            </div>
+            <p className="text-[11px] text-muted-foreground mt-1 line-clamp-1">{dest.tags.join(" · ")}</p>
+          </div>
+          <div className="flex items-center pr-3 shrink-0">
+            <ChevronRight size={16} className="text-muted-foreground group-hover:text-primary transition-colors" />
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
 export default function WhereToGo() {
   const [option, setOption] = useState<"A" | "B">("B");
   const isMobile = useIsMobile();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
-  useEffect(() => {
-    if (isMobile) setOption("A");
-  }, [isMobile]);
-
   return (
     <section className="py-12 px-4 bg-white dark:bg-card" ref={ref} data-testid="section-where-to-go">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-8 flex-wrap gap-3">
           <div>
             <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground">Where do you want to go?</h2>
             <p className="text-muted-foreground text-sm mt-1">Bạn muốn đến đâu?</p>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 bg-muted rounded-full p-1">
-              <button
-                onClick={() => setOption("A")}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${option === "A" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`}
-                data-testid="button-whereto-option-a"
-              >
-                Carousel
-              </button>
-              <button
-                onClick={() => setOption("B")}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${option === "B" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`}
-                data-testid="button-whereto-option-b"
-              >
-                Accordion
-              </button>
-            </div>
+            {/* Option toggle: desktop only */}
+            {!isMobile && (
+              <div className="flex items-center gap-2 bg-muted rounded-full p-1">
+                <button
+                  onClick={() => setOption("A")}
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${option === "A" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`}
+                  data-testid="button-whereto-option-a"
+                >
+                  Carousel
+                </button>
+                <button
+                  onClick={() => setOption("B")}
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${option === "B" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`}
+                  data-testid="button-whereto-option-b"
+                >
+                  Accordion
+                </button>
+              </div>
+            )}
             <a
               href="#"
               className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:text-primary hover:shadow-md"
@@ -315,17 +357,21 @@ export default function WhereToGo() {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5 }}
         >
-          <AnimatePresence mode="wait">
-            {option === "A" ? (
-              <motion.div key="carousel" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <CarouselOption />
-              </motion.div>
-            ) : (
-              <motion.div key="accordion" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <AccordionOption />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {isMobile ? (
+            <MobileList />
+          ) : (
+            <AnimatePresence mode="wait">
+              {option === "A" ? (
+                <motion.div key="carousel" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                  <CarouselOption />
+                </motion.div>
+              ) : (
+                <motion.div key="accordion" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                  <AccordionOption />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          )}
         </motion.div>
       </div>
     </section>

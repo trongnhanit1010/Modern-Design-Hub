@@ -1,6 +1,7 @@
-import { useState, useRef } from "react";
-import { motion, AnimatePresence, useInView } from "framer-motion";
-import { Clock, ArrowRight, CheckCircle } from "lucide-react";
+import { useState, useRef, useCallback } from "react";
+import useEmblaCarousel from "embla-carousel-react";
+import { motion, useInView } from "framer-motion";
+import { Clock, ArrowRight, CheckCircle, ChevronLeft, ChevronRight, Star } from "lucide-react";
 
 const imageDeals = [
   {
@@ -104,6 +105,109 @@ const deals = [
   },
 ];
 
+type Deal = typeof deals[0];
+type ImageDeal = typeof imageDeals[0];
+
+function ColorCard({ deal }: { deal: Deal }) {
+  return (
+    <div className={`rounded-3xl overflow-hidden bg-gradient-to-br ${deal.gradient} cursor-pointer shadow-lg h-full`}>
+      <div className="p-5 flex gap-3 justify-between items-start">
+        <div className="flex-1 min-w-0">
+          <span className="inline-block bg-white/25 text-white text-[10px] font-bold px-2.5 py-1 rounded-full mb-3 tracking-widest">
+            {deal.badge}
+          </span>
+          <h3 className="text-white font-bold text-lg leading-snug">{deal.title}</h3>
+          <div className="flex items-center gap-1 mt-1.5">
+            <Star size={12} className="fill-white/80 text-white/80 shrink-0" />
+            <span className="text-white/80 text-sm font-semibold">{deal.rating}</span>
+          </div>
+          <p className="text-white font-bold text-xl mt-1">{deal.price}</p>
+        </div>
+        <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-lg border-2 border-white/25 shrink-0">
+          <img src={deal.thumb} alt={deal.title} className="w-full h-full object-cover" />
+        </div>
+      </div>
+      <div className="mx-5 border-t border-white/25" />
+      <div className="px-5 py-4 flex flex-col gap-2">
+        <div className="flex items-center gap-2 text-white/85 text-sm">
+          <Clock size={13} className="shrink-0" />
+          <span>{deal.days}</span>
+        </div>
+        <div className="flex items-start gap-2 text-white/85 text-sm">
+          <CheckCircle size={13} className="shrink-0 mt-0.5" />
+          <span className="leading-snug">{deal.include}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ImageCard({ deal }: { deal: ImageDeal }) {
+  return (
+    <div className="relative rounded-2xl overflow-hidden h-52 group cursor-pointer">
+      <img
+        src={deal.image}
+        alt={deal.title}
+        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-transparent" />
+      <div className="absolute inset-0 p-5 flex flex-col justify-between">
+        <div>
+          <span className={`inline-block ${deal.badgeColor} text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full tracking-wide`}>
+            {deal.badge}
+          </span>
+          <h3 className="text-white font-bold text-lg leading-snug mt-2 line-clamp-2 max-w-[70%]">
+            {deal.title}
+          </h3>
+          <p className="text-white/70 text-xs mt-1 max-w-[65%] leading-snug">
+            {deal.subtitle}
+          </p>
+        </div>
+        <button className="self-start flex items-center gap-2 px-4 py-2 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-sm text-white text-sm font-medium transition-colors border border-white/20">
+          {deal.cta} <ArrowRight size={13} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function DealsCarousel({ items, renderCard }: { items: (Deal | ImageDeal)[]; renderCard: (item: Deal | ImageDeal) => React.ReactNode }) {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: "start", dragFree: true });
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+
+  return (
+    <div className="relative">
+      <div className="overflow-hidden" ref={emblaRef}>
+        <div className="flex gap-4">
+          {items.map((item) => (
+            <div
+              key={item.id}
+              className="flex-none w-[82vw] sm:w-[calc(50%-8px)] lg:w-[calc(33.333%-11px)]"
+            >
+              {renderCard(item)}
+            </div>
+          ))}
+        </div>
+      </div>
+      <button
+        onClick={scrollPrev}
+        className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-card border border-border shadow-md hidden sm:flex items-center justify-center text-foreground hover:bg-primary hover:text-white hover:border-primary transition-all"
+        data-testid="button-deals-prev"
+      >
+        <ChevronLeft size={16} />
+      </button>
+      <button
+        onClick={scrollNext}
+        className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-card border border-border shadow-md hidden sm:flex items-center justify-center text-foreground hover:bg-primary hover:text-white hover:border-primary transition-all"
+        data-testid="button-deals-next"
+      >
+        <ChevronRight size={16} />
+      </button>
+    </div>
+  );
+}
+
 export default function DealsSection() {
   const [subMode, setSubMode] = useState<"color" | "image">("color");
   const ref = useRef(null);
@@ -118,113 +222,42 @@ export default function DealsSection() {
             <p className="text-muted-foreground text-sm mt-1">Ưu đãi đặc biệt dành cho bạn</p>
           </div>
           <div className="flex items-center gap-2 bg-muted rounded-full p-1">
-            <button onClick={() => setSubMode("color")} className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${subMode === "color" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`} data-testid="button-deals-option-a">Màu sắc</button>
-            <button onClick={() => setSubMode("image")} className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${subMode === "image" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`} data-testid="button-deals-option-b">Hình ảnh</button>
+            <button
+              onClick={() => setSubMode("color")}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${subMode === "color" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`}
+              data-testid="button-deals-option-a"
+            >
+              Màu sắc
+            </button>
+            <button
+              onClick={() => setSubMode("image")}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${subMode === "image" ? "bg-white shadow-sm text-foreground" : "text-muted-foreground"}`}
+              data-testid="button-deals-option-b"
+            >
+              Hình ảnh
+            </button>
           </div>
         </div>
 
-        <AnimatePresence mode="wait">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.4 }}
+        >
           {subMode === "color" ? (
-            <motion.div
-              key="color-mode"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.25 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
-              data-testid="deals-color-grid"
-            >
-              {deals.slice(0, 3).map((deal, i) => (
-                <motion.div
-                  key={deal.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: i * 0.08, duration: 0.4 }}
-                  whileHover={{ scale: 1.02, y: -3 }}
-                  className={`rounded-3xl overflow-hidden bg-gradient-to-br ${deal.gradient} cursor-pointer shadow-lg`}
-                  data-testid={`card-deal-${deal.id}`}
-                >
-                  {/* Top section: badge + title + price + thumb */}
-                  <div className="p-5 flex gap-3 justify-between items-start">
-                    <div className="flex-1 min-w-0">
-                      <span className="inline-block bg-white/25 text-white text-[10px] font-bold px-2.5 py-1 rounded-full mb-3 tracking-widest">
-                        {deal.badge}
-                      </span>
-                      <h3 className="text-white font-bold text-lg leading-snug">{deal.title}</h3>
-                      <p className="text-white font-bold text-xl mt-1">{deal.price}</p>
-                    </div>
-                    <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-lg border-2 border-white/25 shrink-0">
-                      <img src={deal.thumb} alt={deal.title} className="w-full h-full object-cover" />
-                    </div>
-                  </div>
-
-                  {/* Divider */}
-                  <div className="mx-5 border-t border-white/25" />
-
-                  {/* Bottom section: details */}
-                  <div className="px-5 py-4 flex flex-col gap-2">
-                    <div className="flex items-center gap-2 text-white/85 text-sm">
-                      <Clock size={13} className="shrink-0" />
-                      <span>{deal.days}</span>
-                    </div>
-                    <div className="flex items-start gap-2 text-white/85 text-sm">
-                      <CheckCircle size={13} className="shrink-0 mt-0.5" />
-                      <span className="leading-snug">{deal.include}</span>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
+            <DealsCarousel
+              key="color"
+              items={deals}
+              renderCard={(item) => <ColorCard deal={item as Deal} />}
+            />
           ) : (
-            <motion.div
-              key="image-mode"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.25 }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-4"
-              data-testid="deals-image-grid"
-            >
-              {imageDeals.map((deal, i) => (
-                <motion.div
-                  key={deal.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: i * 0.08, duration: 0.4 }}
-                  whileHover={{ scale: 1.02 }}
-                  className="relative rounded-2xl overflow-hidden h-44 group cursor-pointer"
-                  data-testid={`card-deal-img-${deal.id}`}
-                >
-                  <img
-                    src={deal.image}
-                    alt={deal.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-transparent" />
-
-                  <div className="absolute inset-0 p-5 flex flex-col justify-between">
-                    <div>
-                      <span className={`inline-block ${deal.badgeColor} text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full tracking-wide`}>
-                        {deal.badge}
-                      </span>
-                      <h3 className="text-white font-bold text-lg leading-snug mt-2 line-clamp-2 max-w-[70%]">
-                        {deal.title}
-                      </h3>
-                      <p className="text-white/70 text-xs mt-1 max-w-[65%] leading-snug">
-                        {deal.subtitle}
-                      </p>
-                    </div>
-                    <div>
-                      <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-sm text-white text-sm font-medium transition-colors border border-white/20">
-                        {deal.cta} <ArrowRight size={13} />
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
+            <DealsCarousel
+              key="image"
+              items={imageDeals}
+              renderCard={(item) => <ImageCard deal={item as ImageDeal} />}
+            />
           )}
-        </AnimatePresence>
+        </motion.div>
       </div>
     </section>
   );

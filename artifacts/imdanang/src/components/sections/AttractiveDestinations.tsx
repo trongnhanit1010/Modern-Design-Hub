@@ -27,6 +27,49 @@ function StatPill({ icon: Icon, children }: { icon: typeof MapPin; children: Rea
   );
 }
 
+function SideCard({ place, index, onClick }: { place: typeof sidePlaces[0]; index: number; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`group relative overflow-hidden rounded-2xl text-left shadow-md transition-shadow hover:shadow-xl hover:shadow-slate-900/12 ${
+        index === 4 ? "md:col-span-2 md:h-40" : ""
+      }`}
+      style={{ height: "13rem" }}
+      data-testid={`card-attractive-${place.id}`}
+    >
+      <img
+        src={place.image}
+        alt={place.name}
+        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        loading="lazy"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/88 via-black/30 to-transparent" />
+      <div className="absolute left-3 right-3 top-3 flex items-center justify-between">
+        <span className="inline-flex items-center gap-1 rounded-full bg-black/40 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur-sm">
+          <Star size={10} className="fill-amber-300 text-amber-300" />
+          {place.rating}
+        </span>
+        <span className={`rounded-full bg-gradient-to-r ${place.tagColor} px-2.5 py-1 text-[10px] font-bold text-white shadow`}>
+          {place.tag}
+        </span>
+      </div>
+      <div className="absolute bottom-0 left-0 right-0 p-3.5">
+        <div className="mb-0.5 flex items-center gap-1 text-white/65 text-[11px]">
+          <MapPin size={10} className="shrink-0" />
+          <span className="line-clamp-1">{place.area}</span>
+        </div>
+        <h3 className="text-sm font-bold leading-snug text-white">{place.name}</h3>
+        {index !== 4 && (
+          <p className="mt-1 text-[11px] leading-relaxed text-white/68 line-clamp-2">{place.desc}</p>
+        )}
+        <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-white/80 transition-colors group-hover:text-white">
+          Khám phá <ArrowRight size={10} className="transition-transform group-hover:translate-x-0.5" />
+        </span>
+      </div>
+    </button>
+  );
+}
+
 export default function AttractiveDestinations() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
@@ -99,63 +142,36 @@ export default function AttractiveDestinations() {
             </div>
           </motion.button>
 
-          {/* Side cards: horizontal scroll on mobile, 2-col grid on desktop */}
-          <div className="min-w-0">
+          {/* Side cards */}
+          <div>
+            {/* Mobile: full-width horizontal scroll */}
+            <div
+              className="flex gap-3 overflow-x-auto pb-2 md:hidden"
+              style={{ scrollbarWidth: "none" }}
+            >
+              {sidePlaces.map((place, index) => (
+                <div key={place.id} className="shrink-0 w-[72vw] max-w-xs">
+                  <SideCard place={place} index={index} onClick={() => goToPlace(place.slug)} />
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop: 2-col grid with animations */}
             <motion.div
               variants={containerVariants}
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
-              className="flex gap-3 overflow-x-auto pb-3 md:grid md:grid-cols-2 md:overflow-visible md:pb-0"
-              style={{ scrollbarWidth: "none" }}
+              className="hidden md:grid md:grid-cols-2 gap-3"
             >
               {sidePlaces.map((place, index) => (
-                <motion.button
+                <motion.div
                   key={place.id}
                   variants={cardVariants}
                   whileHover={{ y: -4 }}
-                  onClick={() => goToPlace(place.slug)}
-                  className={`group relative shrink-0 overflow-hidden rounded-2xl text-left shadow-md transition-shadow hover:shadow-xl hover:shadow-slate-900/12 w-56 h-52 md:w-auto md:h-48 ${
-                    index === 4 ? "md:col-span-2 md:h-40" : ""
-                  }`}
-                  data-testid={`card-attractive-${place.id}`}
+                  className={index === 4 ? "col-span-2" : ""}
                 >
-                  {/* Full image */}
-                  <img
-                    src={place.image}
-                    alt={place.name}
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    loading="lazy"
-                  />
-
-                  {/* Gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/88 via-black/30 to-transparent" />
-
-                  {/* Top badges */}
-                  <div className="absolute left-3 right-3 top-3 flex items-center justify-between">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-black/40 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur-sm">
-                      <Star size={10} className="fill-amber-300 text-amber-300" />
-                      {place.rating}
-                    </span>
-                    <span className={`rounded-full bg-gradient-to-r ${place.tagColor} px-2.5 py-1 text-[10px] font-bold text-white shadow`}>
-                      {place.tag}
-                    </span>
-                  </div>
-
-                  {/* Bottom info */}
-                  <div className="absolute bottom-0 left-0 right-0 p-3.5">
-                    <div className="mb-0.5 flex items-center gap-1 text-white/65 text-[11px]">
-                      <MapPin size={10} className="shrink-0" />
-                      <span className="line-clamp-1">{place.area}</span>
-                    </div>
-                    <h3 className="text-sm font-bold leading-snug text-white">{place.name}</h3>
-                    {index !== 4 && (
-                      <p className="mt-1 text-[11px] leading-relaxed text-white/68 line-clamp-2">{place.desc}</p>
-                    )}
-                    <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-white/80 transition-colors group-hover:text-white">
-                      Khám phá <ArrowRight size={10} className="transition-transform group-hover:translate-x-0.5" />
-                    </span>
-                  </div>
-                </motion.button>
+                  <SideCard place={place} index={index} onClick={() => goToPlace(place.slug)} />
+                </motion.div>
               ))}
             </motion.div>
           </div>

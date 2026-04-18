@@ -170,6 +170,41 @@ function GridEventCard({ event, index, isInView }: { event: typeof events[0]; in
   );
 }
 
+function GridMobileCarousel({ events: eventsData, isInView }: { events: typeof events; isInView: boolean }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const scroll = (dir: 1 | -1) => scrollRef.current?.scrollBy({ left: dir * 296, behavior: "smooth" });
+
+  return (
+    <div className="relative sm:hidden">
+      <div
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-auto pb-3"
+        style={{ scrollbarWidth: "none" }}
+      >
+        {eventsData.map((event, i) => (
+          <div key={event.id} className="shrink-0 w-72">
+            <GridEventCard event={event} index={i} isInView={isInView} />
+          </div>
+        ))}
+      </div>
+      <button
+        onClick={() => scroll(-1)}
+        className="absolute -left-1 top-1/2 -translate-y-4 z-10 w-8 h-8 rounded-full bg-white shadow-md border border-border flex items-center justify-center text-foreground hover:bg-primary hover:text-white hover:border-primary transition-all"
+        data-testid="button-grid-prev"
+      >
+        <ChevronLeft size={15} />
+      </button>
+      <button
+        onClick={() => scroll(1)}
+        className="absolute -right-1 top-1/2 -translate-y-4 z-10 w-8 h-8 rounded-full bg-white shadow-md border border-border flex items-center justify-center text-foreground hover:bg-primary hover:text-white hover:border-primary transition-all"
+        data-testid="button-grid-next"
+      >
+        <ChevronRight size={15} />
+      </button>
+    </div>
+  );
+}
+
 export default function EventCalendar() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
@@ -333,14 +368,8 @@ export default function EventCalendar() {
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.3 }}
             >
-              {/* Mobile horizontal scroll carousel */}
-              <div className="flex sm:hidden gap-4 overflow-x-auto pb-3" style={{ scrollbarWidth: "none" }}>
-                {events.map((event, i) => (
-                  <div key={event.id} className="shrink-0 w-72">
-                    <GridEventCard event={event} index={i} isInView={isInView} />
-                  </div>
-                ))}
-              </div>
+              {/* Mobile horizontal scroll carousel with arrows */}
+              <GridMobileCarousel events={events} isInView={isInView} />
               {/* Desktop grid */}
               <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 {events.map((event, i) => (
