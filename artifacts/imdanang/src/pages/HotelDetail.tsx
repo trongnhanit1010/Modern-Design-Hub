@@ -3,7 +3,7 @@ import { motion, useInView, AnimatePresence } from "framer-motion";
 import {
   Star, MapPin, Wifi, Waves, Utensils, Car, Heart,
   ChevronLeft, ChevronRight, Phone, Globe, ExternalLink,
-  Clock, CheckCircle2, Shield, X, Dumbbell, Wind,
+  Clock, CheckCircle2, X, Dumbbell, Wind,
   Coffee, Tv, Bath, Sunrise, Navigation, Images,
 } from "lucide-react";
 import { Link, useParams } from "wouter";
@@ -78,9 +78,11 @@ const amenityMap: Record<string, { icon: typeof Wifi; label: string; color: stri
 };
 
 const reviews = [
-  { id: 1, name: "Nguyễn Minh Anh", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop", rating: 5, date: "Tháng 3/2026", title: "Kỳ nghỉ hoàn hảo!", text: "Khách sạn tuyệt vời, phòng rộng rãi và sạch sẽ. View biển đẹp mê hồn, nhân viên phục vụ rất nhiệt tình.", trip: "Gia đình" },
-  { id: 2, name: "David Chen", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop", rating: 5, date: "Tháng 2/2026", title: "Exceptional luxury resort", text: "Best resort in Da Nang! The beach is pristine, the pool is massive, and the breakfast buffet is incredible.", trip: "Đôi" },
-  { id: 3, name: "Trần Thị Hoa", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&auto=format&fit=crop", rating: 4, date: "Tháng 1/2026", title: "Rất hài lòng với dịch vụ", text: "Phòng deluxe view biển thực sự rất đẹp. Bể bơi vô cực tuyệt vời. Chỉ thiếu 1 sao vì check-in hơi lâu.", trip: "Cặp đôi" },
+  { id: 1, name: "Nguyễn Minh Anh", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop", rating: 5, date: "Tháng 4/2026", title: "Kỳ nghỉ hoàn hảo!", text: "Khách sạn tuyệt vời, phòng rộng rãi và sạch sẽ. View biển đẹp mê hồn, nhân viên phục vụ rất nhiệt tình.", trip: "Gia đình" },
+  { id: 2, name: "David Chen", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop", rating: 5, date: "Tháng 3/2026", title: "Exceptional luxury resort", text: "Best resort in Da Nang! The beach is pristine, the pool is massive, and the breakfast buffet is incredible. Will definitely come back.", trip: "Đôi" },
+  { id: 3, name: "Trần Thị Hoa", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&auto=format&fit=crop", rating: 4, date: "Tháng 2/2026", title: "Rất hài lòng với dịch vụ", text: "Phòng deluxe view biển thực sự rất đẹp. Bể bơi vô cực tuyệt vời. Chỉ thiếu 1 sao vì check-in hơi lâu.", trip: "Cặp đôi" },
+  { id: 4, name: "Sarah Johnson", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop", rating: 5, date: "Tháng 2/2026", title: "Perfect beachfront getaway", text: "The sunset view from our ocean-view balcony was breathtaking. Staff went above and beyond to make our anniversary special. Highly recommend!", trip: "Cặp đôi" },
+  { id: 5, name: "Phạm Văn Đức", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop", rating: 5, date: "Tháng 1/2026", title: "Đáng đồng tiền bát gạo", text: "Hồ bơi vô cực nhìn ra biển cực ấn tượng. Đồ ăn sáng phong phú, đa dạng. Nhân viên thân thiện và chuyên nghiệp. Sẽ quay lại!", trip: "Gia đình" },
 ];
 
 const ratingBars = [
@@ -98,7 +100,7 @@ const nearbyHotels = [
   { id: 4, slug: "vinpearl-resort-spa",  name: "Vinpearl Resort & Spa",stars: 5, rating: 4.8, image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&auto=format&fit=crop", distance: "5.2 km" },
 ];
 
-const TABS = ["Tổng quan", "Tiện nghi", "Chính sách"];
+const TABS = ["Tổng quan", "Tiện nghi"];
 
 export default function HotelDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -293,26 +295,6 @@ export default function HotelDetail() {
                 </motion.div>
               )}
 
-              {activeTab === 2 && (
-                <motion.div key="policies" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-                  <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
-                    <h2 className="text-slate-900 font-bold text-lg mb-5 flex items-center gap-2">
-                      <span className="w-1 h-5 rounded-full bg-violet-500 inline-block" />
-                      Chính sách khách sạn
-                    </h2>
-                    <div className="space-y-0 divide-y divide-slate-100">
-                      {hotel.policies.map((p, i) => (
-                        <div key={i} className="flex items-start gap-3.5 py-3.5">
-                          <div className="w-7 h-7 rounded-xl bg-violet-50 border border-violet-100 flex items-center justify-center shrink-0 mt-0.5">
-                            <Shield size={13} className="text-violet-500" />
-                          </div>
-                          <span className="text-slate-600 text-sm leading-relaxed">{p}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
-              )}
             </AnimatePresence>
 
           </div>
@@ -339,15 +321,28 @@ export default function HotelDetail() {
 
                 {/* Info + actions */}
                 <div className="p-5 space-y-4">
-                  {/* Rating */}
-                  <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-                    <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col items-center justify-center shrink-0">
-                      <span className="text-amber-600 font-extrabold text-lg leading-none">{hotel.rating}</span>
-                      <Star size={9} className="text-amber-400 fill-amber-400 mt-0.5" />
+                  {/* TripAdvisor Rating */}
+                  <div className="pb-4 border-b border-slate-100">
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <svg viewBox="0 0 24 24" className="w-5 h-5 fill-[#00aa6c]" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18a8 8 0 110-16 8 8 0 010 16zm0-12.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9zm0 7a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/>
+                      </svg>
+                      <span className="text-[#00aa6c] font-bold text-xs tracking-wide">TripAdvisor</span>
                     </div>
-                    <div>
-                      <p className="text-slate-800 font-semibold text-sm">Xuất sắc</p>
-                      <p className="text-slate-400 text-xs">{hotel.reviews.toLocaleString()} đánh giá</p>
+                    <div className="flex items-center gap-3">
+                      <div className="flex flex-col items-center bg-[#00aa6c]/10 border border-[#00aa6c]/25 rounded-2xl px-3 py-2 shrink-0">
+                        <span className="text-[#007a52] font-extrabold text-xl leading-none">{hotel.rating}</span>
+                        <div className="flex gap-0.5 mt-1">
+                          {[...Array(5)].map((_, i) => (
+                            <div key={i} className={`w-3 h-3 rounded-full ${i < Math.round(hotel.rating) ? "bg-[#00aa6c]" : "bg-slate-200"}`} />
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-slate-800 font-semibold text-sm">Xuất sắc</p>
+                        <p className="text-slate-400 text-xs">{hotel.reviews.toLocaleString()} đánh giá</p>
+                        <p className="text-[#00aa6c] text-[11px] font-medium mt-0.5">Xem trên TripAdvisor ↗</p>
+                      </div>
                     </div>
                   </div>
 
@@ -386,8 +381,49 @@ export default function HotelDetail() {
                 </div>
               </motion.div>
 
+              {/* TripAdvisor Booking Prices */}
+              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}
+                className="bg-white border border-slate-200 rounded-3xl p-5 shadow-md shadow-slate-200/50">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-1.5">
+                    <svg viewBox="0 0 24 24" className="w-4 h-4 fill-[#00aa6c]" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18a8 8 0 110-16 8 8 0 010 16zm0-12.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9zm0 7a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/>
+                    </svg>
+                    <h3 className="text-slate-700 font-bold text-sm">Giá booking từ TripAdvisor</h3>
+                  </div>
+                  <span className="text-[10px] text-slate-400 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-full">Hôm nay</span>
+                </div>
+                <div className="space-y-2.5">
+                  {[
+                    { type: "Phòng Deluxe", desc: "View biển · 1 giường đôi", price: "2.800.000đ", tag: "Phổ biến" },
+                    { type: "Phòng Superior", desc: "View vườn · 2 giường đơn", price: "2.200.000đ", tag: null },
+                    { type: "Suite Hướng Biển", desc: "Phòng khách riêng · 1 giường King", price: "5.200.000đ", tag: "Sang trọng" },
+                  ].map((room) => (
+                    <div key={room.type} className="flex items-center justify-between gap-2 py-2.5 border-b border-slate-100 last:border-0">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="text-slate-800 font-semibold text-xs leading-snug">{room.type}</span>
+                          {room.tag && (
+                            <span className="text-[9px] font-bold bg-amber-50 text-amber-600 border border-amber-200 px-1.5 py-0.5 rounded-full">{room.tag}</span>
+                          )}
+                        </div>
+                        <p className="text-slate-400 text-[11px] mt-0.5">{room.desc}</p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-[#007a52] font-bold text-sm leading-none">từ {room.price}</p>
+                        <p className="text-slate-400 text-[10px] mt-0.5">/đêm</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <motion.a href="#" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                  className="mt-4 flex items-center justify-center gap-2 w-full py-3 bg-[#00aa6c] text-white font-bold rounded-2xl shadow-md shadow-[#00aa6c]/25 hover:bg-[#008f5b] transition-colors text-sm">
+                  <ExternalLink size={14} />Xem giá trên TripAdvisor
+                </motion.a>
+              </motion.div>
+
               {/* Top amenities quick-view */}
-              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 }}
+              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}
                 className="bg-white border border-slate-200 rounded-3xl p-5 shadow-md shadow-slate-200/50">
                 <h3 className="text-slate-700 font-bold text-sm mb-3 flex items-center gap-2">
                   <CheckCircle2 size={15} className="text-emerald-500" />Tiện nghi nổi bật
@@ -410,89 +446,6 @@ export default function HotelDetail() {
               </motion.div>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* ── OTA — full width ──────────────────────────────────── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-2 mb-8">
-        <h2 className="text-slate-900 font-bold text-xl mb-5 flex items-center gap-2">
-          <span className="w-1 h-6 rounded-full bg-blue-500 inline-block" />
-          Đặt phòng qua
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[
-            {
-              name: "Booking.com",
-              color: "#003580",
-              accent: "#0071c2",
-              img: hotel.images[1],
-              sub: "Hơn 6 triệu đánh giá",
-              badge: "Ưu đãi hôm nay",
-              features: ["Đặt phòng linh hoạt", "Hủy miễn phí", "Thanh toán sau"],
-            },
-            {
-              name: "Agoda",
-              color: "#b20710",
-              accent: "#e02020",
-              img: hotel.images[2],
-              sub: "Giá tốt nhất",
-              badge: "Giảm đến 25%",
-              features: ["Giá thành viên", "Điểm thưởng AgodaCash", "Đặt ngay xác nhận"],
-            },
-            {
-              name: "TripAdvisor",
-              color: "#007a52",
-              accent: "#00aa6c",
-              img: hotel.images[3],
-              sub: "So sánh giá tốt nhất",
-              badge: "Top đánh giá",
-              features: ["So sánh nhiều OTA", "Đánh giá du khách thực", "Gợi ý cá nhân hoá"],
-            },
-          ].map((ota, idx) => (
-            <motion.a key={ota.name} href="#"
-              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.08 }}
-              whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }}
-              className="relative rounded-3xl overflow-hidden block group cursor-pointer shadow-lg hover:shadow-xl transition-shadow"
-            >
-              {/* Background image */}
-              <div className="absolute inset-0">
-                <img src={ota.img} alt={ota.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                <div className="absolute inset-0" style={{ background: `linear-gradient(160deg, ${ota.color}ee 0%, ${ota.accent}cc 100%)` }} />
-              </div>
-
-              {/* Content */}
-              <div className="relative p-6 flex flex-col gap-4 min-h-[200px]">
-                {/* Badge */}
-                <span className="self-start bg-white/20 backdrop-blur-sm text-white text-[11px] font-semibold px-3 py-1 rounded-full border border-white/25">
-                  {ota.badge}
-                </span>
-
-                {/* Name */}
-                <div>
-                  <h3 className="text-white font-extrabold text-2xl tracking-tight leading-none">{ota.name}</h3>
-                  <p className="text-white/70 text-sm mt-1">{ota.sub}</p>
-                </div>
-
-                {/* Features */}
-                <ul className="space-y-1.5 flex-1">
-                  {ota.features.map((f) => (
-                    <li key={f} className="flex items-center gap-2 text-white/85 text-xs">
-                      <CheckCircle2 size={12} className="text-white/60 shrink-0" />{f}
-                    </li>
-                  ))}
-                </ul>
-
-                {/* CTA */}
-                <div className="flex items-center justify-between pt-3 border-t border-white/20">
-                  <span className="text-white font-semibold text-sm">Xem trên {ota.name}</span>
-                  <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/35 transition-colors">
-                    <ExternalLink size={14} className="text-white" />
-                  </div>
-                </div>
-              </div>
-            </motion.a>
-          ))}
         </div>
       </div>
 
@@ -538,7 +491,7 @@ export default function HotelDetail() {
           </div>
 
           {/* Review cards grid */}
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {reviews.map((rv, idx) => (
               <motion.div key={rv.id}
                 initial={{ opacity: 0, y: 16 }}
