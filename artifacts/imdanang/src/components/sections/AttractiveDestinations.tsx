@@ -31,10 +31,7 @@ function SideCard({ place, index, onClick }: { place: typeof sidePlaces[0]; inde
   return (
     <button
       onClick={onClick}
-      className={`group relative overflow-hidden rounded-2xl text-left shadow-md transition-shadow hover:shadow-xl hover:shadow-slate-900/12 ${
-        index === 4 ? "md:col-span-2 md:h-40" : ""
-      }`}
-      style={{ height: "13rem" }}
+      className="group relative w-full h-full overflow-hidden rounded-2xl text-left shadow-md transition-shadow hover:shadow-xl hover:shadow-slate-900/12"
       data-testid={`card-attractive-${place.id}`}
     >
       <img
@@ -150,7 +147,7 @@ export default function AttractiveDestinations() {
               style={{ scrollbarWidth: "none" }}
             >
               {sidePlaces.map((place, index) => (
-                <div key={place.id} className="shrink-0 w-[72vw] max-w-xs">
+                <div key={place.id} className="shrink-0 w-[72vw] max-w-[260px]" style={{ height: "13rem" }}>
                   <SideCard place={place} index={index} onClick={() => goToPlace(place.slug)} />
                 </div>
               ))}
@@ -169,6 +166,7 @@ export default function AttractiveDestinations() {
                   variants={cardVariants}
                   whileHover={{ y: -4 }}
                   className={index === 4 ? "col-span-2" : ""}
+                  style={{ height: index === 4 ? "10rem" : "12rem" }}
                 >
                   <SideCard place={place} index={index} onClick={() => goToPlace(place.slug)} />
                 </motion.div>
