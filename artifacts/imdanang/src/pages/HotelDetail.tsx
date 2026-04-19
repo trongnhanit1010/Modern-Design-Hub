@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import {
   Star, MapPin, Wifi, Waves, Utensils, Car, Heart,
@@ -101,6 +101,65 @@ const nearbyHotels = [
 ];
 
 const TABS = ["Tổng quan", "Tiện nghi"];
+
+type Review = { id: number; name: string; avatar: string; rating: number; trip: string; date: string; title: string; text: string; };
+
+function ReviewSlider({ reviews, inView }: { reviews: Review[]; inView: boolean }) {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ align: "start", dragFree: true });
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+  useEffect(() => { emblaApi?.on("select", onSelect); return () => { emblaApi?.off("select", onSelect); }; }, [emblaApi, onSelect]);
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-slate-400 text-sm">{reviews.length} đánh giá</span>
+        <div className="flex gap-2">
+          <button onClick={scrollPrev} className="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors text-slate-600"><ChevronLeft size={16} /></button>
+          <button onClick={scrollNext} className="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors text-slate-600"><ChevronRight size={16} /></button>
+        </div>
+      </div>
+      <div className="overflow-hidden" ref={emblaRef}>
+        <div className="flex gap-4">
+          {reviews.map((rv, idx) => (
+            <motion.div key={rv.id}
+              initial={{ opacity: 0, y: 16 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.1 + idx * 0.08 }}
+              className="shrink-0 w-[300px] sm:w-[340px] bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col">
+              <div className="flex items-start gap-3 mb-3">
+                <img src={rv.avatar} alt={rv.name} className="w-11 h-11 rounded-full object-cover ring-2 ring-white shadow-sm shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <span className="text-slate-800 font-semibold text-sm block">{rv.name}</span>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <div className="flex gap-0.5">
+                      {[...Array(5)].map((_, i) => <Star key={i} size={10} className={i < rv.rating ? "text-amber-400 fill-amber-400" : "text-slate-300"} />)}
+                    </div>
+                    <span className="text-slate-400 text-[11px]">· {rv.trip}</span>
+                  </div>
+                </div>
+                <span className="text-slate-400 text-[11px] shrink-0">{rv.date}</span>
+              </div>
+              <p className="text-slate-800 font-semibold text-sm mb-1.5">{rv.title}</p>
+              <p className="text-slate-500 text-[13px] leading-relaxed flex-1">{rv.text}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+      <div className="flex justify-center gap-1.5 mt-4">
+        {reviews.map((_, i) => (
+          <button key={i} onClick={() => emblaApi?.scrollTo(i)}
+            className={`h-1.5 rounded-full transition-all duration-300 ${i === selectedIndex ? "w-6 bg-amber-400" : "w-1.5 bg-slate-300"}`} />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function HotelDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -468,32 +527,8 @@ export default function HotelDetail() {
             </div>
           </div>
 
-          {/* Review cards grid */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {reviews.map((rv, idx) => (
-              <motion.div key={rv.id}
-                initial={{ opacity: 0, y: 16 }}
-                animate={reviewsInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 0.1 + idx * 0.1 }}
-                className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col">
-                <div className="flex items-start gap-3 mb-3">
-                  <img src={rv.avatar} alt={rv.name} className="w-11 h-11 rounded-full object-cover ring-2 ring-white shadow-sm shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <span className="text-slate-800 font-semibold text-sm block">{rv.name}</span>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <div className="flex gap-0.5">
-                        {[...Array(5)].map((_, i) => <Star key={i} size={10} className={i < rv.rating ? "text-amber-400 fill-amber-400" : "text-slate-300"} />)}
-                      </div>
-                      <span className="text-slate-400 text-[11px]">· {rv.trip}</span>
-                    </div>
-                  </div>
-                  <span className="text-slate-400 text-[11px] shrink-0">{rv.date}</span>
-                </div>
-                <p className="text-slate-800 font-semibold text-sm mb-1.5">{rv.title}</p>
-                <p className="text-slate-500 text-[13px] leading-relaxed flex-1">{rv.text}</p>
-              </motion.div>
-            ))}
-          </div>
+          {/* Review cards slider */}
+          <ReviewSlider reviews={reviews} inView={reviewsInView} />
         </div>
       </div>
 
