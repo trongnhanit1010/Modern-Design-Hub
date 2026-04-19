@@ -102,61 +102,17 @@ const nearbyHotels = [
 
 const TABS = ["Tổng quan", "Tiện nghi"];
 
-type Review = { id: number; name: string; avatar: string; rating: number; trip: string; date: string; title: string; text: string; };
-
-function ReviewSlider({ reviews, inView }: { reviews: Review[]; inView: boolean }) {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ align: "start", dragFree: true });
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
-  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
-  const onSelect = useCallback(() => {
-    if (!emblaApi) return;
-    setSelectedIndex(emblaApi.selectedScrollSnap());
-  }, [emblaApi]);
-  useEffect(() => { emblaApi?.on("select", onSelect); return () => { emblaApi?.off("select", onSelect); }; }, [emblaApi, onSelect]);
-
+function TaBubbles({ rating, size = 14 }: { rating: number; size?: number }) {
   return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-slate-400 text-sm">{reviews.length} đánh giá</span>
-        <div className="flex gap-2">
-          <button onClick={scrollPrev} className="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors text-slate-600"><ChevronLeft size={16} /></button>
-          <button onClick={scrollNext} className="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors text-slate-600"><ChevronRight size={16} /></button>
-        </div>
-      </div>
-      <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex gap-4">
-          {reviews.map((rv, idx) => (
-            <motion.div key={rv.id}
-              initial={{ opacity: 0, y: 16 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.1 + idx * 0.08 }}
-              className="shrink-0 w-[300px] sm:w-[340px] bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col">
-              <div className="flex items-start gap-3 mb-3">
-                <img src={rv.avatar} alt={rv.name} className="w-11 h-11 rounded-full object-cover ring-2 ring-white shadow-sm shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <span className="text-slate-800 font-semibold text-sm block">{rv.name}</span>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <div className="flex gap-0.5">
-                      {[...Array(5)].map((_, i) => <Star key={i} size={10} className={i < rv.rating ? "text-amber-400 fill-amber-400" : "text-slate-300"} />)}
-                    </div>
-                    <span className="text-slate-400 text-[11px]">· {rv.trip}</span>
-                  </div>
-                </div>
-                <span className="text-slate-400 text-[11px] shrink-0">{rv.date}</span>
-              </div>
-              <p className="text-slate-800 font-semibold text-sm mb-1.5">{rv.title}</p>
-              <p className="text-slate-500 text-[13px] leading-relaxed flex-1">{rv.text}</p>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-      <div className="flex justify-center gap-1.5 mt-4">
-        {reviews.map((_, i) => (
-          <button key={i} onClick={() => emblaApi?.scrollTo(i)}
-            className={`h-1.5 rounded-full transition-all duration-300 ${i === selectedIndex ? "w-6 bg-amber-400" : "w-1.5 bg-slate-300"}`} />
-        ))}
-      </div>
+    <div className="flex gap-0.5">
+      {[...Array(5)].map((_, i) => (
+        <div key={i} className="rounded-full border-2"
+          style={{
+            width: size, height: size,
+            borderColor: "#00aa6c",
+            backgroundColor: i < rating ? "#00aa6c" : "transparent",
+          }} />
+      ))}
     </div>
   );
 }
@@ -486,49 +442,117 @@ export default function HotelDetail() {
         </div>
       </div>
 
-      {/* ── Reviews — full width ───────────────────────────────── */}
+      {/* ── Reviews — TripAdvisor layout ───────────────────────── */}
       <div ref={reviewRef} className="max-w-7xl mx-auto px-4 sm:px-6 mb-8">
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8">
-            <div>
-              <h2 className="text-slate-900 font-bold text-xl flex items-center gap-2 mb-1">
-                <span className="w-1 h-6 rounded-full bg-amber-400 inline-block" />
-                Đánh giá TripAdvisor
-              </h2>
-              <p className="text-slate-400 text-sm">{hotel.reviews.toLocaleString()} đánh giá từ du khách thực</p>
-            </div>
-            <div className="flex items-center gap-6">
-              <div className="text-center">
-                <div className="text-5xl font-bold text-slate-900 leading-none">{hotel.rating}</div>
-                <div className="flex gap-0.5 justify-center mt-1.5">
-                  {[...Array(5)].map((_, i) => <Star key={i} size={13} className={i < Math.round(hotel.rating) ? "text-amber-400 fill-amber-400" : "text-slate-300"} />)}
-                </div>
-                <span className="text-xs text-slate-400 mt-0.5 block">Xuất sắc</span>
+        {/* Section header */}
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-slate-900 font-bold text-xl flex items-center gap-2">
+            <span className="w-1 h-6 rounded-full bg-[#00aa6c] inline-block" />
+            Đánh giá TripAdvisor
+          </h2>
+          <a href="#" className="text-[#00aa6c] text-sm font-semibold flex items-center gap-1 hover:underline">
+            Xem tất cả <ExternalLink size={13} />
+          </a>
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-5 items-start">
+          {/* ── Left: Rating summary card ─── */}
+          <div className="w-full lg:w-72 shrink-0 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+            {/* TA header */}
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-8 h-8 rounded-full bg-[#00aa6c] flex items-center justify-center shrink-0">
+                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="7" cy="12" r="5"/><circle cx="17" cy="12" r="5"/>
+                  <circle cx="7" cy="12" r="2" fill="#00aa6c"/><circle cx="17" cy="12" r="2" fill="#00aa6c"/>
+                </svg>
               </div>
-              {/* Bars */}
-              <div className="space-y-1.5 w-52">
-                {ratingBars.map((r) => (
-                  <div key={r.label} className="flex items-center gap-2 text-xs">
-                    <span className="text-slate-500 w-20 shrink-0 text-right">{r.label}</span>
-                    <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={reviewsInView ? { width: `${r.pct}%` } : {}}
-                        transition={{ delay: 0.2, duration: 0.9, ease: "easeOut" }}
-                        className="h-full rounded-full"
-                        style={{ background: r.color }}
-                      />
-                    </div>
-                    <span className="text-slate-400 w-8 shrink-0">{r.pct}%</span>
+              <div>
+                <p className="font-bold text-slate-900 text-sm leading-tight">Tripadvisor</p>
+                <p className="text-[#00aa6c] text-[11px] leading-tight">Số 38 trên 1.515 KS tại Đà Nẵng</p>
+              </div>
+            </div>
+
+            {/* Big rating + bubbles */}
+            <div className="flex items-end gap-3 mb-1">
+              <span className="text-5xl font-bold text-slate-900 leading-none">{hotel.rating}</span>
+              <div className="mb-1"><TaBubbles rating={Math.round(hotel.rating)} size={16} /></div>
+            </div>
+            <p className="text-slate-400 text-xs mb-4">{hotel.reviews.toLocaleString()} Đánh giá TripAdvisor</p>
+
+            {/* Star bars 5→1 */}
+            <div className="space-y-1.5 mb-5">
+              {ratingBars.map((r, idx) => (
+                <div key={r.label} className="flex items-center gap-2 text-xs">
+                  <span className="text-slate-500 w-4 shrink-0 text-right">{5 - idx}</span>
+                  <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={reviewsInView ? { width: `${r.pct}%` } : {}}
+                      transition={{ delay: 0.2 + idx * 0.08, duration: 0.8, ease: "easeOut" }}
+                      className="h-full rounded-full bg-[#00aa6c]"
+                    />
                   </div>
-                ))}
-              </div>
+                  <span className="text-slate-400 w-7 shrink-0 text-right">{r.pct}%</span>
+                </div>
+              ))}
             </div>
+
+            {/* Category ratings */}
+            <p className="text-slate-700 font-bold text-xs mb-3">Xếp hạng</p>
+            <div className="space-y-2">
+              {[
+                "Địa điểm", "Giấc ngủ", "Phòng", "Dịch vụ", "Giá trị", "Sự sạch sẽ"
+              ].map((cat) => (
+                <div key={cat} className="flex items-center gap-2">
+                  <span className="text-slate-500 text-xs w-24 shrink-0">{cat}</span>
+                  <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-full w-[96%] rounded-full bg-[#00aa6c]" />
+                  </div>
+                  <span className="text-slate-600 text-xs font-semibold w-6 text-right shrink-0">{hotel.rating}</span>
+                </div>
+              ))}
+            </div>
+
+            <a href="#" className="mt-5 flex items-center justify-center gap-1.5 w-full py-2.5 border border-[#00aa6c] text-[#00aa6c] font-semibold rounded-xl text-sm hover:bg-[#00aa6c]/5 transition-colors">
+              Xem tất cả <ExternalLink size={13} />
+            </a>
           </div>
 
-          {/* Review cards slider */}
-          <ReviewSlider reviews={reviews} inView={reviewsInView} />
+          {/* ── Right: Review list ─── */}
+          <div className="flex-1 space-y-3 min-w-0">
+            <p className="text-slate-400 text-sm mb-4">{hotel.reviews.toLocaleString()} đánh giá từ du khách thực tế</p>
+            {reviews.map((rv, idx) => (
+              <motion.div key={rv.id}
+                initial={{ opacity: 0, y: 12 }}
+                animate={reviewsInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: 0.1 + idx * 0.08 }}
+                className="bg-white border border-slate-200 rounded-2xl p-4">
+                {/* Top row */}
+                <div className="flex items-start gap-3 mb-2.5">
+                  <img src={rv.avatar} alt={rv.name}
+                    className="w-10 h-10 rounded-full object-cover ring-2 ring-white shadow-sm shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <span className="text-slate-800 font-semibold text-sm block leading-tight">{rv.name}</span>
+                    <span className="text-slate-400 text-[12px]">{rv.trip}</span>
+                  </div>
+                  <span className="text-slate-400 text-[12px] shrink-0">{rv.date}</span>
+                </div>
+                {/* Bubbles */}
+                <div className="mb-2"><TaBubbles rating={rv.rating} size={13} /></div>
+                {/* Title */}
+                <p className="text-slate-800 font-semibold text-sm mb-1.5">"{rv.title}"</p>
+                {/* Body */}
+                <p className="text-slate-500 text-[13px] leading-relaxed mb-3">{rv.text}</p>
+                {/* Footer */}
+                <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                  <span className="text-slate-400 text-[12px]">👍 0 người thấy hữu ích</span>
+                  <a href="#" className="text-[#00aa6c] text-[12px] font-medium flex items-center gap-0.5 hover:underline">
+                    Đánh giá từ Tripadvisor <ExternalLink size={11} />
+                  </a>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
 
