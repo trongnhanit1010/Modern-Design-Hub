@@ -396,46 +396,6 @@ export default function HotelDetail() {
                 </div>
               </motion.div>
 
-              {/* TripAdvisor Booking Prices */}
-              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}
-                className="bg-white border border-slate-200 rounded-3xl p-5 shadow-md shadow-slate-200/50">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-1.5">
-                    <svg viewBox="0 0 24 24" className="w-4 h-4 fill-[#00aa6c]" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18a8 8 0 110-16 8 8 0 010 16zm0-12.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9zm0 7a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/>
-                    </svg>
-                    <h3 className="text-slate-700 font-bold text-sm">Giá booking từ TripAdvisor</h3>
-                  </div>
-                  <span className="text-[10px] text-slate-400 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-full">Hôm nay</span>
-                </div>
-                <div className="space-y-2.5">
-                  {[
-                    { type: "Phòng Deluxe", desc: "View biển · 1 giường đôi", price: "2.800.000đ", tag: "Phổ biến" },
-                    { type: "Phòng Superior", desc: "View vườn · 2 giường đơn", price: "2.200.000đ", tag: null },
-                    { type: "Suite Hướng Biển", desc: "Phòng khách riêng · 1 giường King", price: "5.200.000đ", tag: "Sang trọng" },
-                  ].map((room) => (
-                    <div key={room.type} className="flex items-center justify-between gap-2 py-2.5 border-b border-slate-100 last:border-0">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="text-slate-800 font-semibold text-xs leading-snug">{room.type}</span>
-                          {room.tag && (
-                            <span className="text-[9px] font-bold bg-amber-50 text-amber-600 border border-amber-200 px-1.5 py-0.5 rounded-full">{room.tag}</span>
-                          )}
-                        </div>
-                        <p className="text-slate-400 text-[11px] mt-0.5">{room.desc}</p>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <p className="text-[#007a52] font-bold text-sm leading-none">từ {room.price}</p>
-                        <p className="text-slate-400 text-[10px] mt-0.5">/đêm</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <motion.a href="#" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                  className="mt-4 flex items-center justify-center gap-2 w-full py-3 bg-[#00aa6c] text-white font-bold rounded-2xl shadow-md shadow-[#00aa6c]/25 hover:bg-[#008f5b] transition-colors text-sm">
-                  <ExternalLink size={14} />Xem giá trên TripAdvisor
-                </motion.a>
-              </motion.div>
 
             </div>
           </div>
