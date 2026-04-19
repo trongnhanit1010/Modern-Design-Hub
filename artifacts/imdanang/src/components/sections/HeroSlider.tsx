@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { ChevronLeft, ChevronRight, Search, MapPin, Utensils, Hotel, X, Clock, TrendingUp, Trash2, CalendarDays } from "lucide-react";
+import { useLocation } from "wouter";
 
 const slides = [
   {
@@ -220,6 +221,7 @@ const textVariants: Variants = {
 };
 
 export default function HeroSlider() {
+  const [, navigate] = useLocation();
   const [current, setCurrent] = useState(0);
   const [progress, setProgress] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -382,6 +384,7 @@ export default function HeroSlider() {
               value={searchVal}
               onChange={(e) => setSearchVal(e.target.value)}
               onFocus={() => { updateDropdownRect(); setShowSuggestions(true); }}
+              onKeyDown={(e) => { if (e.key === "Enter") { const q = searchVal.trim(); navigate(q ? `/tim-kiem?q=${encodeURIComponent(q)}` : "/tim-kiem"); closeDropdown(); } }}
               placeholder="Find places, restaurants, hotels..."
               className="flex-1 bg-transparent text-white placeholder:text-white/50 text-sm py-1.5 px-2 focus:outline-none"
               data-testid="input-search-hero"
@@ -392,6 +395,11 @@ export default function HeroSlider() {
               </button>
             )}
             <button
+              onClick={() => {
+                const q = searchVal.trim();
+                navigate(q ? `/tim-kiem?q=${encodeURIComponent(q)}` : "/tim-kiem");
+                closeDropdown();
+              }}
               className="bg-blue-500 hover:bg-blue-400 text-white px-5 py-2 rounded-xl text-sm font-medium transition-colors shrink-0"
               data-testid="button-search-hero"
             >
