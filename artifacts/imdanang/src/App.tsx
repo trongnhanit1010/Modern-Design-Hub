@@ -21,6 +21,8 @@ import AIAssistant from "@/pages/AIAssistant";
 import WeatherDetail from "@/pages/WeatherDetail";
 import LocalFood from "@/pages/LocalFood";
 import SearchPage from "@/pages/SearchPage";
+import Entertainment from "@/pages/Entertainment";
+import EntertainmentDetail from "@/pages/EntertainmentDetail";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import BottomNav from "@/components/layout/BottomNav";
@@ -74,6 +76,8 @@ function Layout() {
           <Route path="/transport" component={Transport} />
           <Route path="/events" component={Events} />
           <Route path="/shopping" component={Shopping} />
+          <Route path="/vui-choi-giai-tri/:slug" component={EntertainmentDetail} />
+          <Route path="/vui-choi-giai-tri" component={Entertainment} />
           <Route path="/ai" component={AIAssistant} />
           <Route path="/thoi-tiet/:slug" component={WeatherDetail} />
           <Route path="/tim-kiem" component={SearchPage} />
