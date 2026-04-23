@@ -69,98 +69,82 @@ export default function Destinations() {
   return (
     <div className="min-h-screen bg-gray-50" ref={ref}>
 
-      {/* ── Hero ── Polaroid Scrapbook Explorer ── */}
-      <div className="relative overflow-hidden" style={{ background: "linear-gradient(180deg,#ecfdf5 0%,#d1fae5 50%,#a7f3d0 100%)" }}>
-        {/* Topography pattern */}
+      {/* ── Hero ── Compact Polaroid Scrapbook ── */}
+      <div className="relative overflow-hidden" style={{ background: "linear-gradient(180deg,#ecfdf5 0%,#d1fae5 60%,#a7f3d0 100%)" }}>
         <svg className="absolute inset-0 w-full h-full opacity-[0.07]" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <pattern id="topo" width="80" height="80" patternUnits="userSpaceOnUse">
-              <path d="M0 40 Q 20 20, 40 40 T 80 40" fill="none" stroke="#065f46" strokeWidth="1" />
-              <path d="M0 60 Q 20 40, 40 60 T 80 60" fill="none" stroke="#065f46" strokeWidth="1" />
+            <pattern id="topo" width="60" height="60" patternUnits="userSpaceOnUse">
+              <path d="M0 30 Q 15 15, 30 30 T 60 30" fill="none" stroke="#065f46" strokeWidth="1" />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#topo)" />
         </svg>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-10 lg:py-14">
-          <div className="grid lg:grid-cols-[1.1fr,1fr] gap-8 items-center">
-            {/* LEFT: Hand-drawn explorer feel */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-              <div className="inline-flex items-center gap-2 mb-5 px-3 py-1.5 rounded-full bg-emerald-900 text-emerald-100 text-xs font-bold tracking-wide shadow-lg">
-                <Compass size={14} className="text-emerald-300" />
-                NHẬT KÝ KHÁM PHÁ · 2026
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-6">
+          <div className="grid md:grid-cols-[1.3fr,auto] gap-4 items-center">
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+              <div className="inline-flex items-center gap-1.5 mb-2 px-2.5 py-1 rounded-full bg-emerald-900 text-emerald-100 text-[10px] font-bold tracking-wider shadow-md">
+                <Compass size={11} className="text-emerald-300" /> NHẬT KÝ KHÁM PHÁ · 2026
               </div>
-              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-black leading-[0.95] mb-4 text-emerald-950">
+              <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-black leading-[0.95] mb-2 text-emerald-950">
                 Khám Phá
                 <span className="relative inline-block ml-2">
                   <span className="relative z-10 italic text-emerald-700">đó đây</span>
-                  <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 12" fill="none">
+                  <svg className="absolute -bottom-1.5 left-0 w-full" viewBox="0 0 200 12" fill="none">
                     <path d="M2 8 Q 50 2, 100 6 T 198 4" stroke="#10b981" strokeWidth="3" strokeLinecap="round" />
                   </svg>
                 </span>
               </h1>
-              <p className="text-emerald-900/70 text-base max-w-lg leading-relaxed mb-6">
-                85+ điểm đến đáng nhớ — từ bãi cát trắng Mỹ Khê đến phố cổ Hội An. Bộ sưu tập polaroid của những kẻ lữ hành.
+              <p className="text-emerald-900/70 text-sm max-w-lg mb-3 hidden sm:block">
+                85+ điểm đến đáng nhớ — bãi cát Mỹ Khê đến phố cổ Hội An.
               </p>
 
-              {/* Stats with hand-drawn ticket vibe */}
-              <div className="flex gap-3 mb-6 flex-wrap">
+              {/* Stats inline */}
+              <div className="flex flex-wrap gap-1.5 mb-3">
                 {stats.map(({ icon: Icon, label, value }) => (
-                  <div key={label} className="bg-white border-2 border-dashed border-emerald-400 rounded-xl px-3 py-2 flex items-center gap-2 shadow-sm">
-                    <Icon size={16} className="text-emerald-600" />
-                    <div>
-                      <div className="text-emerald-900 font-black text-sm leading-none">{value}</div>
-                      <div className="text-emerald-700/60 text-[10px]">{label}</div>
-                    </div>
+                  <div key={label} className="bg-white border border-dashed border-emerald-400 rounded-lg px-2 py-1 flex items-center gap-1.5 shadow-sm">
+                    <Icon size={12} className="text-emerald-600" />
+                    <span className="text-emerald-900 font-black text-xs">{value}</span>
+                    <span className="text-emerald-700/60 text-[10px] hidden sm:inline">{label}</span>
                   </div>
                 ))}
               </div>
 
-              {/* Passport-style search */}
-              <div className="relative bg-white rounded-2xl shadow-xl p-2 flex items-center gap-2 border border-emerald-200">
-                <div className="absolute -right-3 -top-3 w-14 h-14 rounded-full border-2 border-dashed border-emerald-500 flex items-center justify-center -rotate-12 bg-emerald-50">
-                  <span className="text-[8px] text-emerald-700 font-black text-center leading-none">VISA<br />2026</span>
+              {/* Passport search compact */}
+              <div className="relative bg-white rounded-xl shadow-xl p-1 flex items-center gap-1 border border-emerald-200">
+                <div className="absolute -right-2 -top-2 w-10 h-10 rounded-full border border-dashed border-emerald-500 flex items-center justify-center -rotate-12 bg-emerald-50">
+                  <span className="text-[7px] text-emerald-700 font-black text-center leading-none">VISA<br />2026</span>
                 </div>
-                <div className="flex items-center gap-2 px-3 flex-1 py-1.5">
-                  <Search size={16} className="text-emerald-600" />
-                  <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Bãi biển, di sản, núi rừng..." className="flex-1 bg-transparent text-emerald-950 placeholder:text-emerald-600/40 text-sm focus:outline-none" />
+                <div className="flex items-center gap-2 px-2.5 py-1.5 flex-1 min-w-0">
+                  <Search size={14} className="text-emerald-600" />
+                  <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Bãi biển, di sản, núi rừng..." className="flex-1 bg-transparent text-emerald-950 placeholder:text-emerald-600/40 text-sm focus:outline-none min-w-0" />
                 </div>
-                <button className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-sm flex items-center gap-1">
-                  Khám phá <ChevronRight size={14} />
+                <button className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-lg text-xs flex items-center gap-1 shrink-0">
+                  Khám phá <ChevronRight size={12} />
                 </button>
               </div>
             </motion.div>
 
-            {/* RIGHT: 3 polaroids overlapping */}
-            <div className="relative h-[280px] lg:h-[360px] hidden md:block">
+            {/* RIGHT: Compact polaroid stack */}
+            <div className="relative w-44 h-32 lg:w-56 lg:h-36 hidden md:block">
               {[
-                { src: heroImages[0], label: "Mỹ Khê", rot: -8, x: "0%", y: "10%", z: 1 },
-                { src: heroImages[1], label: "Hội An", rot: 5, x: "30%", y: "0%", z: 2 },
-                { src: heroImages[2], label: "Bà Nà", rot: -3, x: "55%", y: "20%", z: 3 },
+                { src: heroImages[0], label: "Mỹ Khê", rot: -8, x: 0, y: 5, z: 1 },
+                { src: heroImages[1], label: "Hội An", rot: 4, x: 50, y: -2, z: 2 },
+                { src: heroImages[2], label: "Bà Nà", rot: -3, x: 100, y: 8, z: 3 },
               ].map((p, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 30, rotate: 0 }}
-                  animate={{ opacity: 1, y: 0, rotate: p.rot }}
-                  transition={{ duration: 0.8, delay: i * 0.15 }}
-                  whileHover={{ rotate: 0, scale: 1.05, zIndex: 10 }}
-                  className="absolute bg-white p-2.5 pb-8 shadow-2xl rounded-sm cursor-pointer w-44"
-                  style={{ left: p.x, top: p.y, zIndex: p.z }}
-                >
-                  <img src={p.src} className="w-full h-44 object-cover" alt="" />
-                  <div className="absolute bottom-2 left-0 right-0 text-center text-emerald-900 font-bold text-xs" style={{ fontFamily: "'Caveat', 'Comic Sans MS', cursive" }}>
+                <motion.div key={i}
+                  initial={{ opacity: 0, y: 16, rotate: 0 }}
+                  animate={{ opacity: 1, y: p.y, rotate: p.rot }}
+                  transition={{ duration: 0.6, delay: i * 0.12 }}
+                  whileHover={{ rotate: 0, scale: 1.06, zIndex: 10 }}
+                  className="absolute bg-white p-1.5 pb-5 shadow-xl rounded-sm w-24 lg:w-28"
+                  style={{ left: `${p.x}px`, top: `${p.y}px`, zIndex: p.z }}>
+                  <img src={p.src} className="w-full h-20 lg:h-24 object-cover" alt="" />
+                  <div className="absolute bottom-0.5 left-0 right-0 text-center text-emerald-900 font-bold text-[10px]" style={{ fontFamily: "'Caveat', cursive" }}>
                     📍 {p.label}
                   </div>
                 </motion.div>
               ))}
-              {/* Hand-drawn dotted route */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 400 360">
-                <motion.path
-                  d="M70 80 Q 150 30, 200 70 T 320 110"
-                  stroke="#059669" strokeWidth="2.5" strokeDasharray="4 6" fill="none"
-                  initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, delay: 0.7 }}
-                />
-              </svg>
             </div>
           </div>
         </div>

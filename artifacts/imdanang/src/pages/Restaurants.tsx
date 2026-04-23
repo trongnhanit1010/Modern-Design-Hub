@@ -85,109 +85,90 @@ export default function Restaurants() {
   return (
     <div className="min-h-screen bg-gray-50" ref={ref}>
 
-      {/* ── Hero ── Plate & Steam Culinary ── */}
+      {/* ── Hero ── Compact Plate & Steam ── */}
       <div className="relative overflow-hidden" style={{ background: "linear-gradient(135deg,#fff7ed 0%,#ffedd5 60%,#fed7aa 100%)" }}>
-        {/* Diagonal stripes */}
         <div className="absolute inset-0 opacity-[0.06]" style={{
           backgroundImage: "repeating-linear-gradient(45deg, #ea580c 0 2px, transparent 2px 14px)"
         }} />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-10 lg:py-14">
-          <div className="grid lg:grid-cols-[1fr,1.1fr] gap-8 items-center">
-            {/* LEFT: Title + chalkboard search */}
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}>
-              <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-orange-600 text-white text-xs font-bold shadow-md">
-                <Flame size={13} />
-                ĐẶC SẢN XỨ QUẢNG · 240+ QUÁN
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-6">
+          <div className="grid md:grid-cols-[1.4fr,auto] gap-4 items-center">
+            <motion.div initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
+              <div className="inline-flex items-center gap-1.5 mb-2 px-2.5 py-1 rounded-full bg-orange-600 text-white text-[10px] font-bold tracking-wider shadow-md">
+                <Flame size={11} /> ĐẶC SẢN XỨ QUẢNG · 240+ QUÁN
               </div>
-              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-black leading-[0.95] mb-3 text-orange-950">
-                <span className="block">Ngon Khó</span>
-                <span className="block italic text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-red-500 to-rose-600">
-                  Cưỡng Lại
-                </span>
+              <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-black leading-[0.95] mb-2 text-orange-950">
+                Ngon Khó <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-red-500 to-rose-600">Cưỡng Lại</span>
               </h1>
-              <p className="text-orange-900/70 text-base max-w-md leading-relaxed mb-6">
-                Hải sản nóng hổi vừa lên đĩa, fine-dining bên sông Hàn, quán cũ trăm năm trong phố cổ.
+              <p className="text-orange-900/70 text-sm max-w-md mb-3 hidden sm:block">
+                Hải sản tươi sống, fine-dining bên sông Hàn, quán cũ trăm năm trong phố cổ.
               </p>
 
-              {/* Chip stats */}
-              <div className="flex flex-wrap gap-2 mb-6">
+              {/* Stats inline */}
+              <div className="flex flex-wrap gap-1.5 mb-3">
                 {stats.map(({ icon: Icon, label, value }) => (
-                  <div key={label} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border-2 border-orange-200 shadow-sm">
-                    <Icon size={13} className="text-orange-600" />
-                    <span className="text-orange-950 font-black text-sm">{value}</span>
-                    <span className="text-orange-700/60 text-[11px]">{label}</span>
+                  <div key={label} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-orange-200 shadow-sm">
+                    <Icon size={11} className="text-orange-600" />
+                    <span className="text-orange-950 font-black text-xs">{value}</span>
+                    <span className="text-orange-700/60 text-[10px] hidden sm:inline">{label}</span>
                   </div>
                 ))}
               </div>
 
-              {/* Chalkboard menu search */}
-              <div className="rounded-2xl p-3 shadow-2xl border-4 border-orange-900" style={{ background: "linear-gradient(135deg,#1c1917,#292524)" }}>
-                <div className="text-orange-300 text-[10px] font-black tracking-widest mb-2 flex items-center gap-1.5">
-                  <UtensilsCrossed size={11} /> THỰC ĐƠN HÔM NAY
+              {/* Chalkboard search compact */}
+              <div className="rounded-xl p-1.5 shadow-2xl border-2 border-orange-900 relative" style={{ background: "linear-gradient(135deg,#1c1917,#292524)" }}>
+                <div className="absolute -top-2 left-3 px-1.5 py-0.5 bg-orange-500 text-white text-[8px] font-black tracking-widest rounded">
+                  THỰC ĐƠN
                 </div>
-                <div className="flex items-center gap-2 bg-orange-50 rounded-xl p-1.5">
-                  <div className="flex items-center gap-2 flex-1 px-3 py-1.5">
-                    <Search size={16} className="text-orange-700" />
-                    <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Tìm món, quán, khu vực..." className="bg-transparent text-orange-950 placeholder:text-orange-600/40 text-sm flex-1 focus:outline-none" />
+                <div className="flex items-center gap-1 bg-orange-50 rounded-lg p-0.5">
+                  <div className="flex items-center gap-2 flex-1 px-2.5 py-1.5">
+                    <Search size={14} className="text-orange-700" />
+                    <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Tìm món, quán..." className="bg-transparent text-orange-950 placeholder:text-orange-600/40 text-sm flex-1 focus:outline-none min-w-0" />
                   </div>
-                  <button className="bg-gradient-to-br from-orange-500 to-red-600 text-white font-bold px-4 py-2.5 rounded-lg text-sm flex items-center gap-1">
-                    Đặt bàn <ChevronRight size={14} />
+                  <button className="bg-gradient-to-br from-orange-500 to-red-600 text-white font-bold px-3 py-2 rounded-md text-xs flex items-center gap-1 shrink-0">
+                    Đặt bàn <ChevronRight size={12} />
                   </button>
                 </div>
               </div>
             </motion.div>
 
-            {/* RIGHT: Plate with orbit icons */}
-            <div className="relative h-[320px] lg:h-[400px] hidden md:flex items-center justify-center">
-              {/* Steam */}
+            {/* RIGHT: Compact spinning plate */}
+            <div className="relative w-44 h-44 lg:w-52 lg:h-52 hidden md:flex items-center justify-center mx-auto">
               {[0, 1, 2].map((i) => (
-                <motion.div
-                  key={i}
-                  className="absolute w-2 rounded-full bg-orange-300/40 blur-sm"
-                  style={{ left: `${44 + i * 6}%`, height: 60 }}
-                  animate={{ y: [-20, -120], opacity: [0.6, 0] }}
-                  transition={{ duration: 2.4, delay: i * 0.5, repeat: Infinity, ease: "easeOut" }}
-                />
+                <motion.div key={i} className="absolute w-1.5 rounded-full bg-orange-300/50 blur-sm"
+                  style={{ left: `${44 + i * 6}%`, height: 36, top: -10 }}
+                  animate={{ y: [0, -50], opacity: [0.6, 0] }}
+                  transition={{ duration: 2, delay: i * 0.4, repeat: Infinity, ease: "easeOut" }} />
               ))}
-              {/* Plate */}
-              <motion.div
-                animate={{ rotate: [0, 360] }}
-                transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-                className="absolute w-72 h-72 lg:w-80 lg:h-80 rounded-full border-[10px] border-white shadow-2xl overflow-hidden"
-                style={{ boxShadow: "0 30px 60px rgba(234,88,12,0.3), inset 0 0 0 4px #f97316" }}
-              >
+              <motion.div animate={{ rotate: 360 }} transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+                className="w-36 h-36 lg:w-44 lg:h-44 rounded-full border-[6px] border-white shadow-2xl overflow-hidden"
+                style={{ boxShadow: "0 16px 40px rgba(234,88,12,0.35), inset 0 0 0 3px #f97316" }}>
                 <img src={heroImages[0]} className="w-full h-full object-cover" alt="" />
               </motion.div>
-              {/* Orbiting icons */}
+              {/* Mini orbiting icons */}
               {[
                 { Icon: Fish, angle: 0, color: "bg-sky-500" },
-                { Icon: Beef, angle: 72, color: "bg-red-500" },
-                { Icon: Coffee, angle: 144, color: "bg-amber-700" },
-                { Icon: Leaf, angle: 216, color: "bg-emerald-500" },
-                { Icon: Flame, angle: 288, color: "bg-orange-500" },
+                { Icon: Coffee, angle: 90, color: "bg-amber-700" },
+                { Icon: Leaf, angle: 180, color: "bg-emerald-500" },
+                { Icon: Flame, angle: 270, color: "bg-red-500" },
               ].map(({ Icon, angle, color }, i) => {
-                const r = 180;
+                const r = 95;
                 const rad = (angle * Math.PI) / 180;
                 const x = Math.cos(rad) * r;
                 const y = Math.sin(rad) * r;
                 return (
-                  <motion.div
-                    key={i}
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1, y: [y, y - 8, y] }}
-                    transition={{ scale: { delay: 0.4 + i * 0.1 }, y: { duration: 2.2 + i * 0.3, repeat: Infinity, ease: "easeInOut" } }}
-                    className={`absolute w-12 h-12 rounded-2xl ${color} shadow-xl flex items-center justify-center text-white border-4 border-white`}
-                    style={{ left: `calc(50% + ${x}px - 24px)`, top: `calc(50% + ${y}px - 24px)` }}
-                  >
-                    <Icon size={18} />
+                  <motion.div key={i}
+                    initial={{ scale: 0 }} animate={{ scale: 1, y: [y, y - 4, y] }}
+                    transition={{ scale: { delay: 0.3 + i * 0.08 }, y: { duration: 2 + i * 0.2, repeat: Infinity, ease: "easeInOut" } }}
+                    className={`absolute w-8 h-8 rounded-xl ${color} shadow-lg flex items-center justify-center text-white border-2 border-white`}
+                    style={{ left: `calc(50% + ${x}px - 16px)`, top: `calc(50% + ${y}px - 16px)` }}>
+                    <Icon size={13} />
                   </motion.div>
                 );
               })}
-              {/* Center chef hat */}
-              <div className="absolute top-3 right-3 w-16 h-16 rounded-full bg-white shadow-xl flex flex-col items-center justify-center border-2 border-orange-300">
-                <Award size={20} className="text-orange-600" />
-                <span className="text-[8px] text-orange-700 font-black">CHEF'S</span>
+              <div className="absolute -top-2 -right-2 w-11 h-11 rounded-full bg-white shadow-xl flex flex-col items-center justify-center border-2 border-orange-300">
+                <Award size={14} className="text-orange-600" />
+                <span className="text-[7px] text-orange-700 font-black leading-none">CHEF</span>
               </div>
             </div>
           </div>

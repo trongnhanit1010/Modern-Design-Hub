@@ -33,139 +33,89 @@ export default function Transport() {
 
   return (
     <div className="min-h-screen bg-gray-50" ref={ref}>
-      {/* ── Hero ── Trip Planner with Animated Route ── */}
+      {/* ── Hero ── Compact Trip Planner ── */}
       <div className="relative overflow-hidden" style={{ background: "linear-gradient(135deg,#eff6ff 0%,#dbeafe 50%,#bfdbfe 100%)" }}>
-        {/* Sky grid */}
         <div className="absolute inset-0 opacity-[0.06]" style={{
           backgroundImage: "linear-gradient(#0ea5e9 1px,transparent 1px),linear-gradient(90deg,#0ea5e9 1px,transparent 1px)",
-          backgroundSize: "32px 32px"
+          backgroundSize: "28px 28px"
         }} />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-10 lg:py-12">
-          <div className="grid lg:grid-cols-[1fr,1.1fr] gap-8 items-center">
-            {/* LEFT: Title + planner */}
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}>
-              <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-sky-600 text-white text-xs font-bold shadow-md">
-                <Navigation size={13} />
-                CHỈ DẪN DI CHUYỂN · LIVE
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-6">
+          <div className="grid md:grid-cols-[1.3fr,1fr] gap-4 items-center">
+            <motion.div initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
+              <div className="inline-flex items-center gap-1.5 mb-2 px-2.5 py-1 rounded-full bg-sky-600 text-white text-[10px] font-bold tracking-wider shadow-md">
+                <Navigation size={11} /> CHỈ DẪN DI CHUYỂN · LIVE
               </div>
-              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-black leading-[0.95] mb-3 text-sky-950">
-                Đi Đâu
-                <span className="block italic text-transparent bg-clip-text bg-gradient-to-r from-sky-500 via-blue-500 to-indigo-600">
-                  Cũng Đến
-                </span>
+              <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-black leading-[0.95] mb-2 text-sky-950">
+                Đi Đâu <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-sky-500 via-blue-500 to-indigo-600">Cũng Đến</span>
               </h1>
-              <p className="text-sky-900/70 text-base max-w-md leading-relaxed mb-6">
-                Sân bay, taxi, Grab, xe buýt, xe máy thuê, phà — chọn cách đi phù hợp & xem giá ngay.
+              <p className="text-sky-900/70 text-sm max-w-md mb-3 hidden sm:block">
+                Sân bay, taxi, Grab, xe buýt, xe máy thuê — chọn cách đi & xem giá tức thì.
               </p>
 
-              {/* TRIP PLANNER WIDGET */}
-              <div className="rounded-3xl bg-white p-2 sm:p-3 shadow-2xl border-2 border-sky-200">
-                <div className="flex items-center justify-between px-2 mb-2">
-                  <div className="text-[10px] font-black tracking-widest text-sky-700 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> TRIP PLANNER
-                  </div>
-                  <div className="text-[10px] text-sky-500 font-mono">{new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}</div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3 bg-sky-50 rounded-xl px-3 py-2.5">
-                    <div className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
-                      <MapPin size={14} />
+              {/* COMPACT TRIP PLANNER (single row) */}
+              <div className="rounded-xl bg-white p-1.5 shadow-2xl border-2 border-sky-200">
+                <div className="grid grid-cols-1 sm:grid-cols-[1fr,auto,1fr,auto] gap-1 items-center">
+                  <div className="flex items-center gap-2 px-2 py-1.5 bg-sky-50 rounded-lg">
+                    <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                      <MapPin size={11} />
                     </div>
-                    <div className="flex-1">
-                      <div className="text-[10px] uppercase tracking-wider text-sky-600 font-bold">Điểm đi</div>
-                      <input value={from} onChange={e => setFrom(e.target.value)} className="w-full bg-transparent text-sky-950 text-sm font-semibold focus:outline-none" />
-                    </div>
+                    <input value={from} onChange={e => setFrom(e.target.value)} className="w-full bg-transparent text-sky-950 text-xs font-semibold focus:outline-none min-w-0" placeholder="Điểm đi" />
                   </div>
-                  {/* Connector dots */}
-                  <div className="flex items-center justify-center gap-1 -my-1">
-                    {Array.from({ length: 6 }).map((_, i) => (
-                      <span key={i} className="block w-1 h-1 rounded-full bg-sky-400" />
-                    ))}
-                  </div>
-                  <div className="flex items-center gap-3 bg-sky-50 rounded-xl px-3 py-2.5">
-                    <div className="w-8 h-8 rounded-full bg-rose-500 text-white flex items-center justify-center shrink-0">
-                      <MapPin size={14} />
+                  <ArrowRight size={14} className="text-sky-500 hidden sm:block mx-auto" />
+                  <div className="flex items-center gap-2 px-2 py-1.5 bg-sky-50 rounded-lg">
+                    <div className="w-6 h-6 rounded-full bg-rose-500 text-white flex items-center justify-center shrink-0">
+                      <MapPin size={11} />
                     </div>
-                    <div className="flex-1">
-                      <div className="text-[10px] uppercase tracking-wider text-sky-600 font-bold">Điểm đến</div>
-                      <input value={to} onChange={e => setTo(e.target.value)} className="w-full bg-transparent text-sky-950 text-sm font-semibold focus:outline-none" />
-                    </div>
+                    <input value={to} onChange={e => setTo(e.target.value)} className="w-full bg-transparent text-sky-950 text-xs font-semibold focus:outline-none min-w-0" placeholder="Điểm đến" />
                   </div>
-                  <button className="w-full bg-gradient-to-br from-sky-500 to-blue-600 text-white font-black py-3 rounded-xl text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-sky-500/40 transition-shadow">
-                    <Search size={14} /> Tìm phương tiện <ArrowRight size={14} />
+                  <button className="bg-gradient-to-br from-sky-500 to-blue-600 text-white font-bold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1 shrink-0">
+                    <Search size={12} /> Tìm
                   </button>
                 </div>
-                {/* Quick stats */}
-                <div className="flex justify-around mt-3 pt-3 border-t border-sky-100 text-center">
-                  <div><div className="text-sky-950 font-black text-sm">20p</div><div className="text-sky-600 text-[10px]">ETA</div></div>
-                  <div><div className="text-sky-950 font-black text-sm">8.5km</div><div className="text-sky-600 text-[10px]">Khoảng cách</div></div>
-                  <div><div className="text-sky-950 font-black text-sm">~95K</div><div className="text-sky-600 text-[10px]">Giá</div></div>
+                {/* Quick info row */}
+                <div className="flex justify-between mt-2 px-2 text-center text-[10px]">
+                  <span className="flex items-center gap-1 text-sky-700"><Clock size={10} /> 20p</span>
+                  <span className="flex items-center gap-1 text-sky-700"><Navigation size={10} /> 8.5 km</span>
+                  <span className="flex items-center gap-1 text-emerald-600"><DollarSign size={10} /> ~95K</span>
+                  <span className="flex items-center gap-1 text-sky-700 font-mono">{new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}</span>
                 </div>
               </div>
             </motion.div>
 
-            {/* RIGHT: Animated route map */}
-            <div className="relative h-[320px] lg:h-[420px] hidden md:block">
-              <div className="absolute inset-0 rounded-3xl overflow-hidden border-2 border-sky-200 shadow-2xl bg-gradient-to-br from-sky-100 to-blue-100">
-                <svg className="w-full h-full" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice">
-                  {/* Map roads */}
-                  <path d="M0 320 L 400 320" stroke="#e0f2fe" strokeWidth="40" />
-                  <path d="M180 0 L 180 400" stroke="#e0f2fe" strokeWidth="32" />
-                  <path d="M0 180 L 400 180" stroke="#e0f2fe" strokeWidth="28" />
-                  {/* River */}
-                  <path d="M0 80 Q 100 120, 200 100 T 400 130" stroke="#7dd3fc" strokeWidth="14" fill="none" opacity="0.6" />
-                  {/* Route dotted line */}
-                  <motion.path
-                    d="M50 350 Q 120 280, 180 220 T 340 80"
-                    stroke="#0284c7" strokeWidth="4" strokeDasharray="8 6" fill="none"
-                    initial={{ strokeDashoffset: 0 }} animate={{ strokeDashoffset: -28 }}
-                    transition={{ duration: 1.6, repeat: Infinity, ease: "linear" }}
-                  />
-                  {/* Stops */}
-                  <circle cx="50" cy="350" r="10" fill="#10b981" stroke="white" strokeWidth="3" />
-                  <circle cx="180" cy="220" r="6" fill="#0ea5e9" stroke="white" strokeWidth="2" />
-                  <circle cx="340" cy="80" r="10" fill="#f43f5e" stroke="white" strokeWidth="3" />
+            {/* RIGHT: Compact route map */}
+            <div className="relative hidden md:block h-44 lg:h-48">
+              <div className="absolute inset-0 rounded-2xl overflow-hidden border-2 border-sky-200 shadow-xl bg-gradient-to-br from-sky-100 to-blue-100">
+                <svg className="w-full h-full" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice">
+                  <path d="M0 160 L 400 160" stroke="#e0f2fe" strokeWidth="22" />
+                  <path d="M200 0 L 200 200" stroke="#e0f2fe" strokeWidth="18" />
+                  <path d="M0 60 Q 100 90, 200 70 T 400 90" stroke="#7dd3fc" strokeWidth="8" fill="none" opacity="0.6" />
+                  <motion.path d="M40 170 Q 120 130, 200 110 T 360 40"
+                    stroke="#0284c7" strokeWidth="3" strokeDasharray="6 5" fill="none"
+                    initial={{ strokeDashoffset: 0 }} animate={{ strokeDashoffset: -22 }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }} />
+                  <circle cx="40" cy="170" r="7" fill="#10b981" stroke="white" strokeWidth="2" />
+                  <circle cx="200" cy="110" r="4" fill="#0ea5e9" stroke="white" strokeWidth="1.5" />
+                  <circle cx="360" cy="40" r="7" fill="#f43f5e" stroke="white" strokeWidth="2" />
                 </svg>
-
-                {/* Moving vehicle */}
-                <motion.div
-                  className="absolute w-10 h-10 rounded-full bg-sky-500 border-4 border-white shadow-lg flex items-center justify-center text-white"
-                  initial={{ left: 30, top: 330 }}
-                  animate={{
-                    left: [30, 165, 320],
-                    top: [330, 200, 60],
-                  }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <Car size={18} />
+                <motion.div className="absolute w-8 h-8 rounded-full bg-sky-500 border-2 border-white shadow-lg flex items-center justify-center text-white"
+                  initial={{ left: 24, top: 154 }}
+                  animate={{ left: [24, 184, 344], top: [154, 94, 24] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}>
+                  <Car size={14} />
                 </motion.div>
-
-                {/* Pin labels */}
-                <div className="absolute bottom-6 left-12 bg-white/95 backdrop-blur rounded-lg px-2 py-1 shadow-md border border-sky-100">
-                  <div className="text-[9px] uppercase font-bold text-emerald-600">Start</div>
-                  <div className="text-sky-950 text-xs font-bold">Sân bay</div>
-                </div>
-                <div className="absolute top-6 right-12 bg-white/95 backdrop-blur rounded-lg px-2 py-1 shadow-md border border-sky-100">
-                  <div className="text-[9px] uppercase font-bold text-rose-600">End</div>
-                  <div className="text-sky-950 text-xs font-bold">Mỹ Khê</div>
-                </div>
-
-                {/* Floating mode badges */}
                 {[
-                  { Icon: Plane, x: 8, y: 8, color: "bg-sky-500" },
-                  { Icon: Bus, x: 300, y: 8, color: "bg-emerald-500" },
-                  { Icon: Bike, x: 8, y: 300, color: "bg-rose-500" },
-                  { Icon: Ship, x: 300, y: 300, color: "bg-teal-500" },
-                ].map(({ Icon, x, y, color }, i) => (
-                  <motion.div
-                    key={i}
-                    animate={{ y: [0, -6, 0] }}
+                  { Icon: Plane, x: 6, y: 6, color: "bg-sky-500" },
+                  { Icon: Bus, x: "auto", y: 6, color: "bg-emerald-500", right: 6 },
+                  { Icon: Bike, x: 6, y: "auto", color: "bg-rose-500", bottom: 6 },
+                  { Icon: Ship, x: "auto", y: "auto", color: "bg-teal-500", right: 6, bottom: 6 },
+                ].map(({ Icon, x, y, color, right, bottom }, i) => (
+                  <motion.div key={i}
+                    animate={{ y: [0, -4, 0] }}
                     transition={{ duration: 2 + i * 0.3, repeat: Infinity, ease: "easeInOut" }}
-                    className={`absolute w-10 h-10 rounded-2xl ${color} flex items-center justify-center text-white shadow-xl border-2 border-white`}
-                    style={{ left: x, top: y }}
-                  >
-                    <Icon size={16} />
+                    className={`absolute w-8 h-8 rounded-xl ${color} flex items-center justify-center text-white shadow-lg border-2 border-white`}
+                    style={{ left: x as any, top: y as any, right: right as any, bottom: bottom as any }}>
+                    <Icon size={13} />
                   </motion.div>
                 ))}
               </div>

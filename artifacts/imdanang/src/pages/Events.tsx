@@ -386,126 +386,107 @@ export default function Events() {
   return (
     <div className="min-h-screen bg-slate-50">
 
-      {/* ── Hero ── Festival Ticket Stub ────────────────── */}
-      <div className="relative overflow-hidden" style={{ background: "linear-gradient(135deg,#1e1b4b 0%,#312e81 30%,#581c87 70%,#1e1b4b 100%)" }}>
+      {/* ── Hero ── Festival w/ Live Photo Mosaic ────────── */}
+      <div className="relative overflow-hidden" style={{ background: "linear-gradient(135deg,#1e1b4b 0%,#581c87 50%,#1e1b4b 100%)" }}>
         {/* Firework particles */}
-        {Array.from({ length: 24 }).map((_, i) => (
-          <motion.span
-            key={i}
-            className="absolute rounded-full"
+        {Array.from({ length: 18 }).map((_, i) => (
+          <motion.span key={i} className="absolute rounded-full pointer-events-none"
             style={{
-              left: `${(i * 37) % 100}%`,
-              top: `${(i * 53) % 100}%`,
-              width: 3 + (i % 3),
-              height: 3 + (i % 3),
+              left: `${(i * 37) % 100}%`, top: `${(i * 53) % 100}%`,
+              width: 3 + (i % 3), height: 3 + (i % 3),
               background: ["#fcd34d", "#f472b6", "#a78bfa", "#60a5fa"][i % 4],
-              boxShadow: `0 0 10px currentColor`,
-              color: ["#fcd34d", "#f472b6", "#a78bfa", "#60a5fa"][i % 4],
+              boxShadow: `0 0 10px currentColor`, color: ["#fcd34d", "#f472b6", "#a78bfa", "#60a5fa"][i % 4],
             }}
             animate={{ opacity: [0, 1, 0], scale: [0.5, 1.5, 0.5] }}
-            transition={{ duration: 2 + (i % 3), repeat: Infinity, delay: (i * 0.2) % 4 }}
-          />
+            transition={{ duration: 2 + (i % 3), repeat: Infinity, delay: (i * 0.2) % 4 }} />
         ))}
-        {/* Spotlights */}
-        <div className="absolute inset-0 opacity-30" style={{
+        <div className="absolute inset-0 opacity-30 pointer-events-none" style={{
           background: "radial-gradient(ellipse at 20% 100%, #fcd34d 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, #f472b6 0%, transparent 50%)"
         }} />
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-10 lg:py-12">
-          {/* TICKET STUB */}
-          <motion.div
-            initial={{ opacity: 0, y: 30, rotate: -1 }}
-            animate={{ opacity: 1, y: 0, rotate: 0 }}
-            transition={{ duration: 0.7 }}
-            className="relative mx-auto max-w-5xl"
-          >
-            <div
-              className="relative rounded-3xl overflow-hidden grid grid-cols-[1fr,auto] shadow-2xl"
-              style={{
-                background: "linear-gradient(135deg,#fdf4ff 0%,#fae8ff 50%,#f5d0fe 100%)",
-                boxShadow: "0 24px 60px rgba(139,92,246,0.5)",
-              }}
-            >
-              {/* Perforation circles */}
-              <div className="absolute right-[33.333%] top-0 bottom-0 w-px border-l-2 border-dashed border-violet-400/60" />
-              {Array.from({ length: 6 }).map((_, i) => (
-                <span
-                  key={i}
-                  className="absolute w-5 h-5 rounded-full bg-violet-950"
-                  style={{
-                    right: "calc(33.333% - 10px)",
-                    top: `${i * 18 + 8}%`,
-                  }}
-                />
-              ))}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-6">
+          <div className="grid md:grid-cols-[1.2fr,1.4fr] gap-4 items-center">
+            {/* LEFT: Title + ticket info */}
+            <motion.div initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
+              <div className="inline-flex items-center gap-1.5 mb-2 px-2.5 py-1 rounded-full bg-violet-50/10 border border-violet-300/30 backdrop-blur text-violet-100 text-[10px] font-bold tracking-wider">
+                <Tag size={11} className="text-amber-400" /> ADMIT ONE · FESTIVAL 2026
+              </div>
+              <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-black leading-[0.95] mb-1 text-violet-50">
+                Đà Nẵng
+              </h1>
+              <h2 className="text-2xl sm:text-3xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-fuchsia-400 to-pink-400 mb-3">
+                Lễ Hội Quanh Năm
+              </h2>
+              <p className="text-violet-200/70 text-sm max-w-md mb-3 hidden sm:block">
+                Pháo hoa quốc tế, festival biển, đêm nhạc sông Hàn — luôn có một sự kiện đang chờ bạn.
+              </p>
 
-              {/* MAIN TICKET BODY */}
-              <div className="p-6 sm:p-8">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="px-3 py-1 bg-violet-700 text-violet-50 text-[10px] font-black tracking-[0.3em] rounded-md">
-                    ADMIT ONE
-                  </div>
-                  <Tag size={14} className="text-violet-700" />
-                  <span className="text-violet-700 text-xs font-bold tracking-wider">FESTIVAL · 2026</span>
-                </div>
-
-                <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-black leading-[0.9] mb-2 text-violet-950">
-                  Đà Nẵng
-                </h1>
-                <h2 className="text-3xl sm:text-4xl font-black italic text-transparent bg-clip-text bg-gradient-to-r from-violet-600 via-fuchsia-500 to-pink-500 mb-4">
-                  Lễ Hội Quanh Năm
-                </h2>
-
-                <p className="text-violet-900/70 text-sm sm:text-base max-w-md mb-5">
-                  Pháo hoa quốc tế, festival biển, đêm nhạc sông Hàn — không bao giờ là quá muộn để hòa mình vào không khí lễ hội.
-                </p>
-
-                {/* Stats as ticket fields */}
-                <div className="grid grid-cols-3 gap-3 max-w-md">
-                  {[
-                    { value: liveEvents.length, label: "Đang diễn ra", color: "text-red-600", dotColor: "bg-red-500", live: true },
-                    { value: upcomingEvents.length, label: "Sắp tới", color: "text-sky-600", dotColor: "bg-sky-500" },
-                    { value: ALL_EVENTS.length, label: "Tổng 2026", color: "text-amber-600", dotColor: "bg-amber-500" },
-                  ].map((s) => (
-                    <div key={s.label} className="bg-white/80 border border-violet-200 rounded-xl p-2.5">
-                      <div className="flex items-center gap-1.5 mb-1">
-                        <span className={`w-1.5 h-1.5 rounded-full ${s.dotColor} ${s.live ? "animate-pulse" : ""}`} />
-                        <span className={`text-[9px] uppercase tracking-wider font-bold ${s.color}`}>
-                          {s.live ? "LIVE" : "INFO"}
-                        </span>
-                      </div>
-                      <div className="font-black text-violet-950 text-2xl leading-none">{s.value}</div>
-                      <div className="text-violet-700/60 text-[10px] mt-0.5">{s.label}</div>
+              {/* Stats compact */}
+              <div className="flex gap-2 mb-3">
+                {[
+                  { value: liveEvents.length, label: "Đang diễn ra", color: "text-red-300", dot: "bg-red-500", live: true },
+                  { value: upcomingEvents.length, label: "Sắp tới", color: "text-sky-300", dot: "bg-sky-500" },
+                  { value: ALL_EVENTS.length, label: "Tổng 2026", color: "text-amber-300", dot: "bg-amber-500" },
+                ].map((s) => (
+                  <div key={s.label} className="flex-1 bg-white/5 backdrop-blur border border-violet-300/20 rounded-lg px-2.5 py-1.5">
+                    <div className="flex items-center gap-1 mb-0.5">
+                      <span className={`w-1.5 h-1.5 rounded-full ${s.dot} ${s.live ? "animate-pulse" : ""}`} />
+                      <span className={`text-[9px] uppercase tracking-wider font-bold ${s.color}`}>{s.live ? "LIVE" : "INFO"}</span>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* TICKET STUB (right) */}
-              <div className="hidden md:flex flex-col items-center justify-between bg-gradient-to-b from-violet-100 to-fuchsia-100 p-5 w-[33.333%] border-l-2 border-dashed border-violet-300">
-                <div className="text-center">
-                  <div className="text-[10px] font-black text-violet-700 tracking-widest mb-1">SECTION</div>
-                  <div className="text-violet-950 font-black text-4xl">VIP</div>
-                </div>
-
-                <div className="text-center">
-                  <Flame size={28} className="text-rose-500 mx-auto mb-1" />
-                  <div className="text-violet-950 font-black text-2xl leading-none">26.04</div>
-                  <div className="text-violet-700/70 text-[10px] mt-0.5">PHÁO HOA QT</div>
-                </div>
-
-                {/* Mock barcode */}
-                <div className="w-full">
-                  <div className="flex justify-center items-end gap-[2px] mb-1">
-                    {[3, 1, 4, 2, 1, 5, 2, 3, 1, 4, 2, 1, 3, 2, 4, 1].map((w, i) => (
-                      <span key={i} className="block bg-violet-950" style={{ width: w, height: 30 }} />
-                    ))}
+                    <div className="font-black text-violet-50 text-xl leading-none">{s.value}</div>
+                    <div className="text-violet-200/60 text-[10px] mt-0.5 truncate">{s.label}</div>
                   </div>
-                  <div className="text-center text-violet-700 text-[8px] font-mono tracking-widest">DNG · 2026 · 04</div>
+                ))}
+              </div>
+
+              {/* Mini ticket footer with VIP + countdown */}
+              <div className="rounded-xl bg-gradient-to-r from-violet-50 to-fuchsia-50 p-2 flex items-center gap-2 shadow-lg relative overflow-hidden">
+                {/* perforation */}
+                <div className="absolute left-[60%] top-0 bottom-0 w-px border-l-2 border-dashed border-violet-300" />
+                <div className="flex items-center gap-2 flex-1 px-1">
+                  <Flame size={20} className="text-rose-500 shrink-0" />
+                  <div className="min-w-0">
+                    <div className="text-violet-950 font-black text-xs leading-tight truncate">26.04 · Pháo hoa QT</div>
+                    <div className="text-violet-700/60 text-[10px] truncate">Cầu Rồng · 21:00</div>
+                  </div>
+                </div>
+                <div className="text-right pr-2">
+                  <div className="text-[8px] font-black text-violet-700 tracking-widest">SECTION</div>
+                  <div className="text-violet-950 font-black text-lg leading-none">VIP</div>
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+
+            {/* RIGHT: 4-tile event photo mosaic */}
+            <motion.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
+              className="grid grid-cols-3 gap-1.5 h-44 sm:h-48 md:h-52">
+              {/* Big featured event */}
+              <div className="col-span-2 row-span-2 relative rounded-2xl overflow-hidden border-2 border-violet-300/30 shadow-2xl group">
+                <img src={ALL_EVENTS[0]?.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="" />
+                <div className="absolute inset-0 bg-gradient-to-t from-violet-950/95 via-violet-950/30 to-transparent" />
+                <div className="absolute top-2 left-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-red-500 text-white text-[9px] font-black">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" /> LIVE
+                </div>
+                <div className="absolute bottom-2 left-2.5 right-2.5 text-violet-50">
+                  <div className="text-[9px] tracking-widest font-bold opacity-80">★ ĐANG DIỄN RA</div>
+                  <div className="font-bold text-sm sm:text-base leading-tight line-clamp-2">{ALL_EVENTS[0]?.name}</div>
+                </div>
+              </div>
+              {/* Smaller tiles */}
+              {[ALL_EVENTS[1], ALL_EVENTS[2]].filter(Boolean).map((ev, i) => (
+                <motion.div key={ev.id}
+                  initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 + i * 0.1 }}
+                  className="relative rounded-xl overflow-hidden border border-violet-300/30 shadow-lg group">
+                  <img src={ev.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-violet-950/90 to-transparent" />
+                  <div className="absolute bottom-1.5 left-1.5 right-1.5 text-violet-50">
+                    <div className="text-[8px] tracking-widest font-bold opacity-80">{ev.status === "live" ? "🔴 LIVE" : "📅 SẮP TỚI"}</div>
+                    <div className="font-bold text-[11px] leading-tight line-clamp-2">{ev.name}</div>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
         </div>
       </div>
 

@@ -201,130 +201,85 @@ export default function LocalFood() {
   return (
     <div className={`min-h-screen ${bg}`}>
 
-      {/* ─── HERO ── Recipe Card / Aged Paper ── */}
-      <div
-        className="relative overflow-hidden"
-        style={{
-          background: D
-            ? "linear-gradient(135deg,#1c0d0d 0%,#2a1010 50%,#1c0d0d 100%)"
-            : "linear-gradient(135deg,#fff7f0 0%,#fef3e8 50%,#fde4d4 100%)",
-        }}
-      >
-        {/* Paper texture */}
-        <div
-          className="absolute inset-0 opacity-[0.08]"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 25% 25%, #be185d 0%, transparent 35%), radial-gradient(circle at 75% 75%, #f59e0b 0%, transparent 35%)",
-          }}
-        />
-        {/* Top + bottom dotted "stitches" */}
-        <div className={`absolute top-3 inset-x-6 border-t-2 border-dashed ${D ? "border-rose-700/50" : "border-rose-400/50"}`} />
-        <div className={`absolute bottom-3 inset-x-6 border-t-2 border-dashed ${D ? "border-rose-700/50" : "border-rose-400/50"}`} />
+      {/* ─── HERO ── Compact Recipe Card ── */}
+      <div className="relative overflow-hidden"
+        style={{ background: D ? "linear-gradient(135deg,#1c0d0d 0%,#2a1010 50%,#1c0d0d 100%)" : "linear-gradient(135deg,#fff7f0 0%,#fef3e8 50%,#fde4d4 100%)" }}>
+        <div className="absolute inset-0 opacity-[0.08]" style={{
+          backgroundImage: "radial-gradient(circle at 20% 20%, #be185d 0%, transparent 35%), radial-gradient(circle at 80% 80%, #f59e0b 0%, transparent 35%)"
+        }} />
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-10 lg:py-12">
-          <div className="grid lg:grid-cols-[1.1fr,1fr] gap-8 items-center">
-            {/* LEFT: Recipe header */}
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-              <div className={`inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full text-xs font-bold tracking-widest ${D ? "bg-rose-500 text-white" : "bg-rose-100 text-rose-800 border border-rose-300"}`}>
-                <UtensilsCrossed size={13} />
-                THỰC ĐƠN · {dishes.length} MÓN GIA TRUYỀN
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-5 sm:py-6">
+          <div className="grid md:grid-cols-[1.5fr,auto] gap-4 items-center">
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+              <div className={`inline-flex items-center gap-1.5 mb-2 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-widest ${D ? "bg-rose-500 text-white" : "bg-rose-100 text-rose-800 border border-rose-300"}`}>
+                <UtensilsCrossed size={11} /> {dishes.length} MÓN GIA TRUYỀN
               </div>
-
-              <h1 className={`font-serif text-5xl sm:text-6xl lg:text-7xl font-black leading-[0.95] mb-3 ${D ? "text-rose-50" : "text-rose-950"}`}>
-                Món Ngon
-                <span className={`block italic text-transparent bg-clip-text bg-gradient-to-r from-rose-500 via-pink-500 to-orange-500`} style={{ fontFamily: "'Brush Script MT', cursive" }}>
-                  Mẹ Nấu
-                </span>
+              <h1 className={`font-serif text-3xl sm:text-4xl lg:text-5xl font-black leading-[0.95] mb-2 ${D ? "text-rose-50" : "text-rose-950"}`}>
+                Món Ngon <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-rose-500 via-pink-500 to-orange-500" style={{ fontFamily: "'Brush Script MT', cursive" }}>Mẹ Nấu</span>
               </h1>
-
-              <p className={`text-base max-w-md leading-relaxed mb-6 ${D ? "text-rose-100/60" : "text-rose-900/70"}`}>
-                Mì Quảng nóng hổi, Cao Lầu trăm năm, Bánh Xèo giòn tan — công thức truyền đời của xứ Quảng.
+              <p className={`text-sm max-w-md mb-3 hidden sm:block ${D ? "text-rose-100/60" : "text-rose-900/70"}`}>
+                Mì Quảng, Cao Lầu, Bánh Xèo — công thức truyền đời của xứ Quảng.
               </p>
 
-              {/* Hand-drawn ingredient chips */}
-              <div className="flex flex-wrap gap-2 mb-6">
+              {/* Compact ingredient row + search inline */}
+              <div className="flex flex-wrap gap-1.5 mb-3">
                 {[
                   { emoji: "🍜", label: "Bún & Mì" },
-                  { emoji: "🥖", label: "Bánh & Xôi" },
+                  { emoji: "🥖", label: "Bánh" },
                   { emoji: "🐟", label: "Hải sản" },
                   { emoji: "🍗", label: "Đặc sản" },
                 ].map((c, i) => (
-                  <motion.div
-                    key={c.label}
-                    initial={{ opacity: 0, scale: 0.8, rotate: 0 }}
-                    animate={{ opacity: 1, scale: 1, rotate: i % 2 ? -3 : 3 }}
-                    transition={{ delay: 0.2 + i * 0.07 }}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-dashed shadow-sm ${D ? "bg-rose-950/50 border-rose-700/60 text-rose-100" : "bg-white border-rose-300 text-rose-900"}`}
-                  >
-                    <span className="text-lg">{c.emoji}</span>
-                    <span className="text-xs font-bold">{c.label}</span>
+                  <motion.div key={c.label}
+                    initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1, rotate: i % 2 ? -2 : 2 }}
+                    transition={{ delay: 0.15 + i * 0.05 }}
+                    className={`flex items-center gap-1 px-2 py-1 rounded-lg border border-dashed shadow-sm text-xs font-bold ${D ? "bg-rose-950/50 border-rose-700/60 text-rose-100" : "bg-white border-rose-300 text-rose-900"}`}>
+                    <span className="text-base">{c.emoji}</span>
+                    <span className="hidden sm:inline">{c.label}</span>
                   </motion.div>
                 ))}
               </div>
 
-              {/* Recipe-card search */}
-              <div className={`relative rounded-2xl p-1.5 flex items-center gap-2 shadow-2xl border-4 ${D ? "bg-rose-950 border-rose-700" : "bg-white border-rose-300"}`}>
-                <div className={`absolute -top-3 left-5 px-2.5 py-0.5 text-[10px] font-black tracking-[0.2em] rounded-md z-10 ${D ? "bg-rose-500 text-white" : "bg-rose-700 text-rose-50"}`}>
+              <div className={`relative rounded-xl p-1 flex items-center gap-1 shadow-2xl border-2 ${D ? "bg-rose-950 border-rose-700" : "bg-white border-rose-300"}`}>
+                <div className={`absolute -top-2 left-4 px-2 py-0.5 text-[9px] font-black tracking-widest rounded z-10 ${D ? "bg-rose-500 text-white" : "bg-rose-700 text-rose-50"}`}>
                   TÌM CÔNG THỨC
                 </div>
-                <div className="flex items-center gap-2 flex-1 px-3">
-                  <Search size={16} className={D ? "text-rose-300" : "text-rose-700"} />
-                  <input
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                    placeholder="Mì Quảng, Cao Lầu, Bánh Xèo..."
-                    className={`flex-1 bg-transparent text-sm focus:outline-none ${D ? "text-rose-50 placeholder:text-rose-300/40" : "text-rose-950 placeholder:text-rose-600/40"}`}
-                  />
+                <div className="flex items-center gap-2 flex-1 px-2.5 py-1.5 min-w-0">
+                  <Search size={14} className={D ? "text-rose-300" : "text-rose-700"} />
+                  <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Mì Quảng, Cao Lầu..." className={`flex-1 bg-transparent text-sm focus:outline-none min-w-0 ${D ? "text-rose-50 placeholder:text-rose-300/40" : "text-rose-950 placeholder:text-rose-600/40"}`} />
                 </div>
-                <button className="bg-gradient-to-br from-rose-500 to-pink-600 text-white font-black px-4 py-2.5 rounded-xl text-sm flex items-center gap-1">
-                  Khám phá <ChevronRight size={14} />
+                <button className="bg-gradient-to-br from-rose-500 to-pink-600 text-white font-black px-3 py-2 rounded-lg text-xs flex items-center gap-1 shrink-0">
+                  Khám phá <ChevronRight size={12} />
                 </button>
               </div>
             </motion.div>
 
-            {/* RIGHT: Recipe-card photo with hand-drawn icons border */}
-            <div className="relative h-[280px] lg:h-[360px] hidden md:block">
-              <motion.div
-                initial={{ opacity: 0, rotate: 4 }}
-                animate={{ opacity: 1, rotate: -2 }}
-                transition={{ duration: 0.8 }}
-                className={`absolute inset-4 rounded-3xl overflow-hidden border-8 shadow-2xl ${D ? "border-rose-50 bg-rose-50" : "border-white bg-white"}`}
-                style={{ boxShadow: "0 30px 60px rgba(244,63,94,0.3)" }}
-              >
-                <img
-                  src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=900&auto=format&fit=crop"
-                  className="w-full h-full object-cover"
-                  alt=""
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-rose-950/60 via-transparent" />
-                {/* Stamp */}
-                <div className="absolute top-3 right-3 w-16 h-16 rounded-full border-4 border-rose-500 flex items-center justify-center bg-white/90 -rotate-12">
+            {/* RIGHT: Compact stamp photo */}
+            <motion.div initial={{ opacity: 0, x: 16, rotate: 4 }} animate={{ opacity: 1, x: 0, rotate: -2 }} transition={{ duration: 0.7 }}
+              className="hidden md:block relative w-40 h-40 lg:w-52 lg:h-44 mx-auto">
+              <div className={`absolute inset-0 rounded-2xl overflow-hidden border-4 shadow-2xl ${D ? "border-rose-50" : "border-white"}`}
+                style={{ boxShadow: "0 16px 40px rgba(244,63,94,0.3)" }}>
+                <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&auto=format&fit=crop" className="w-full h-full object-cover" alt="" />
+                <div className="absolute inset-0 bg-gradient-to-t from-rose-950/70 via-transparent" />
+                <div className="absolute top-1.5 right-1.5 w-11 h-11 rounded-full border-2 border-rose-500 flex items-center justify-center bg-white/90 -rotate-12">
                   <div className="text-center text-rose-700">
-                    <div className="text-[8px] font-black leading-none">TRUYỀN</div>
-                    <div className="text-base font-black">100%</div>
-                    <div className="text-[8px] font-black leading-none">THỐNG</div>
+                    <div className="text-[7px] font-black leading-none">100%</div>
+                    <div className="text-[7px] font-black leading-none">TRUYỀN<br/>THỐNG</div>
                   </div>
                 </div>
-                <div className="absolute bottom-4 left-4 right-4 text-white">
-                  <div className="text-[10px] tracking-widest font-bold opacity-80">★ ICONIC</div>
-                  <div className="font-serif font-bold text-2xl">Mì Quảng</div>
+                <div className="absolute bottom-1.5 left-2 right-2 text-white">
+                  <div className="text-[8px] tracking-widest font-bold opacity-80">★ ICONIC</div>
+                  <div className="font-serif font-bold text-base leading-none">Mì Quảng</div>
                 </div>
-              </motion.div>
-
-              {/* Floating ingredient emojis */}
-              {["🌶️", "🍋", "🌿", "🥢", "🥄"].map((e, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute text-3xl"
-                  style={{ left: `${[5, 80, 90, 0, 70][i]}%`, top: `${[5, 10, 80, 75, 50][i]}%` }}
-                  animate={{ y: [0, -10, 0], rotate: [0, 12, 0] }}
-                  transition={{ duration: 2.5 + i * 0.3, repeat: Infinity, delay: i * 0.2 }}
-                >
+              </div>
+              {["🌶️", "🍋"].map((e, i) => (
+                <motion.div key={i} className="absolute text-2xl"
+                  style={{ left: i === 0 ? "-12px" : "auto", right: i === 1 ? "-8px" : "auto", top: i === 0 ? "-8px" : "auto", bottom: i === 1 ? "-8px" : "auto" }}
+                  animate={{ y: [0, -6, 0], rotate: [0, 10, 0] }}
+                  transition={{ duration: 2.5 + i * 0.3, repeat: Infinity, delay: i * 0.2 }}>
                   {e}
                 </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>
