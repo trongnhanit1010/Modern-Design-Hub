@@ -69,43 +69,101 @@ export default function Destinations() {
   return (
     <div className="min-h-screen bg-gray-50" ref={ref}>
 
-      {/* ── Hero ── */}
-      <div className="relative h-[72vh] min-h-[480px] overflow-hidden">
-        <div className="absolute inset-0 grid grid-cols-3 gap-0">
-          {heroImages.map((src, i) => (
-            <div key={i} className="relative overflow-hidden">
-              <img src={src} alt="" className="w-full h-full object-cover scale-105" style={{ filter: "brightness(0.72)" }} />
-            </div>
-          ))}
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/35 to-black/70" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-          <motion.div initial={{ opacity: 0, y: 36 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="max-w-3xl w-full">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white/90 rounded-full px-4 py-1.5 text-sm mb-6 shadow-lg">
-              <Camera size={13} className="text-teal-400" />
-              <span>85+ Địa điểm tham quan tại Đà Nẵng &amp; Hội An</span>
-            </div>
-            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 leading-tight drop-shadow-xl">
-              Khám Phá <span className="text-teal-400">Đà Nẵng</span><br />&amp; Hội An
-            </h1>
-            <p className="text-white/75 text-base md:text-lg max-w-xl mx-auto mb-10 leading-relaxed">
-              Từ bãi biển cát trắng đến di sản UNESCO — khám phá những điểm đến không thể bỏ qua
-            </p>
-            <div className="flex items-center justify-center gap-6 md:gap-12">
-              {stats.map(({ icon: Icon, label, value }) => (
-                <div key={label} className="flex flex-col items-center gap-1">
-                  <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center mb-1">
-                    <Icon size={18} className="text-teal-400" />
+      {/* ── Hero ── Polaroid Scrapbook Explorer ── */}
+      <div className="relative overflow-hidden" style={{ background: "linear-gradient(180deg,#ecfdf5 0%,#d1fae5 50%,#a7f3d0 100%)" }}>
+        {/* Topography pattern */}
+        <svg className="absolute inset-0 w-full h-full opacity-[0.07]" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="topo" width="80" height="80" patternUnits="userSpaceOnUse">
+              <path d="M0 40 Q 20 20, 40 40 T 80 40" fill="none" stroke="#065f46" strokeWidth="1" />
+              <path d="M0 60 Q 20 40, 40 60 T 80 60" fill="none" stroke="#065f46" strokeWidth="1" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#topo)" />
+        </svg>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-10 lg:py-14">
+          <div className="grid lg:grid-cols-[1.1fr,1fr] gap-8 items-center">
+            {/* LEFT: Hand-drawn explorer feel */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
+              <div className="inline-flex items-center gap-2 mb-5 px-3 py-1.5 rounded-full bg-emerald-900 text-emerald-100 text-xs font-bold tracking-wide shadow-lg">
+                <Compass size={14} className="text-emerald-300" />
+                NHẬT KÝ KHÁM PHÁ · 2026
+              </div>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-black leading-[0.95] mb-4 text-emerald-950">
+                Khám Phá
+                <span className="relative inline-block ml-2">
+                  <span className="relative z-10 italic text-emerald-700">đó đây</span>
+                  <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 12" fill="none">
+                    <path d="M2 8 Q 50 2, 100 6 T 198 4" stroke="#10b981" strokeWidth="3" strokeLinecap="round" />
+                  </svg>
+                </span>
+              </h1>
+              <p className="text-emerald-900/70 text-base max-w-lg leading-relaxed mb-6">
+                85+ điểm đến đáng nhớ — từ bãi cát trắng Mỹ Khê đến phố cổ Hội An. Bộ sưu tập polaroid của những kẻ lữ hành.
+              </p>
+
+              {/* Stats with hand-drawn ticket vibe */}
+              <div className="flex gap-3 mb-6 flex-wrap">
+                {stats.map(({ icon: Icon, label, value }) => (
+                  <div key={label} className="bg-white border-2 border-dashed border-emerald-400 rounded-xl px-3 py-2 flex items-center gap-2 shadow-sm">
+                    <Icon size={16} className="text-emerald-600" />
+                    <div>
+                      <div className="text-emerald-900 font-black text-sm leading-none">{value}</div>
+                      <div className="text-emerald-700/60 text-[10px]">{label}</div>
+                    </div>
                   </div>
-                  <span className="text-white font-bold text-xl">{value}</span>
-                  <span className="text-white/60 text-xs">{label}</span>
+                ))}
+              </div>
+
+              {/* Passport-style search */}
+              <div className="relative bg-white rounded-2xl shadow-xl p-2 flex items-center gap-2 border border-emerald-200">
+                <div className="absolute -right-3 -top-3 w-14 h-14 rounded-full border-2 border-dashed border-emerald-500 flex items-center justify-center -rotate-12 bg-emerald-50">
+                  <span className="text-[8px] text-emerald-700 font-black text-center leading-none">VISA<br />2026</span>
                 </div>
+                <div className="flex items-center gap-2 px-3 flex-1 py-1.5">
+                  <Search size={16} className="text-emerald-600" />
+                  <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Bãi biển, di sản, núi rừng..." className="flex-1 bg-transparent text-emerald-950 placeholder:text-emerald-600/40 text-sm focus:outline-none" />
+                </div>
+                <button className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-sm flex items-center gap-1">
+                  Khám phá <ChevronRight size={14} />
+                </button>
+              </div>
+            </motion.div>
+
+            {/* RIGHT: 3 polaroids overlapping */}
+            <div className="relative h-[280px] lg:h-[360px] hidden md:block">
+              {[
+                { src: heroImages[0], label: "Mỹ Khê", rot: -8, x: "0%", y: "10%", z: 1 },
+                { src: heroImages[1], label: "Hội An", rot: 5, x: "30%", y: "0%", z: 2 },
+                { src: heroImages[2], label: "Bà Nà", rot: -3, x: "55%", y: "20%", z: 3 },
+              ].map((p, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 30, rotate: 0 }}
+                  animate={{ opacity: 1, y: 0, rotate: p.rot }}
+                  transition={{ duration: 0.8, delay: i * 0.15 }}
+                  whileHover={{ rotate: 0, scale: 1.05, zIndex: 10 }}
+                  className="absolute bg-white p-2.5 pb-8 shadow-2xl rounded-sm cursor-pointer w-44"
+                  style={{ left: p.x, top: p.y, zIndex: p.z }}
+                >
+                  <img src={p.src} className="w-full h-44 object-cover" alt="" />
+                  <div className="absolute bottom-2 left-0 right-0 text-center text-emerald-900 font-bold text-xs" style={{ fontFamily: "'Caveat', 'Comic Sans MS', cursive" }}>
+                    📍 {p.label}
+                  </div>
+                </motion.div>
               ))}
+              {/* Hand-drawn dotted route */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 400 360">
+                <motion.path
+                  d="M70 80 Q 150 30, 200 70 T 320 110"
+                  stroke="#059669" strokeWidth="2.5" strokeDasharray="4 6" fill="none"
+                  initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, delay: 0.7 }}
+                />
+              </svg>
             </div>
-          </motion.div>
+          </div>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-gray-900 to-transparent" />
       </div>
 
       {/* ── Filter bar ── */}

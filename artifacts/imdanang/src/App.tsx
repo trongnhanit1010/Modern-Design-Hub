@@ -23,6 +23,7 @@ import LocalFood from "@/pages/LocalFood";
 import SearchPage from "@/pages/SearchPage";
 import Entertainment from "@/pages/Entertainment";
 import EntertainmentDetail from "@/pages/EntertainmentDetail";
+import Cyclo from "@/pages/Cyclo";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import BottomNav from "@/components/layout/BottomNav";
@@ -78,6 +79,7 @@ function Layout() {
           <Route path="/shopping" component={Shopping} />
           <Route path="/vui-choi-giai-tri/:slug" component={EntertainmentDetail} />
           <Route path="/vui-choi-giai-tri" component={Entertainment} />
+          <Route path="/xich-lo-du-lich" component={Cyclo} />
           <Route path="/ai" component={AIAssistant} />
           <Route path="/thoi-tiet/:slug" component={WeatherDetail} />
           <Route path="/tim-kiem" component={SearchPage} />

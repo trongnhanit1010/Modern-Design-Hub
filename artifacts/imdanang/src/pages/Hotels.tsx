@@ -85,63 +85,94 @@ export default function Hotels() {
   return (
     <div className="min-h-screen bg-gray-50" ref={ref}>
 
-      {/* ── Hero ── */}
-      <div className="relative h-[78vh] min-h-[520px] overflow-hidden">
-        {/* layered background images */}
-        <div className="absolute inset-0 grid grid-cols-3 gap-0">
-          {heroImages.map((src, i) => (
-            <div key={i} className="relative overflow-hidden">
-              <img
-                src={src}
-                alt=""
-                className="w-full h-full object-cover scale-105"
-                style={{ filter: "brightness(0.72)" }}
-              />
-            </div>
-          ))}
-        </div>
+      {/* ── Hero ── Amber Luxury Editorial ── */}
+      <div className="relative overflow-hidden" style={{ background: "linear-gradient(135deg,#1a1206 0%,#2a1d0a 50%,#1a1206 100%)" }}>
+        <div className="absolute inset-0 opacity-30" style={{
+          backgroundImage: "radial-gradient(circle at 25% 30%, #f59e0b 0%, transparent 35%), radial-gradient(circle at 75% 70%, #b45309 0%, transparent 40%)"
+        }} />
+        {/* Decorative serif "H" watermark */}
+        <div className="absolute -top-20 -left-10 font-serif text-[400px] text-amber-500/[0.04] leading-none select-none pointer-events-none">H</div>
 
-        {/* unified overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/35 to-black/70" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-10 lg:py-14">
+          <div className="grid lg:grid-cols-[1.3fr,1fr] gap-8 items-center">
+            {/* LEFT: Title + concierge search */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
+              <div className="flex items-center gap-3 mb-5">
+                <div className="h-px w-12 bg-amber-400/50" />
+                <span className="text-amber-300 text-[10px] tracking-[0.35em] font-bold flex items-center gap-1.5">
+                  <Sparkles size={11} /> LUXURY EDITION · 2026
+                </span>
+              </div>
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-black text-amber-50 leading-[0.95] mb-4">
+                Nơi Nghỉ
+                <span className="block italic text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400">
+                  Đẳng Cấp
+                </span>
+              </h1>
+              <p className="text-amber-100/60 text-base max-w-md leading-relaxed mb-6">
+                Từ resort biển 5 sao đến boutique cổ điển — chọn nơi chốn xứng tầm cho hành trình của bạn.
+              </p>
 
-        {/* content */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 36 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
-            className="max-w-3xl w-full"
-          >
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white/90 rounded-full px-4 py-1.5 text-sm mb-6 shadow-lg">
-              <Sparkles size={13} className="text-amber-400" />
-              <span>128 Chỗ nghỉ cao cấp tại Đà Nẵng & Hội An</span>
-            </div>
-
-            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 leading-tight drop-shadow-xl">
-              Tìm Nơi <span className="text-amber-400">Nghỉ Ngơi</span><br />Hoàn Hảo
-            </h1>
-            <p className="text-white/75 text-base md:text-lg max-w-xl mx-auto mb-10 leading-relaxed">
-              Từ resort biển đẳng cấp đến boutique hotel quyến rũ — khám phá không gian nghỉ dưỡng ưng ý nhất cho chuyến đi của bạn
-            </p>
-
-            {/* stats row */}
-            <div className="flex items-center justify-center gap-6 md:gap-12">
-              {stats.map(({ icon: Icon, label, value }) => (
-                <div key={label} className="flex flex-col items-center gap-1">
-                  <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center mb-1">
-                    <Icon size={18} className="text-amber-400" />
+              {/* Gold pill stats */}
+              <div className="flex flex-wrap gap-2 mb-6">
+                {stats.map(({ icon: Icon, label, value }) => (
+                  <div key={label} className="flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/5 backdrop-blur-sm">
+                    <Icon size={13} className="text-amber-400" />
+                    <span className="text-amber-100 font-bold text-sm">{value}</span>
+                    <span className="text-amber-200/50 text-[11px]">{label}</span>
                   </div>
-                  <span className="text-white font-bold text-xl">{value}</span>
-                  <span className="text-white/60 text-xs">{label}</span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
+                ))}
+              </div>
 
-        {/* bottom fade into page */}
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-gray-900 to-transparent" />
+              {/* Concierge search desk */}
+              <div className="relative">
+                <div className="absolute -top-3 left-5 px-2.5 py-0.5 bg-amber-500 text-amber-950 text-[10px] font-black tracking-[0.2em] rounded-md shadow-lg z-10 border border-amber-300">
+                  CONCIERGE
+                </div>
+                <div className="rounded-2xl bg-amber-50/95 backdrop-blur p-1.5 grid grid-cols-[1fr,auto,auto] gap-1.5 shadow-2xl border-2 border-amber-400/40">
+                  <div className="flex items-center gap-2 px-3 py-2.5">
+                    <Search size={16} className="text-amber-700 shrink-0" />
+                    <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Tìm khách sạn, khu vực..." className="flex-1 bg-transparent text-amber-950 placeholder:text-amber-700/40 text-sm focus:outline-none min-w-0" />
+                  </div>
+                  <div className="hidden sm:flex items-center gap-2 px-3 border-l border-amber-200/80">
+                    <BedDouble size={14} className="text-amber-700" />
+                    <span className="text-amber-900 text-sm font-medium whitespace-nowrap">2 khách</span>
+                  </div>
+                  <button className="bg-gradient-to-br from-amber-500 to-orange-600 text-white font-bold px-4 sm:px-5 rounded-xl text-sm flex items-center gap-1.5 hover:shadow-amber-500/40 hover:shadow-lg transition-shadow">
+                    Tìm <ChevronRight size={14} />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* RIGHT: Photo collage */}
+            <div className="relative h-[260px] lg:h-[360px] hidden lg:block">
+              <motion.div initial={{ opacity: 0, x: 30, rotate: 5 }} animate={{ opacity: 1, x: 0, rotate: 3 }} transition={{ duration: 0.8 }}
+                className="absolute inset-y-0 right-0 w-[78%] rounded-3xl overflow-hidden border-4 border-amber-400/30 shadow-2xl">
+                <img src={heroImages[0]} className="w-full h-full object-cover" alt="" />
+                <div className="absolute inset-0 bg-gradient-to-t from-amber-950/80 via-transparent" />
+                <div className="absolute top-3 right-3 px-2 py-1 bg-amber-400 text-amber-950 text-[9px] font-black rounded-full">★ FEATURED</div>
+                <div className="absolute bottom-4 left-4 right-4 text-amber-50">
+                  <div className="text-[10px] tracking-widest font-bold opacity-70">★★★★★</div>
+                  <div className="font-serif font-bold text-lg">Crowne Plaza Đà Nẵng</div>
+                </div>
+              </motion.div>
+              <motion.div initial={{ opacity: 0, y: -20, rotate: -8 }} animate={{ opacity: 1, y: 0, rotate: -5 }} transition={{ duration: 0.9, delay: 0.15 }}
+                className="absolute top-0 left-0 w-[55%] h-[48%] rounded-2xl overflow-hidden border-4 border-amber-400/25 shadow-xl">
+                <img src={heroImages[1]} className="w-full h-full object-cover" alt="" />
+              </motion.div>
+              <motion.div initial={{ opacity: 0, y: 20, rotate: 8 }} animate={{ opacity: 1, y: 0, rotate: 6 }} transition={{ duration: 0.9, delay: 0.25 }}
+                className="absolute bottom-0 left-2 w-[48%] h-[42%] rounded-2xl overflow-hidden border-4 border-amber-400/25 shadow-xl">
+                <img src={heroImages[2]} className="w-full h-full object-cover" alt="" />
+              </motion.div>
+              {/* Floating gold key */}
+              <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity }}
+                className="absolute -bottom-4 right-4 w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-xl border-2 border-amber-200">
+                <Trophy size={22} className="text-white" />
+              </motion.div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* ── Filters & Content ── */}

@@ -1,6 +1,6 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { ShoppingBag, Star, MapPin, Clock, Tag, TrendingUp, Gem, Package, Shirt, Coffee } from "lucide-react";
+import { ShoppingBag, Star, MapPin, Clock, Tag, TrendingUp, Gem, Package, Shirt, Coffee, Search, Sparkles, Heart, Percent, ChevronRight } from "lucide-react";
 
 const categories = [
   { icon: Gem, label: "Thủ công mỹ nghệ", count: 48, color: "from-violet-400 to-purple-500", bg: "bg-violet-50 border-violet-100" },
@@ -21,18 +21,102 @@ const markets = [
 export default function Shopping() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const [search, setSearch] = useState("");
 
   return (
     <div className="min-h-screen bg-gray-50" ref={ref}>
-      <div className="relative h-56 overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1555529669-2269763671c0?w=1400&auto=format&fit=crop" alt="Shopping" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 pb-6">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <div className="inline-flex items-center gap-2 bg-pink-500 text-white rounded-full px-4 py-1.5 text-sm mb-3 shadow-md">
-              <ShoppingBag size={14} />335 Địa điểm mua sắm
+      {/* ── Hero ── Magazine SALE Cover ── */}
+      <div className="relative overflow-hidden" style={{ background: "linear-gradient(135deg,#fdf2f8 0%,#fce7f3 50%,#fbcfe8 100%)" }}>
+        {/* Floating price tags */}
+        {[
+          { x: "8%", y: "15%", rot: -12, size: 60, label: "-50%" },
+          { x: "82%", y: "12%", rot: 14, size: 70, label: "SALE" },
+          { x: "85%", y: "62%", rot: -8, size: 55, label: "HOT" },
+          { x: "10%", y: "70%", rot: 10, size: 50, label: "NEW" },
+        ].map((t, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, scale: 0.5, rotate: 0 }}
+            animate={{ opacity: 1, scale: 1, rotate: t.rot, y: [0, -8, 0] }}
+            transition={{ scale: { duration: 0.6, delay: i * 0.15 }, y: { duration: 3 + i * 0.4, repeat: Infinity, ease: "easeInOut" } }}
+            className="absolute hidden md:flex items-center justify-center font-black text-white shadow-xl"
+            style={{
+              left: t.x, top: t.y, width: t.size, height: t.size, fontSize: t.size / 4.5,
+              background: "linear-gradient(135deg,#ec4899,#db2777)",
+              clipPath: "polygon(20% 0,100% 0,100% 100%,20% 100%,0 50%)",
+            }}
+          >
+            {t.label}
+          </motion.div>
+        ))}
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-10 lg:py-14 text-center">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
+            <div className="inline-flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-pink-600 text-white text-xs font-black tracking-wider shadow-lg">
+              <Sparkles size={13} />
+              MÙA MUA SẮM 2026 · 335 ĐỊA ĐIỂM
             </div>
-            <h1 className="font-serif text-4xl md:text-5xl font-bold text-white drop-shadow-lg">Mua Sắm Tại Đà Nẵng</h1>
+
+            {/* Magazine title with stripes underline */}
+            <div className="relative inline-block">
+              <h1 className="font-serif text-5xl sm:text-6xl lg:text-8xl font-black leading-[0.9] mb-3 text-pink-950">
+                MUA SẮM
+              </h1>
+              <div className="flex justify-center gap-1 mb-4">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <motion.span key={i} className="block h-1 w-8 rounded-full bg-pink-500"
+                    initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: 0.3 + i * 0.05 }} style={{ transformOrigin: "left" }} />
+                ))}
+              </div>
+              <h2 className="text-pink-700 italic text-2xl sm:text-3xl font-bold mb-2" style={{ fontFamily: "'Brush Script MT', cursive" }}>
+                Đà Nẵng Edition
+              </h2>
+            </div>
+
+            <p className="text-pink-900/70 text-base max-w-xl mx-auto leading-relaxed mb-6">
+              Chợ Hàn cổ kính, Vincom hiện đại, làng nghề độc bản — bộ sưu tập mua sắm hot nhất xứ Quảng.
+            </p>
+
+            {/* Stats */}
+            <div className="flex items-center justify-center gap-6 mb-7">
+              {[
+                { Icon: ShoppingBag, value: "335", label: "Địa điểm", color: "bg-pink-500" },
+                { Icon: Percent, value: "12%", label: "Giảm TB", color: "bg-rose-500" },
+                { Icon: Heart, value: "4.7", label: "Yêu thích", color: "bg-fuchsia-500" },
+              ].map(({ Icon, value, label, color }) => (
+                <div key={label} className="flex items-center gap-2">
+                  <div className={`w-10 h-10 rounded-2xl ${color} flex items-center justify-center text-white shadow-md`}>
+                    <Icon size={16} />
+                  </div>
+                  <div className="text-left">
+                    <div className="font-black text-pink-950 text-base leading-none">{value}</div>
+                    <div className="text-pink-700/60 text-[11px]">{label}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Barcode-styled search */}
+            <div className="max-w-xl mx-auto relative">
+              <div className="absolute -top-2 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-pink-950 text-pink-100 text-[10px] font-black tracking-[0.4em] rounded-md z-10">
+                BARCODE · SCAN
+              </div>
+              <div className="rounded-2xl bg-white p-2 flex items-center gap-2 shadow-2xl border-4 border-pink-900">
+                {/* Mock barcode */}
+                <div className="hidden sm:flex items-center gap-[1.5px] px-3 py-3 bg-pink-50 rounded-xl">
+                  {[2, 4, 1, 3, 5, 1, 2, 4, 1, 3].map((w, i) => (
+                    <span key={i} className="block bg-pink-950" style={{ width: w, height: 28 }} />
+                  ))}
+                </div>
+                <div className="flex items-center gap-2 flex-1 px-2">
+                  <Search size={16} className="text-pink-600" />
+                  <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Tìm chợ, mall, đặc sản..." className="flex-1 bg-transparent text-pink-950 placeholder:text-pink-500/50 text-sm focus:outline-none" />
+                </div>
+                <button className="bg-gradient-to-br from-pink-500 to-rose-600 text-white font-black px-5 py-2.5 rounded-xl text-sm flex items-center gap-1">
+                  Săn sale <ChevronRight size={14} />
+                </button>
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>

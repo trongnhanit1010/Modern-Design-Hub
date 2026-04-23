@@ -1,24 +1,10 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "wouter";
-import {
-  Home, Hotel, MapPin, UtensilsCrossed, Bus, CalendarDays,
-  ShoppingBag, Map, Bot, ChevronRight, Soup, PartyPopper
-} from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { useSidebar } from "@/context/SidebarContext";
+import { categoryThemes, navOrder } from "@/lib/categoryThemes";
 
-const navItems = [
-  { icon: Home, label: "Trang chủ", href: "/" },
-  { icon: Hotel, label: "Hotels", href: "/luu-tru-khach-san" },
-  { icon: MapPin, label: "Địa điểm tham quan", href: "/destinations" },
-  { icon: UtensilsCrossed, label: "Restaurants", href: "/restaurants" },
-  { icon: Soup, label: "Món ngon địa phương", href: "/mon-ngon" },
-  { icon: Bus, label: "Giao thông / Di chuyển", href: "/transport" },
-  { icon: CalendarDays, label: "Sự kiện - Lễ hội", href: "/events" },
-  { icon: ShoppingBag, label: "Mua sắm", href: "/shopping" },
-  { icon: PartyPopper, label: "Vui chơi giải trí", href: "/vui-choi-giai-tri" },
-  { icon: Map, label: "Bản đồ", href: "/ban-do" },
-  { icon: Bot, label: "AI Trợ lý", href: "/ai" },
-];
+const navItems = navOrder.map((k) => categoryThemes[k]);
 
 export default function Sidebar() {
   const { isExpanded, toggle } = useSidebar();
@@ -34,6 +20,7 @@ export default function Sidebar() {
       <nav className="flex-1 py-4 overflow-hidden">
         {navItems.map((item, i) => {
           const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
+          const Icon = item.icon;
 
           return (
             <Link key={item.label} href={item.href}>
@@ -47,12 +34,20 @@ export default function Sidebar() {
                 {isActive && (
                   <motion.div
                     layoutId="sidebar-active"
-                    className="absolute left-0 top-0 bottom-0 w-0.5 bg-primary rounded-r"
+                    className="absolute left-0 top-0 bottom-0 w-1 rounded-r"
+                    style={{ background: item.hex }}
                     transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
                 )}
-                <div className={`shrink-0 w-[33px] flex items-center justify-center ${isActive ? "text-primary" : ""}`}>
-                  <item.icon size={18} />
+                <div
+                  className={`shrink-0 w-[33px] h-[33px] flex items-center justify-center rounded-lg transition-all ${item.iconColor}`}
+                  style={
+                    isActive
+                      ? { background: `${item.hex}1a`, boxShadow: `0 0 0 1px ${item.hex}33 inset` }
+                      : undefined
+                  }
+                >
+                  <Icon size={18} strokeWidth={isActive ? 2.4 : 2} />
                 </div>
                 <AnimatePresence initial={false}>
                   {isExpanded && (
