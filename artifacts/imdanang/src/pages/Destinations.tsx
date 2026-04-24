@@ -1,291 +1,194 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Link } from "wouter";
-import { motion, useInView, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  Star, MapPin, Heart, Search, Filter, SlidersHorizontal, X,
-  ChevronRight, Loader2, Camera, Compass, Waves, Mountain, Landmark, TreePine, Clock,
+  Star, MapPin, Heart, ChevronRight, Loader2, Camera, Compass, Clock,
 } from "lucide-react";
 import { places } from "@/data/destinations";
+import { CategoryShell, useThemeAccents } from "@/components/category/CategoryShell";
 
-const heroImages = [
-  "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1548013146-72479768bada?w=800&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop",
+const categoryFilters = [
+  { key: "all",      label: "Tất cả",       emoji: "🌏" },
+  { key: "beach",    label: "Bãi biển",     emoji: "🏖️" },
+  { key: "mountain", label: "Núi rừng",     emoji: "⛰️" },
+  { key: "heritage", label: "Di sản",       emoji: "🏛️" },
+  { key: "nature",   label: "Thiên nhiên",  emoji: "🌿" },
 ];
-const stats = [
-  { icon: Camera,  label: "Địa điểm", value: "85+" },
-  { icon: Star,    label: "Điểm TB",  value: "4.8" },
-  { icon: Compass, label: "UNESCO",   value: "2" },
-];
-const categoryOptions = [
-  { value: "beach",    label: "Bãi biển",   icon: Waves },
-  { value: "mountain", label: "Núi rừng",   icon: Mountain },
-  { value: "heritage", label: "Di sản",     icon: Landmark },
-  { value: "nature",   label: "Thiên nhiên",icon: TreePine },
-];
-const areaOptions = ["Đà Nẵng", "Hội An"];
 const sortOptions = [
-  { label: "Phổ biến nhất", value: "popular" },
-  { label: "Đánh giá cao",  value: "rating" },
-  { label: "Tên A-Z",       value: "name" },
+  { label: "Phổ biến",     value: "popular" },
+  { label: "Đánh giá cao", value: "rating"  },
+  { label: "Tên A → Z",    value: "name"    },
+];
+
+const collage = [
+  { src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=900&auto=format&fit=crop", className: "top-0 right-0 w-[58%] h-[58%]" },
+  { src: "https://images.unsplash.com/photo-1548013146-72479768bada?w=900&auto=format&fit=crop", className: "top-[18%] left-0 w-[48%] h-[52%]" },
+  { src: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=900&auto=format&fit=crop", className: "bottom-0 right-[10%] w-[52%] h-[42%]" },
 ];
 
 export default function Destinations() {
-  const [search, setSearch]         = useState("");
-  const [selCats, setSelCats]       = useState<string[]>([]);
-  const [selAreas, setSelAreas]     = useState<string[]>([]);
-  const [sort, setSort]             = useState("popular");
-  const [liked, setLiked]           = useState<number[]>([]);
-  const [showFilter, setShowFilter] = useState(false);
+  const [search, setSearch]       = useState("");
+  const [activeCat, setActiveCat] = useState("all");
+  const [sort, setSort]           = useState("popular");
+  const [liked, setLiked]         = useState<number[]>([]);
   const [visibleCount, setVisibleCount] = useState(6);
   const [loadingMore, setLoadingMore]   = useState(false);
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const acc = useThemeAccents("destinations");
 
-  const toggleCat  = (v: string) => setSelCats(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v]);
-  const toggleArea = (v: string) => setSelAreas(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v]);
-  const toggleLike = (id: number) => setLiked(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
-
+  const toggleLike = (id: number) => setLiked((p) => p.includes(id) ? p.filter((x) => x !== id) : [...p, id]);
   const handleLoadMore = () => {
     setLoadingMore(true);
-    setTimeout(() => { setVisibleCount(v => v + 3); setLoadingMore(false); }, 800);
+    setTimeout(() => { setVisibleCount((v) => v + 3); setLoadingMore(false); }, 800);
   };
 
-  let filtered = places.filter(p => {
-    if (search && !p.name.toLowerCase().includes(search.toLowerCase()) && !p.desc.toLowerCase().includes(search.toLowerCase())) return false;
-    if (selCats.length && !selCats.includes(p.category)) return false;
-    if (selAreas.length && !selAreas.includes(p.area)) return false;
+  let filtered = places.filter((p) => {
+    if (activeCat !== "all" && p.category !== activeCat) return false;
+    if (search) {
+      const q = search.toLowerCase();
+      if (!p.name.toLowerCase().includes(q) && !p.desc.toLowerCase().includes(q)) return false;
+    }
     return true;
   });
-  if (sort === "popular") filtered = [...filtered].sort((a, b) => b.reviews - a.reviews);
+  if (sort === "popular")     filtered = [...filtered].sort((a, b) => b.reviews - a.reviews);
   else if (sort === "rating") filtered = [...filtered].sort((a, b) => b.rating - a.rating);
-  else if (sort === "name") filtered = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+  else if (sort === "name")   filtered = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
 
   const visible   = filtered.slice(0, visibleCount);
   const hasMore   = visibleCount < filtered.length;
   const remaining = filtered.length - visibleCount;
-  const activeFilterCount = selCats.length + selAreas.length;
 
   return (
-    <div className="min-h-screen bg-gray-50" ref={ref}>
-
-      {/* ── Hero ── Compact Polaroid Scrapbook ── */}
-      <div className="relative overflow-hidden" style={{ background: "linear-gradient(180deg,#ecfdf5 0%,#d1fae5 60%,#a7f3d0 100%)" }}>
-        <svg className="absolute inset-0 w-full h-full opacity-[0.07]" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="topo" width="60" height="60" patternUnits="userSpaceOnUse">
-              <path d="M0 30 Q 15 15, 30 30 T 60 30" fill="none" stroke="#065f46" strokeWidth="1" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#topo)" />
-        </svg>
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-6">
-          <div className="grid md:grid-cols-[1.3fr,auto] gap-4 items-center">
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <div className="inline-flex items-center gap-1.5 mb-2 px-2.5 py-1 rounded-full bg-emerald-900 text-emerald-100 text-[10px] font-bold tracking-wider shadow-md">
-                <Compass size={11} className="text-emerald-300" /> NHẬT KÝ KHÁM PHÁ · 2026
-              </div>
-              <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-black leading-[0.95] mb-2 text-emerald-950">
-                Khám Phá
-                <span className="relative inline-block ml-2">
-                  <span className="relative z-10 italic text-emerald-700">đó đây</span>
-                  <svg className="absolute -bottom-1.5 left-0 w-full" viewBox="0 0 200 12" fill="none">
-                    <path d="M2 8 Q 50 2, 100 6 T 198 4" stroke="#10b981" strokeWidth="3" strokeLinecap="round" />
-                  </svg>
-                </span>
-              </h1>
-              <p className="text-emerald-900/70 text-sm max-w-lg mb-3 hidden sm:block">
-                85+ điểm đến đáng nhớ — bãi cát Mỹ Khê đến phố cổ Hội An.
-              </p>
-
-              {/* Stats inline */}
-              <div className="flex flex-wrap gap-1.5 mb-3">
-                {stats.map(({ icon: Icon, label, value }) => (
-                  <div key={label} className="bg-white border border-dashed border-emerald-400 rounded-lg px-2 py-1 flex items-center gap-1.5 shadow-sm">
-                    <Icon size={12} className="text-emerald-600" />
-                    <span className="text-emerald-900 font-black text-xs">{value}</span>
-                    <span className="text-emerald-700/60 text-[10px] hidden sm:inline">{label}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Passport search compact */}
-              <div className="relative bg-white rounded-xl shadow-xl p-1 flex items-center gap-1 border border-emerald-200">
-                <div className="absolute -right-2 -top-2 w-10 h-10 rounded-full border border-dashed border-emerald-500 flex items-center justify-center -rotate-12 bg-emerald-50">
-                  <span className="text-[7px] text-emerald-700 font-black text-center leading-none">VISA<br />2026</span>
-                </div>
-                <div className="flex items-center gap-2 px-2.5 py-1.5 flex-1 min-w-0">
-                  <Search size={14} className="text-emerald-600" />
-                  <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Bãi biển, di sản, núi rừng..." className="flex-1 bg-transparent text-emerald-950 placeholder:text-emerald-600/40 text-sm focus:outline-none min-w-0" />
-                </div>
-                <button className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-2 rounded-lg text-xs flex items-center gap-1 shrink-0">
-                  Khám phá <ChevronRight size={12} />
-                </button>
-              </div>
-            </motion.div>
-
-            {/* RIGHT: Compact polaroid stack */}
-            <div className="relative w-44 h-32 lg:w-56 lg:h-36 hidden md:block">
-              {[
-                { src: heroImages[0], label: "Mỹ Khê", rot: -8, x: 0, y: 5, z: 1 },
-                { src: heroImages[1], label: "Hội An", rot: 4, x: 50, y: -2, z: 2 },
-                { src: heroImages[2], label: "Bà Nà", rot: -3, x: 100, y: 8, z: 3 },
-              ].map((p, i) => (
-                <motion.div key={i}
-                  initial={{ opacity: 0, y: 16, rotate: 0 }}
-                  animate={{ opacity: 1, y: p.y, rotate: p.rot }}
-                  transition={{ duration: 0.6, delay: i * 0.12 }}
-                  whileHover={{ rotate: 0, scale: 1.06, zIndex: 10 }}
-                  className="absolute bg-white p-1.5 pb-5 shadow-xl rounded-sm w-24 lg:w-28"
-                  style={{ left: `${p.x}px`, top: `${p.y}px`, zIndex: p.z }}>
-                  <img src={p.src} className="w-full h-20 lg:h-24 object-cover" alt="" />
-                  <div className="absolute bottom-0.5 left-0 right-0 text-center text-emerald-900 font-bold text-[10px]" style={{ fontFamily: "'Caveat', cursive" }}>
-                    📍 {p.label}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Filter bar ── */}
-      <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-10">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
-          className="bg-white rounded-2xl p-4 mb-6 flex flex-wrap items-center gap-3 shadow-xl border border-gray-100">
-          <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 flex-1 min-w-48">
-            <Search size={15} className="text-gray-400 shrink-0" />
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Tìm địa điểm..." className="bg-transparent text-gray-800 text-sm placeholder:text-gray-400 focus:outline-none flex-1" />
-            {search && <button onClick={() => setSearch("")}><X size={13} className="text-gray-400" /></button>}
-          </div>
-          <button onClick={() => setShowFilter(!showFilter)}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all border ${showFilter ? "bg-teal-500 border-teal-400 text-white" : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"}`}>
-            <SlidersHorizontal size={15} />Bộ lọc
-            {activeFilterCount > 0 && <span className="w-5 h-5 bg-teal-500 text-white rounded-full text-xs font-bold flex items-center justify-center">{activeFilterCount}</span>}
-          </button>
-          <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-500 text-sm">
-            <Filter size={14} />
-            <select value={sort} onChange={e => setSort(e.target.value)} className="bg-transparent text-gray-700 focus:outline-none cursor-pointer">
-              {sortOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
-          </div>
-        </motion.div>
-
+    <CategoryShell
+      themeKey="destinations"
+      badge={{ icon: Compass, text: "Nhật ký khám phá · 2026" }}
+      titleLines={["Khám phá", "đó đây.", "Mỗi điểm đến · một câu chuyện."]}
+      gradientLineIndex={1}
+      subtitle="Bãi cát Mỹ Khê, đèo Hải Vân, phố cổ Hội An — 85+ điểm đến đáng nhớ trải dài giữa Đà Nẵng và Hội An."
+      stats={[
+        { icon: Camera,  label: "Địa điểm", value: "85+" },
+        { icon: Star,    label: "Điểm TB",  value: "4.8" },
+        { icon: Compass, label: "UNESCO",   value: "2"   },
+      ]}
+      collage={collage}
+      floatingBadge={{ icon: Compass, title: "Bà Nà Hills", subtitle: "★ ICONIC" }}
+      search={search}
+      setSearch={setSearch}
+      searchPlaceholder="Tìm bãi biển, di sản, núi..."
+      categories={categoryFilters}
+      activeCat={activeCat}
+      setActiveCat={setActiveCat}
+      sortOptions={sortOptions}
+      sort={sort}
+      setSort={setSort}
+      resultCount={<><span className="text-white font-semibold">{filtered.length}</span> địa điểm phù hợp</>}
+    >
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 pt-4">
         <AnimatePresence>
-          {showFilter && (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden mb-5">
-              <div className="bg-white border border-gray-200 rounded-2xl px-5 py-4 flex flex-wrap items-center gap-x-6 gap-y-4 shadow-sm">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-gray-400 text-xs font-medium shrink-0">Loại</span>
-                  {categoryOptions.map(c => (
-                    <button key={c.value} onClick={() => toggleCat(c.value)}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${selCats.includes(c.value) ? "bg-teal-500 border-teal-500 text-white" : "border-gray-200 text-gray-500 hover:border-teal-300 hover:text-teal-600"}`}>
-                      <c.icon size={11} />{c.label}
-                    </button>
-                  ))}
+          {visible.map((place, i) => (
+            <motion.div
+              key={place.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ delay: i * 0.06, duration: 0.4 }}
+              whileHover={{ y: -6 }}
+              className="group rounded-3xl overflow-hidden border border-white/10 bg-white/[0.04] backdrop-blur-md hover:border-white/25 transition-all"
+              data-testid={`card-destination-${place.id}`}
+            >
+              <Link href={`/destinations/${place.slug}`}>
+                <div className="relative h-52 overflow-hidden">
+                  <img src={place.image} alt={place.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                  <div
+                    className="absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-full text-white"
+                    style={{ background: `linear-gradient(135deg, ${acc.orbA}, ${acc.orbB})` }}
+                  >
+                    {place.tag}
+                  </div>
+                  <button
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleLike(place.id); }}
+                    className="absolute top-3 right-3 p-2 rounded-full bg-black/40 backdrop-blur hover:bg-black/60 transition-colors"
+                  >
+                    <Heart size={15} className={liked.includes(place.id) ? "text-rose-400 fill-rose-400" : "text-white/80"} />
+                  </button>
                 </div>
-                <div className="w-px h-5 bg-gray-200 hidden md:block" />
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-gray-400 text-xs font-medium shrink-0">Khu vực</span>
-                  {areaOptions.map(a => (
-                    <button key={a} onClick={() => toggleArea(a)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${selAreas.includes(a) ? "bg-blue-500 border-blue-500 text-white" : "border-gray-200 text-gray-500 hover:border-blue-300 hover:text-blue-600"}`}>
-                      {a}
-                    </button>
-                  ))}
+                <div className="p-4">
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <h3 className="text-white font-bold text-base leading-tight">{place.name}</h3>
+                    <div
+                      className="shrink-0 flex items-center gap-1 rounded-lg px-2 py-0.5 border"
+                      style={{ background: `${acc.orbA}1f`, borderColor: `${acc.orbA}55`, color: acc.orbC }}
+                    >
+                      <Star size={11} className="fill-current" />
+                      <span className="text-xs font-bold">{place.rating}</span>
+                    </div>
+                  </div>
+                  <p className="text-white/55 text-xs mb-3 line-clamp-2 leading-relaxed">{place.desc}</p>
+                  <div className="flex items-center gap-3 mb-4 text-xs text-white/55">
+                    <div className="flex items-center gap-1"><MapPin size={11} className="text-white/40" />{place.distance} từ TT</div>
+                    <div className="flex items-center gap-1"><Clock size={11} className="text-white/40" />{place.hours}</div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-white/40">{place.reviews.toLocaleString()} đánh giá</span>
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.96 }}
+                      className="flex items-center gap-1 text-white text-sm font-semibold px-4 py-2 rounded-xl"
+                      style={{
+                        background: `linear-gradient(135deg, ${acc.orbA}, ${acc.orbB})`,
+                        boxShadow: `0 8px 24px ${acc.orbA}55`,
+                      }}
+                    >
+                      Khám phá <ChevronRight size={14} />
+                    </motion.div>
+                  </div>
                 </div>
-                {activeFilterCount > 0 && (
-                  <>
-                    <div className="w-px h-5 bg-gray-200 hidden md:block" />
-                    <button onClick={() => { setSelCats([]); setSelAreas([]); }} className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-700 transition-colors">
-                      <X size={12} />Xóa
-                    </button>
-                  </>
-                )}
-              </div>
+              </Link>
             </motion.div>
-          )}
+          ))}
         </AnimatePresence>
-
-        <div className="flex items-center justify-between mb-5">
-          <p className="text-gray-500 text-sm"><span className="text-gray-900 font-semibold">{filtered.length}</span> địa điểm phù hợp</p>
-          {activeFilterCount > 0 && (
-            <button onClick={() => { setSelCats([]); setSelAreas([]); }} className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-700 transition-colors">
-              <X size={12} />Xóa bộ lọc
-            </button>
-          )}
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 pb-6">
-          <AnimatePresence>
-            {visible.map((place, i) => (
-              <motion.div key={place.id} initial={{ opacity: 0, y: 30 }} animate={isInView ? { opacity: 1, y: 0 } : {}} exit={{ opacity: 0, scale: 0.95 }} transition={{ delay: i * 0.07, duration: 0.45 }} whileHover={{ y: -6 }}
-                className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-md hover:shadow-xl transition-shadow group cursor-pointer">
-                <Link href={`/destinations/${place.slug}`}>
-                  <div className="relative h-52 overflow-hidden">
-                    <img src={place.image} alt={place.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                    <div className={`absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-full text-white bg-gradient-to-r ${place.tagColor}`}>{place.tag}</div>
-                    <button onClick={e => { e.preventDefault(); e.stopPropagation(); toggleLike(place.id); }} className="absolute top-3 right-3 p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-colors shadow-sm">
-                      <Heart size={15} className={liked.includes(place.id) ? "text-rose-500 fill-rose-500" : "text-gray-500"} />
-                    </button>
-                  </div>
-                  <div className="p-4">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <h3 className="text-gray-900 font-bold text-base leading-tight">{place.name}</h3>
-                      <div className="shrink-0 flex items-center gap-1 bg-amber-50 text-amber-600 rounded-lg px-2 py-0.5 border border-amber-100">
-                        <Star size={11} className="fill-amber-500 text-amber-500" />
-                        <span className="text-xs font-bold">{place.rating}</span>
-                      </div>
-                    </div>
-                    <p className="text-gray-500 text-xs mb-3 line-clamp-2 leading-relaxed">{place.desc}</p>
-                    <div className="flex items-center gap-3 mb-4 text-xs text-gray-500">
-                      <div className="flex items-center gap-1"><MapPin size={11} className="text-gray-400" />{place.distance} từ TT</div>
-                      <div className="flex items-center gap-1"><Clock size={11} className="text-gray-400" />{place.hours}</div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-400">{place.reviews.toLocaleString()} đánh giá</span>
-                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }}
-                        className="flex items-center gap-1 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all shadow-md shadow-teal-100">
-                        Khám phá <ChevronRight size={14} />
-                      </motion.div>
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-
-        {hasMore && (
-          <div className="flex flex-col items-center gap-3 pb-12">
-            <p className="text-gray-400 text-sm">
-              Đang hiển thị <span className="text-gray-700 font-semibold">{visible.length}</span> / <span className="text-gray-700 font-semibold">{filtered.length}</span> địa điểm
-              {" — "}còn <span className="text-teal-600 font-semibold">{remaining}</span> chưa hiển thị
-            </p>
-            <motion.button whileHover={{ scale: loadingMore ? 1 : 1.04 }} whileTap={{ scale: loadingMore ? 1 : 0.97 }}
-              onClick={handleLoadMore} disabled={loadingMore}
-              className="flex items-center gap-2.5 px-8 py-3 bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold rounded-2xl shadow-lg shadow-teal-200 hover:from-teal-400 hover:to-cyan-400 transition-all text-sm disabled:opacity-80 disabled:cursor-not-allowed min-w-52 justify-center">
-              <AnimatePresence mode="wait">
-                {loadingMore
-                  ? <motion.span key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-2"><Loader2 size={16} className="animate-spin" />Đang tải...</motion.span>
-                  : <motion.span key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-2">Xem thêm {remaining} địa điểm</motion.span>}
-              </AnimatePresence>
-            </motion.button>
-          </div>
-        )}
-        {!hasMore && filtered.length > 0 && (
-          <div className="pb-12 text-center text-gray-400 text-sm">Đã hiển thị tất cả <span className="text-gray-600 font-semibold">{filtered.length}</span> địa điểm</div>
-        )}
-        {filtered.length === 0 && (
-          <div className="pb-12 flex flex-col items-center justify-center py-16 text-center">
-            <Compass size={40} className="text-gray-300 mb-3" />
-            <p className="text-gray-600 font-medium">Không tìm thấy địa điểm phù hợp</p>
-            <p className="text-gray-400 text-sm mt-1">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
-          </div>
-        )}
       </div>
-    </div>
+
+      {hasMore && (
+        <div className="flex flex-col items-center gap-3 pt-10">
+          <p className="text-white/50 text-sm">
+            Hiển thị <span className="text-white font-semibold">{visible.length}</span> /{" "}
+            <span className="text-white font-semibold">{filtered.length}</span> · còn{" "}
+            <span style={{ color: acc.orbC }} className="font-semibold">{remaining}</span> điểm
+          </p>
+          <motion.button
+            whileHover={{ scale: loadingMore ? 1 : 1.04 }}
+            whileTap={{ scale: loadingMore ? 1 : 0.97 }}
+            onClick={handleLoadMore}
+            disabled={loadingMore}
+            className="flex items-center gap-2.5 px-8 py-3 text-white font-semibold rounded-2xl text-sm disabled:opacity-80 min-w-52 justify-center"
+            style={{
+              background: `linear-gradient(135deg, ${acc.orbA}, ${acc.orbB})`,
+              boxShadow: `0 12px 28px ${acc.orbA}55`,
+            }}
+          >
+            {loadingMore ? (
+              <><Loader2 size={16} className="animate-spin" />Đang tải...</>
+            ) : (
+              <>Xem thêm {remaining} địa điểm</>
+            )}
+          </motion.button>
+        </div>
+      )}
+
+      {!hasMore && filtered.length > 0 && (
+        <div className="pt-10 text-center text-white/45 text-sm">
+          Đã hiển thị tất cả <span className="text-white/80 font-semibold">{filtered.length}</span> địa điểm
+        </div>
+      )}
+
+      {filtered.length === 0 && (
+        <div className="pt-16 flex flex-col items-center justify-center text-center">
+          <Compass size={40} className="text-white/30 mb-3" />
+          <p className="text-white/80 font-medium">Không tìm thấy địa điểm phù hợp</p>
+          <p className="text-white/40 text-sm mt-1">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
+        </div>
+      )}
+    </CategoryShell>
   );
 }
