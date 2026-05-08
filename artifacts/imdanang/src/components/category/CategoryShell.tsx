@@ -28,9 +28,9 @@ export type FloatingBadge = { icon: LucideIcon; title: string; subtitle: string 
 
 /** Hero layout variants */
 export type HeroVariant =
-  | "split"    // title left · collage right  (Hotels, Restaurants, Shopping)
-  | "banner"   // full-width title + panoramic image strip  (Destinations, Events)
-  | "minimal"; // large typography only, no image  (Transport, LocalFood)
+  | "split"     // title left · collage right           (Hotels, Restaurants, Shopping)
+  | "banner"    // full-width title + panoramic below    (Destinations, Events)
+  | "magazine"; // large image left · title right        (Transport, LocalFood)
 
 interface CategoryShellProps {
   themeKey: CategoryKey;
@@ -288,32 +288,82 @@ export function CategoryShell({
             </motion.div>
           )}
 
-          {/* ══ MINIMAL variant ══ */}
-          {heroVariant === "minimal" && (
+          {/* ══ MAGAZINE variant ══ */}
+          {heroVariant === "magazine" && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.55 }}
-              className="pt-10 sm:pt-14 pb-8"
+              className="pt-10 sm:pt-14 pb-6 grid lg:grid-cols-[56%_44%] gap-8 items-center"
             >
-              {badge && <div className="mb-6"><Badge icon={Badgeicon} text={badge.text} bd={bd} /></div>}
-              {TitleBlock}
-              <AccentBar bd={bd} />
+              {/* LEFT — large featured image */}
+              {collage && collage.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, x: -20, scale: 0.96 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  transition={{ delay: 0.1, duration: 0.65, ease: [0.23, 1, 0.32, 1] }}
+                  className="relative h-[340px] sm:h-[380px] rounded-3xl overflow-hidden"
+                  style={{ boxShadow: `0 20px 60px -12px ${bd.orbA}30`, border: "1px solid rgba(0,0,0,0.06)" }}
+                >
+                  <img src={collage[0].src} alt="" className="w-full h-full object-cover" />
+                  {/* dark-to-transparent gradient on bottom */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+                  {/* accent colour vignette on left */}
+                  <div
+                    className="absolute inset-0"
+                    style={{ background: `linear-gradient(to right, ${bd.orbA}22, transparent 55%)` }}
+                  />
 
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+                  {/* Thumbnail strip — bottom-left */}
+                  {collage.length > 1 && (
+                    <div className="absolute bottom-4 left-4 flex gap-2">
+                      {collage.slice(1).map((p, i) => (
+                        <div
+                          key={i}
+                          className="w-16 h-12 rounded-xl overflow-hidden border-2 border-white/50 shadow-lg"
+                        >
+                          <img src={p.src} alt="" className="w-full h-full object-cover" />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Floating badge — top-right */}
+                  {floatingBadge && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.55 }}
+                      className="absolute top-4 right-4 rounded-2xl px-3.5 py-2.5 flex items-center gap-2 text-white"
+                      style={{
+                        background: `linear-gradient(135deg, ${bd.orbA}, ${bd.orbB})`,
+                        boxShadow: `0 8px 24px ${bd.orbA}55`,
+                      }}
+                    >
+                      <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center">
+                        <floatingBadge.icon size={13} />
+                      </div>
+                      <div>
+                        <div className="text-[10px] opacity-75 leading-none">{floatingBadge.subtitle}</div>
+                        <div className="text-sm font-bold leading-none mt-0.5">{floatingBadge.title}</div>
+                      </div>
+                    </motion.div>
+                  )}
+                </motion.div>
+              )}
+
+              {/* RIGHT — text */}
+              <div>
+                {badge && <div className="mb-5"><Badge icon={Badgeicon} text={badge.text} bd={bd} /></div>}
+                {TitleBlock}
+                <AccentBar bd={bd} />
                 {subtitle && (
-                  <p className="text-gray-500 text-[1.02rem] max-w-lg leading-relaxed">{subtitle}</p>
+                  <p className="text-gray-500 text-[1.02rem] leading-relaxed max-w-sm">{subtitle}</p>
                 )}
                 {stats && stats.length > 0 && (
-                  <div className="shrink-0"><StatRow stats={stats} bd={bd} compact /></div>
+                  <div className="mt-6"><StatRow stats={stats} bd={bd} compact /></div>
                 )}
               </div>
-
-              {/* Decorative rule */}
-              <div
-                className="mt-8 h-px w-full"
-                style={{ background: `linear-gradient(90deg, ${bd.orbA}30, transparent 60%)` }}
-              />
             </motion.div>
           )}
 

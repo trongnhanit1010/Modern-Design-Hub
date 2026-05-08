@@ -62,7 +62,7 @@ export default function Transport() {
   return (
     <CategoryShell
       themeKey="transport"
-      heroVariant="minimal"
+      heroVariant="magazine"
       badge={{ icon: Navigation, text: "Chỉ dẫn di chuyển · Live" }}
       titleLines={["Di chuyển", "dễ dàng."]}
       gradientLineIndex={1}

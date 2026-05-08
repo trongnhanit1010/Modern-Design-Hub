@@ -125,7 +125,7 @@ export default function LocalFood() {
     <>
       <CategoryShell
         themeKey="localfood"
-        heroVariant="minimal"
+        heroVariant="magazine"
         badge={{ icon: Soup, text: `${dishes.length} món gia truyền · Xứ Quảng` }}
         titleLines={["Món ngon", "xứ Quảng."]}
         gradientLineIndex={1}
