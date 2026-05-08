@@ -94,10 +94,10 @@ const dishes: Dish[] = [
 ];
 
 const categoryFilters = [
-  { key: "all",     label: "Tất cả",    emoji: "🍽️" },
-  { key: "bun-mi",  label: "Bún & Mì",  emoji: "🍜" },
-  { key: "banh",    label: "Bánh & Xôi",emoji: "🥖" },
-  { key: "dac-san", label: "Đặc sản",   emoji: "⭐" },
+  { key: "all",     label: "Tất cả"    },
+  { key: "bun-mi",  label: "Bún & Mì"  },
+  { key: "banh",    label: "Bánh & Xôi"},
+  { key: "dac-san", label: "Đặc sản"   },
 ];
 
 const collage = [

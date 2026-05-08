@@ -20,11 +20,11 @@ const markets: Market[] = [
 ];
 
 const categoryFilters = [
-  { key: "all",     label: "Tất cả",    emoji: "🛍️" },
-  { key: "market",  label: "Chợ",       emoji: "🥬" },
-  { key: "mall",    label: "TTTM",      emoji: "🏬" },
-  { key: "craft",   label: "Làng nghề", emoji: "💎" },
-  { key: "fashion", label: "Thời trang",emoji: "👗" },
+  { key: "all",     label: "Tất cả"    },
+  { key: "market",  label: "Chợ"       },
+  { key: "mall",    label: "TTTM"      },
+  { key: "craft",   label: "Làng nghề" },
+  { key: "fashion", label: "Thời trang"},
 ];
 const sortOptions = [
   { label: "Phổ biến",     value: "popular" },

@@ -56,11 +56,11 @@ const collage = [
 ];
 
 const categoryFilters = [
-  { key: "all",      label: "Tất cả",   emoji: "🎉" },
-  { key: "festival", label: "Lễ hội",   emoji: "🎆" },
-  { key: "music",    label: "Âm nhạc",  emoji: "🎵" },
-  { key: "food",     label: "Ẩm thực",  emoji: "🍜" },
-  { key: "culture",  label: "Văn hóa",  emoji: "🏛️" },
+  { key: "all",      label: "Tất cả"  },
+  { key: "festival", label: "Lễ hội"  },
+  { key: "music",    label: "Âm nhạc" },
+  { key: "food",     label: "Ẩm thực" },
+  { key: "culture",  label: "Văn hóa" },
 ];
 
 /* ─── Mini Calendar ─── */

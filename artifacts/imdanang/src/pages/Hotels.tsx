@@ -22,10 +22,10 @@ const amenityIcons: Record<string, typeof Wifi> = { wifi: Wifi, pool: Waves, res
 const amenityLabels: Record<string, string> = { wifi: "WiFi", pool: "Hồ bơi", restaurant: "Nhà hàng", parking: "Đỗ xe" };
 
 const typeFilters = [
-  { key: "all",      label: "Tất cả",    emoji: "✨" },
-  { key: "resort",   label: "Resort",    emoji: "🌴" },
-  { key: "hotel",    label: "Khách sạn", emoji: "🏨" },
-  { key: "boutique", label: "Boutique",  emoji: "🥂" },
+  { key: "all",      label: "Tất cả"    },
+  { key: "resort",   label: "Resort"    },
+  { key: "hotel",    label: "Khách sạn" },
+  { key: "boutique", label: "Boutique"  },
 ];
 const sortOptions = [
   { label: "Phổ biến",      value: "popular"    },

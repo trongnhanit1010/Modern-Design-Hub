@@ -8,11 +8,11 @@ import { places } from "@/data/destinations";
 import { CategoryShell, useThemeAccents } from "@/components/category/CategoryShell";
 
 const categoryFilters = [
-  { key: "all",      label: "Tất cả",       emoji: "🌏" },
-  { key: "beach",    label: "Bãi biển",     emoji: "🏖️" },
-  { key: "mountain", label: "Núi rừng",     emoji: "⛰️" },
-  { key: "heritage", label: "Di sản",       emoji: "🏛️" },
-  { key: "nature",   label: "Thiên nhiên",  emoji: "🌿" },
+  { key: "all",      label: "Tất cả"      },
+  { key: "beach",    label: "Bãi biển"    },
+  { key: "mountain", label: "Núi rừng"    },
+  { key: "heritage", label: "Di sản"      },
+  { key: "nature",   label: "Thiên nhiên" },
 ];
 const sortOptions = [
   { label: "Phổ biến",     value: "popular" },

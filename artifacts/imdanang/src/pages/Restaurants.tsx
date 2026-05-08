@@ -22,13 +22,13 @@ const restaurants = [
 ];
 
 const cuisineFilters = [
-  { key: "all",           label: "Tất cả",   emoji: "🍽️" },
-  { key: "seafood",       label: "Hải sản",  emoji: "🦐" },
-  { key: "vietnamese",    label: "Việt Nam", emoji: "🥢" },
-  { key: "international", label: "Quốc tế",  emoji: "🍷" },
-  { key: "vegan",         label: "Chay",     emoji: "🥗" },
-  { key: "bbq",           label: "Nướng",    emoji: "🔥" },
-  { key: "cafe",          label: "Cà phê",   emoji: "☕" },
+  { key: "all",           label: "Tất cả"   },
+  { key: "seafood",       label: "Hải sản"  },
+  { key: "vietnamese",    label: "Việt Nam" },
+  { key: "international", label: "Quốc tế"  },
+  { key: "vegan",         label: "Chay"     },
+  { key: "bbq",           label: "Nướng"    },
+  { key: "cafe",          label: "Cà phê"   },
 ];
 const sortOptions = [
   { label: "Phổ biến",     value: "popular" },

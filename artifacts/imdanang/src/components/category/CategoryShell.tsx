@@ -21,7 +21,7 @@ const themeBackdrops: Record<
   ai:            { bgFrom: "#0a0a1f", bgVia: "#10112e", bgTo: "#06061a", orbA: "#6366f1", orbB: "#3730a3", orbC: "#6366f1" },
 };
 
-export type CategoryFilter = { key: string; label: string; emoji?: string };
+export type CategoryFilter = { key: string; label: string };
 export type StatItem = { icon: LucideIcon; label: string; value: string };
 export type CollageImage = { src: string; className: string };
 export type FloatingBadge = { icon: LucideIcon; title: string; subtitle: string };
@@ -85,43 +85,57 @@ export function CategoryShell({
 
   return (
     <div className="min-h-screen bg-white relative overflow-hidden">
-      {/* Subtle colored accent blobs */}
+      {/* Subtle tinted blobs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div
-          className="absolute -top-60 -left-60 w-[700px] h-[700px] rounded-full blur-[200px] opacity-[0.07]"
+          className="absolute -top-60 -left-60 w-[700px] h-[700px] rounded-full blur-[220px] opacity-[0.07]"
           style={{ background: bd.orbA }}
         />
         <div
-          className="absolute -top-20 -right-60 w-[600px] h-[600px] rounded-full blur-[200px] opacity-[0.05]"
+          className="absolute -top-20 -right-60 w-[600px] h-[600px] rounded-full blur-[220px] opacity-[0.04]"
           style={{ background: bd.orbB }}
         />
       </div>
 
       {/* ── HERO ── */}
-      <section className="relative pt-10 pb-6 sm:pt-12 sm:pb-8 px-4 sm:px-6">
+      <section className="relative pt-10 pb-6 sm:pt-14 sm:pb-8 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55 }}
-            className="relative grid lg:grid-cols-[1.2fr_1fr] gap-8 items-center"
+            transition={{ duration: 0.6 }}
+            className="relative grid lg:grid-cols-[1.2fr_1fr] gap-10 items-center"
           >
+            {/* LEFT */}
             <div>
+              {/* Badge */}
               {badge && (
-                <div
-                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-semibold mb-5"
-                  style={{
-                    borderColor: `${bd.orbA}40`,
-                    background: `${bd.orbA}0e`,
-                    color: bd.orbA,
-                  }}
+                <motion.div
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="inline-flex items-center gap-2.5 mb-6"
                 >
-                  <Badgeicon size={13} style={{ color: bd.orbA }} />
-                  {badge.text}
-                </div>
+                  <div
+                    className="flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-semibold tracking-wide"
+                    style={{
+                      borderColor: `${bd.orbA}45`,
+                      background: `${bd.orbA}0c`,
+                      color: bd.orbA,
+                    }}
+                  >
+                    <span
+                      className="w-1.5 h-1.5 rounded-full"
+                      style={{ background: bd.orbA }}
+                    />
+                    <Badgeicon size={12} />
+                    {badge.text}
+                  </div>
+                </motion.div>
               )}
 
-              <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-extrabold leading-[1.02] tracking-tight text-gray-900">
+              {/* Title */}
+              <h1 className="font-serif text-[2.8rem] sm:text-5xl md:text-[3.6rem] font-black leading-[1.0] tracking-tight text-gray-900 mb-5">
                 {titleLines.map((line, i) => (
                   <span
                     key={i}
@@ -133,30 +147,48 @@ export function CategoryShell({
                 ))}
               </h1>
 
+              {/* Accent bar under gradient line */}
+              <div
+                className="h-0.5 w-20 rounded-full mb-5"
+                style={{ background: `linear-gradient(90deg, ${bd.orbA}, transparent)` }}
+              />
+
               {subtitle && (
-                <p className="text-gray-500 text-base md:text-lg mt-5 max-w-xl leading-relaxed">
+                <p className="text-gray-500 text-base md:text-[1.05rem] max-w-lg leading-[1.75]">
                   {subtitle}
                 </p>
               )}
 
+              {/* Stats */}
               {stats && stats.length > 0 && (
-                <div className="flex flex-wrap items-center gap-5 md:gap-8 mt-6">
-                  {stats.map(({ icon: Icon, label, value }) => (
-                    <div key={label} className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-6 md:gap-10 mt-7">
+                  {stats.map(({ icon: Icon, label, value }, si) => (
+                    <motion.div
+                      key={label}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.25 + si * 0.07 }}
+                      className="flex items-center gap-3"
+                    >
                       <div
-                        className="w-10 h-10 rounded-2xl flex items-center justify-center border"
+                        className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
                         style={{
-                          background: `${bd.orbA}12`,
-                          borderColor: `${bd.orbA}30`,
+                          background: `${bd.orbA}14`,
+                          border: `1px solid ${bd.orbA}28`,
                         }}
                       >
-                        <Icon size={16} style={{ color: bd.orbA }} />
+                        <Icon size={15} style={{ color: bd.orbA }} />
                       </div>
                       <div>
-                        <div className="font-bold text-lg leading-none text-gray-900">{value}</div>
-                        <div className="text-gray-400 text-xs mt-1">{label}</div>
+                        <div
+                          className="font-black text-xl leading-none tracking-tight"
+                          style={{ color: bd.orbA }}
+                        >
+                          {value}
+                        </div>
+                        <div className="text-gray-400 text-[11px] mt-0.5 leading-none">{label}</div>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               )}
@@ -168,27 +200,35 @@ export function CategoryShell({
                 {collage.map((p, i) => (
                   <motion.div
                     key={i}
-                    initial={{ opacity: 0, scale: 0.85, y: 24 }}
+                    initial={{ opacity: 0, scale: 0.88, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                    transition={{ delay: 0.15 + i * 0.1, duration: 0.55 }}
-                    className={`absolute ${p.className} rounded-3xl overflow-hidden border border-gray-100 shadow-lg`}
+                    transition={{ delay: 0.18 + i * 0.1, duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+                    className={`absolute ${p.className} rounded-2xl overflow-hidden shadow-[0_16px_40px_-8px_rgba(0,0,0,0.18)]`}
+                    style={{ border: `1px solid rgba(0,0,0,0.06)` }}
                   >
                     <img src={p.src} alt="" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
                   </motion.div>
                 ))}
 
                 {floatingBadge && (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.6 }}
-                    className="absolute -bottom-2 right-2 rounded-2xl px-4 py-3 shadow-xl flex items-center gap-2 text-white"
-                    style={{ background: `linear-gradient(135deg, ${bd.orbA}, ${bd.orbB})` }}
+                    initial={{ opacity: 0, scale: 0.8, y: 8 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{ delay: 0.65, type: "spring", stiffness: 280 }}
+                    className="absolute -bottom-2 right-2 rounded-2xl px-4 py-3 shadow-2xl flex items-center gap-2.5 text-white"
+                    style={{
+                      background: `linear-gradient(135deg, ${bd.orbA}, ${bd.orbB})`,
+                      boxShadow: `0 12px 32px ${bd.orbA}55`,
+                    }}
                   >
-                    <floatingBadge.icon size={16} />
+                    <div
+                      className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0"
+                    >
+                      <floatingBadge.icon size={15} />
+                    </div>
                     <div>
-                      <div className="text-xs opacity-90 leading-none">{floatingBadge.subtitle}</div>
+                      <div className="text-[10px] opacity-80 leading-none font-medium">{floatingBadge.subtitle}</div>
                       <div className="text-sm font-bold leading-none mt-1">{floatingBadge.title}</div>
                     </div>
                   </motion.div>
@@ -199,13 +239,13 @@ export function CategoryShell({
 
           {/* ── Search + filter bar ── */}
           <motion.div
-            initial={{ opacity: 0, y: 14 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.45 }}
-            className="mt-8 rounded-3xl border border-gray-200 bg-white p-3 sm:p-4 shadow-sm"
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="mt-9 rounded-2xl border border-gray-200 bg-white p-2.5 sm:p-3 shadow-sm"
           >
-            <div className="flex items-center gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl bg-gray-50 border border-gray-200">
-              <Search size={16} className="text-gray-400 shrink-0" />
+            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-50 border border-gray-200/80">
+              <Search size={15} className="text-gray-400 shrink-0" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -216,7 +256,7 @@ export function CategoryShell({
                 <select
                   value={sort}
                   onChange={(e) => setSort(e.target.value)}
-                  className="bg-white text-gray-600 text-xs sm:text-sm border border-gray-200 rounded-lg px-2 py-1 cursor-pointer focus:outline-none hidden sm:block"
+                  className="bg-white text-gray-600 text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 cursor-pointer focus:outline-none hidden sm:block"
                 >
                   {sortOptions.map((o) => (
                     <option key={o.value} value={o.value} className="bg-white text-gray-800">
@@ -228,7 +268,7 @@ export function CategoryShell({
               {search && (
                 <button
                   onClick={() => setSearch("")}
-                  className="text-gray-400 text-xs hover:text-gray-700 shrink-0"
+                  className="text-gray-400 text-xs hover:text-gray-600 shrink-0 transition-colors"
                 >
                   Xóa
                 </button>
@@ -236,21 +276,21 @@ export function CategoryShell({
             </div>
 
             {categories && activeCat !== undefined && setActiveCat && categories.length > 0 && (
-              <div className="flex items-center gap-2 mt-3 sm:mt-4 overflow-x-auto pb-1 scrollbar-thin">
+              <div className="flex items-center gap-1.5 mt-2.5 overflow-x-auto pb-0.5 scrollbar-thin">
                 {categories.map((c) => {
                   const active = activeCat === c.key;
                   return (
                     <button
                       key={c.key}
                       onClick={() => setActiveCat(c.key)}
-                      className="shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all border"
+                      className="shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all border"
                       style={
                         active
                           ? {
                               background: `linear-gradient(135deg, ${bd.orbA}, ${bd.orbB})`,
                               color: "#fff",
                               borderColor: "transparent",
-                              boxShadow: `0 4px 14px ${bd.orbA}44`,
+                              boxShadow: `0 3px 12px ${bd.orbA}40`,
                             }
                           : {
                               borderColor: "#e5e7eb",
@@ -259,7 +299,6 @@ export function CategoryShell({
                             }
                       }
                     >
-                      {c.emoji && <span>{c.emoji}</span>}
                       {c.label}
                     </button>
                   );
@@ -268,7 +307,7 @@ export function CategoryShell({
             )}
 
             {resultCount && (
-              <div className="mt-2 sm:mt-3 px-1 text-xs text-gray-500">{resultCount}</div>
+              <div className="mt-2 px-1 text-xs text-gray-400">{resultCount}</div>
             )}
           </motion.div>
         </div>
