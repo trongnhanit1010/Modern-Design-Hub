@@ -325,10 +325,11 @@ export default function Events() {
   return (
     <CategoryShell
       themeKey="events"
+      heroVariant="banner"
       badge={{ icon: Tag, text: "Admit one · Festival 2026" }}
-      titleLines={["Đà Nẵng", "lễ hội quanh năm.", "Pháo hoa · Acoustic · Triển lãm."]}
+      titleLines={["Lễ hội", "Đà Nẵng."]}
       gradientLineIndex={1}
-      subtitle="Pháo hoa quốc tế, festival biển, đêm nhạc sông Hàn — luôn có một sự kiện đang chờ bạn trong từng tháng của 2026."
+      subtitle="Pháo hoa quốc tế, festival biển, đêm nhạc sông Hàn — mỗi tháng một sự kiện."
       stats={[
         { icon: Flame,        label: "Đang diễn",  value: `${liveEvents.length}` },
         { icon: CalendarDays, label: "Sắp tới",    value: `${upcomingEvents.length}` },

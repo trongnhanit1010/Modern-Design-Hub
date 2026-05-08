@@ -26,13 +26,21 @@ export type StatItem = { icon: LucideIcon; label: string; value: string };
 export type CollageImage = { src: string; className: string };
 export type FloatingBadge = { icon: LucideIcon; title: string; subtitle: string };
 
+/** Hero layout variants */
+export type HeroVariant =
+  | "split"    // title left · collage right  (Hotels, Restaurants, Shopping)
+  | "banner"   // full-width title + panoramic image strip  (Destinations, Events)
+  | "minimal"; // large typography only, no image  (Transport, LocalFood)
+
 interface CategoryShellProps {
   themeKey: CategoryKey;
+  heroVariant?: HeroVariant;
   badge?: { icon?: LucideIcon; text: string };
   titleLines: ReactNode[];
   gradientLineIndex?: number;
   subtitle?: string;
   stats?: StatItem[];
+  /** Used by split (3 images) and banner (first image = panoramic) */
   collage?: CollageImage[];
   floatingBadge?: FloatingBadge;
   search: string;
@@ -48,8 +56,59 @@ interface CategoryShellProps {
   children: ReactNode;
 }
 
+/* ─── shared accent bar + badge ─── */
+function Badge({ icon: Icon, text, bd }: { icon: LucideIcon; text: string; bd: typeof themeBackdrops[CategoryKey] }) {
+  return (
+    <div
+      className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border text-xs font-semibold tracking-wide"
+      style={{ borderColor: `${bd.orbA}40`, background: `${bd.orbA}0c`, color: bd.orbA }}
+    >
+      <span className="w-1.5 h-1.5 rounded-full" style={{ background: bd.orbA }} />
+      <Icon size={11} />
+      {text}
+    </div>
+  );
+}
+
+function AccentBar({ bd }: { bd: typeof themeBackdrops[CategoryKey] }) {
+  return (
+    <div
+      className="h-0.5 w-16 rounded-full mt-4 mb-4"
+      style={{ background: `linear-gradient(90deg, ${bd.orbA}, transparent)` }}
+    />
+  );
+}
+
+function StatRow({ stats, bd, compact = false }: { stats: StatItem[]; bd: typeof themeBackdrops[CategoryKey]; compact?: boolean }) {
+  return (
+    <div className={`flex flex-wrap items-center ${compact ? "gap-5 md:gap-8" : "gap-6 md:gap-10"}`}>
+      {stats.map(({ icon: Icon, label, value }, si) => (
+        <motion.div
+          key={label}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 + si * 0.06 }}
+          className="flex items-center gap-2.5"
+        >
+          <div
+            className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+            style={{ background: `${bd.orbA}14`, border: `1px solid ${bd.orbA}28` }}
+          >
+            <Icon size={14} style={{ color: bd.orbA }} />
+          </div>
+          <div>
+            <div className="font-black text-lg leading-none" style={{ color: bd.orbA }}>{value}</div>
+            <div className="text-gray-400 text-[11px] mt-0.5">{label}</div>
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
 export function CategoryShell({
   themeKey,
+  heroVariant = "split",
   badge,
   titleLines,
   gradientLineIndex = 1,
@@ -69,8 +128,8 @@ export function CategoryShell({
   resultCount,
   children,
 }: CategoryShellProps) {
-  const theme = categoryThemes[themeKey];
   const bd = themeBackdrops[themeKey];
+  const Badgeicon = badge?.icon ?? Sparkles;
 
   const gradientStyle = useMemo(
     () => ({
@@ -81,168 +140,189 @@ export function CategoryShell({
     [bd]
   );
 
-  const Badgeicon = badge?.icon ?? Sparkles;
+  const TitleBlock = (
+    <h1 className={`font-serif font-black leading-[1.0] tracking-tight text-gray-900 ${
+      heroVariant === "minimal"
+        ? "text-5xl sm:text-6xl md:text-7xl"
+        : heroVariant === "banner"
+        ? "text-5xl sm:text-6xl"
+        : "text-[2.6rem] sm:text-5xl md:text-[3.4rem]"
+    }`}>
+      {titleLines.map((line, i) => (
+        <span key={i} className="block" style={i === gradientLineIndex ? gradientStyle : undefined}>
+          {line}
+        </span>
+      ))}
+    </h1>
+  );
 
   return (
     <div className="min-h-screen bg-white relative overflow-hidden">
-      {/* Subtle tinted blobs */}
+      {/* ambient blobs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div
-          className="absolute -top-60 -left-60 w-[700px] h-[700px] rounded-full blur-[220px] opacity-[0.07]"
-          style={{ background: bd.orbA }}
-        />
-        <div
-          className="absolute -top-20 -right-60 w-[600px] h-[600px] rounded-full blur-[220px] opacity-[0.04]"
-          style={{ background: bd.orbB }}
-        />
+        <div className="absolute -top-60 -left-60 w-[700px] h-[700px] rounded-full blur-[220px] opacity-[0.07]" style={{ background: bd.orbA }} />
+        <div className="absolute -top-20 -right-60 w-[600px] h-[600px] rounded-full blur-[220px] opacity-[0.04]" style={{ background: bd.orbB }} />
       </div>
 
-      {/* ── HERO ── */}
-      <section className="relative pt-10 pb-6 sm:pt-14 sm:pb-8 px-4 sm:px-6">
+      {/* ───── HERO ───── */}
+      <section className="relative px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="relative grid lg:grid-cols-[1.2fr_1fr] gap-10 items-center"
-          >
-            {/* LEFT */}
-            <div>
-              {/* Badge */}
-              {badge && (
-                <motion.div
-                  initial={{ opacity: 0, x: -12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="inline-flex items-center gap-2.5 mb-6"
-                >
-                  <div
-                    className="flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-semibold tracking-wide"
-                    style={{
-                      borderColor: `${bd.orbA}45`,
-                      background: `${bd.orbA}0c`,
-                      color: bd.orbA,
-                    }}
-                  >
-                    <span
-                      className="w-1.5 h-1.5 rounded-full"
-                      style={{ background: bd.orbA }}
-                    />
-                    <Badgeicon size={12} />
-                    {badge.text}
-                  </div>
-                </motion.div>
-              )}
 
-              {/* Title */}
-              <h1 className="font-serif text-[2.8rem] sm:text-5xl md:text-[3.6rem] font-black leading-[1.0] tracking-tight text-gray-900 mb-5">
-                {titleLines.map((line, i) => (
-                  <span
-                    key={i}
-                    className="block"
-                    style={i === gradientLineIndex ? gradientStyle : undefined}
-                  >
-                    {line}
-                  </span>
-                ))}
-              </h1>
-
-              {/* Accent bar under gradient line */}
-              <div
-                className="h-0.5 w-20 rounded-full mb-5"
-                style={{ background: `linear-gradient(90deg, ${bd.orbA}, transparent)` }}
-              />
-
-              {subtitle && (
-                <p className="text-gray-500 text-base md:text-[1.05rem] max-w-lg leading-[1.75]">
-                  {subtitle}
-                </p>
-              )}
-
-              {/* Stats */}
-              {stats && stats.length > 0 && (
-                <div className="flex flex-wrap items-center gap-6 md:gap-10 mt-7">
-                  {stats.map(({ icon: Icon, label, value }, si) => (
-                    <motion.div
-                      key={label}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.25 + si * 0.07 }}
-                      className="flex items-center gap-3"
-                    >
-                      <div
-                        className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                        style={{
-                          background: `${bd.orbA}14`,
-                          border: `1px solid ${bd.orbA}28`,
-                        }}
-                      >
-                        <Icon size={15} style={{ color: bd.orbA }} />
-                      </div>
-                      <div>
-                        <div
-                          className="font-black text-xl leading-none tracking-tight"
-                          style={{ color: bd.orbA }}
-                        >
-                          {value}
-                        </div>
-                        <div className="text-gray-400 text-[11px] mt-0.5 leading-none">{label}</div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* RIGHT: collage */}
-            {collage && collage.length > 0 && (
-              <div className="relative h-[320px] hidden lg:block">
-                {collage.map((p, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, scale: 0.88, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    transition={{ delay: 0.18 + i * 0.1, duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
-                    className={`absolute ${p.className} rounded-2xl overflow-hidden shadow-[0_16px_40px_-8px_rgba(0,0,0,0.18)]`}
-                    style={{ border: `1px solid rgba(0,0,0,0.06)` }}
-                  >
-                    <img src={p.src} alt="" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
-                  </motion.div>
-                ))}
-
-                {floatingBadge && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8, y: 8 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    transition={{ delay: 0.65, type: "spring", stiffness: 280 }}
-                    className="absolute -bottom-2 right-2 rounded-2xl px-4 py-3 shadow-2xl flex items-center gap-2.5 text-white"
-                    style={{
-                      background: `linear-gradient(135deg, ${bd.orbA}, ${bd.orbB})`,
-                      boxShadow: `0 12px 32px ${bd.orbA}55`,
-                    }}
-                  >
-                    <div
-                      className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0"
-                    >
-                      <floatingBadge.icon size={15} />
-                    </div>
-                    <div>
-                      <div className="text-[10px] opacity-80 leading-none font-medium">{floatingBadge.subtitle}</div>
-                      <div className="text-sm font-bold leading-none mt-1">{floatingBadge.title}</div>
-                    </div>
-                  </motion.div>
+          {/* ══ SPLIT variant ══ */}
+          {heroVariant === "split" && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55 }}
+              className="pt-10 sm:pt-14 pb-6 grid lg:grid-cols-[1.15fr_1fr] gap-10 items-center"
+            >
+              <div>
+                {badge && <div className="mb-5"><Badge icon={Badgeicon} text={badge.text} bd={bd} /></div>}
+                {TitleBlock}
+                <AccentBar bd={bd} />
+                {subtitle && <p className="text-gray-500 text-[1.02rem] max-w-md leading-relaxed">{subtitle}</p>}
+                {stats && stats.length > 0 && (
+                  <div className="mt-6"><StatRow stats={stats} bd={bd} /></div>
                 )}
               </div>
-            )}
-          </motion.div>
 
-          {/* ── Search + filter bar ── */}
+              {collage && collage.length > 0 && (
+                <div className="relative h-[300px] hidden lg:block">
+                  {collage.map((p, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, scale: 0.88, y: 18 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      transition={{ delay: 0.15 + i * 0.1, duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+                      className={`absolute ${p.className} rounded-2xl overflow-hidden`}
+                      style={{ boxShadow: "0 14px 36px -8px rgba(0,0,0,0.18)", border: "1px solid rgba(0,0,0,0.06)" }}
+                    >
+                      <img src={p.src} alt="" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                    </motion.div>
+                  ))}
+                  {floatingBadge && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ delay: 0.6, type: "spring", stiffness: 280 }}
+                      className="absolute -bottom-2 right-2 rounded-2xl px-4 py-2.5 flex items-center gap-2.5 text-white"
+                      style={{ background: `linear-gradient(135deg, ${bd.orbA}, ${bd.orbB})`, boxShadow: `0 10px 28px ${bd.orbA}55` }}
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center">
+                        <floatingBadge.icon size={14} />
+                      </div>
+                      <div>
+                        <div className="text-[10px] opacity-75 leading-none">{floatingBadge.subtitle}</div>
+                        <div className="text-sm font-bold leading-none mt-0.5">{floatingBadge.title}</div>
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+              )}
+            </motion.div>
+          )}
+
+          {/* ══ BANNER variant ══ */}
+          {heroVariant === "banner" && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55 }}
+              className="pt-10 sm:pt-14 pb-6"
+            >
+              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
+                <div className="flex-1 max-w-2xl">
+                  {badge && <div className="mb-5"><Badge icon={Badgeicon} text={badge.text} bd={bd} /></div>}
+                  {TitleBlock}
+                  <AccentBar bd={bd} />
+                  {subtitle && <p className="text-gray-500 text-[1.02rem] leading-relaxed">{subtitle}</p>}
+                </div>
+                {stats && stats.length > 0 && (
+                  <div className="shrink-0 pb-1"><StatRow stats={stats} bd={bd} compact /></div>
+                )}
+              </div>
+
+              {/* Panoramic banner image */}
+              {collage && collage.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.97 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2, duration: 0.7, ease: [0.23, 1, 0.32, 1] }}
+                  className="relative h-60 sm:h-72 md:h-80 rounded-2xl overflow-hidden"
+                  style={{ boxShadow: "0 16px 48px -12px rgba(0,0,0,0.18)", border: "1px solid rgba(0,0,0,0.06)" }}
+                >
+                  <img src={collage[0].src} alt="" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent" />
+
+                  {/* mini thumbnails — top-right */}
+                  {collage.length > 1 && (
+                    <div className="absolute top-3 right-3 flex gap-2">
+                      {collage.slice(1).map((p, i) => (
+                        <div key={i} className="w-20 h-14 rounded-xl overflow-hidden border-2 border-white/40 shadow-md">
+                          <img src={p.src} alt="" className="w-full h-full object-cover" />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {floatingBadge && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -12 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.5 }}
+                      className="absolute bottom-4 left-4 rounded-2xl px-4 py-2.5 flex items-center gap-2.5 text-white"
+                      style={{ background: `linear-gradient(135deg, ${bd.orbA}, ${bd.orbB})`, boxShadow: `0 10px 28px ${bd.orbA}55` }}
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center">
+                        <floatingBadge.icon size={14} />
+                      </div>
+                      <div>
+                        <div className="text-[10px] opacity-75 leading-none">{floatingBadge.subtitle}</div>
+                        <div className="text-sm font-bold leading-none mt-0.5">{floatingBadge.title}</div>
+                      </div>
+                    </motion.div>
+                  )}
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+
+          {/* ══ MINIMAL variant ══ */}
+          {heroVariant === "minimal" && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55 }}
+              className="pt-10 sm:pt-14 pb-8"
+            >
+              {badge && <div className="mb-6"><Badge icon={Badgeicon} text={badge.text} bd={bd} /></div>}
+              {TitleBlock}
+              <AccentBar bd={bd} />
+
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+                {subtitle && (
+                  <p className="text-gray-500 text-[1.02rem] max-w-lg leading-relaxed">{subtitle}</p>
+                )}
+                {stats && stats.length > 0 && (
+                  <div className="shrink-0"><StatRow stats={stats} bd={bd} compact /></div>
+                )}
+              </div>
+
+              {/* Decorative rule */}
+              <div
+                className="mt-8 h-px w-full"
+                style={{ background: `linear-gradient(90deg, ${bd.orbA}30, transparent 60%)` }}
+              />
+            </motion.div>
+          )}
+
+          {/* ─── Search + filter bar ─── */}
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            className="mt-9 rounded-2xl border border-gray-200 bg-white p-2.5 sm:p-3 shadow-sm"
+            transition={{ delay: 0.28, duration: 0.45 }}
+            className="pb-6 rounded-2xl border border-gray-200 bg-white p-2.5 sm:p-3 shadow-sm"
           >
             <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-50 border border-gray-200/80">
               <Search size={15} className="text-gray-400 shrink-0" />
@@ -259,17 +339,12 @@ export function CategoryShell({
                   className="bg-white text-gray-600 text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 cursor-pointer focus:outline-none hidden sm:block"
                 >
                   {sortOptions.map((o) => (
-                    <option key={o.value} value={o.value} className="bg-white text-gray-800">
-                      {o.label}
-                    </option>
+                    <option key={o.value} value={o.value} className="bg-white text-gray-800">{o.label}</option>
                   ))}
                 </select>
               )}
               {search && (
-                <button
-                  onClick={() => setSearch("")}
-                  className="text-gray-400 text-xs hover:text-gray-600 shrink-0 transition-colors"
-                >
+                <button onClick={() => setSearch("")} className="text-gray-400 text-xs hover:text-gray-600 shrink-0 transition-colors">
                   Xóa
                 </button>
               )}
@@ -286,17 +361,8 @@ export function CategoryShell({
                       className="shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all border"
                       style={
                         active
-                          ? {
-                              background: `linear-gradient(135deg, ${bd.orbA}, ${bd.orbB})`,
-                              color: "#fff",
-                              borderColor: "transparent",
-                              boxShadow: `0 3px 12px ${bd.orbA}40`,
-                            }
-                          : {
-                              borderColor: "#e5e7eb",
-                              color: "#6b7280",
-                              background: "transparent",
-                            }
+                          ? { background: `linear-gradient(135deg, ${bd.orbA}, ${bd.orbB})`, color: "#fff", borderColor: "transparent", boxShadow: `0 3px 12px ${bd.orbA}40` }
+                          : { borderColor: "#e5e7eb", color: "#6b7280", background: "transparent" }
                       }
                     >
                       {c.label}
@@ -338,12 +404,8 @@ export function CategoryCardShell({
       data-testid={testId}
       className={`group relative rounded-3xl overflow-hidden border bg-white shadow-sm hover:shadow-md transition-all ${className}`}
       style={{ borderColor: "#f1f5f9" }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLElement).style.borderColor = `${bd.orbA}50`;
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.borderColor = "#f1f5f9";
-      }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = `${bd.orbA}50`; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "#f1f5f9"; }}
     >
       {children}
     </div>

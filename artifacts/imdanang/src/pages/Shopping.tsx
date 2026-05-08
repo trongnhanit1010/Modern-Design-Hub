@@ -76,10 +76,11 @@ export default function Shopping() {
   return (
     <CategoryShell
       themeKey="shopping"
+      heroVariant="split"
       badge={{ icon: ShoppingBag, text: "Mùa mua sắm 2026 · 335 địa điểm" }}
-      titleLines={["Mua sắm", "Đà Nẵng.", "Edition vạn món."]}
+      titleLines={["Mua sắm", "thỏa thích."]}
       gradientLineIndex={1}
-      subtitle="Chợ Hàn cổ kính, Vincom hiện đại, làng nghề độc bản, Lotte Mart đa sắc — bộ sưu tập mua sắm tinh hoa xứ Quảng."
+      subtitle="Chợ Hàn, Vincom, làng nghề, Lotte Mart — mọi lựa chọn trong một bản đồ."
       stats={[
         { icon: ShoppingBag, label: "Địa điểm",  value: "335"  },
         { icon: Percent,     label: "Giảm TB",   value: "12%"  },

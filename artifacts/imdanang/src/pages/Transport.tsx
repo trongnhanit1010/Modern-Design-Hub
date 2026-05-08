@@ -62,10 +62,11 @@ export default function Transport() {
   return (
     <CategoryShell
       themeKey="transport"
+      heroVariant="minimal"
       badge={{ icon: Navigation, text: "Chỉ dẫn di chuyển · Live" }}
-      titleLines={["Đi đâu", "cũng đến.", "Bản đồ giao thông Đà Nẵng – Hội An."]}
+      titleLines={["Di chuyển", "dễ dàng."]}
       gradientLineIndex={1}
-      subtitle="Sân bay, taxi, Grab, xe buýt, xe máy thuê, phà — chọn cách đi & xem giá tham khảo cho mọi tuyến phổ biến."
+      subtitle="Sân bay, taxi, Grab, xe buýt, xe máy — giá & tuyến đường phổ biến nhất."
       stats={[
         { icon: Bus,   label: "Phương tiện", value: "6"    },
         { icon: Route, label: "Tuyến gợi ý", value: "12+"  },

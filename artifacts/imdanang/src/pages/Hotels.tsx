@@ -75,10 +75,11 @@ export default function Hotels() {
   return (
     <CategoryShell
       themeKey="hotels"
+      heroVariant="split"
       badge={{ text: "Hotels & Resorts · Đà Nẵng – Hội An" }}
-      titleLines={["Nơi nghỉ", "đẳng cấp.", "Hành trình tinh tế."]}
+      titleLines={["Nơi nghỉ", "đẳng cấp."]}
       gradientLineIndex={1}
-      subtitle="Resort 5 sao bên bờ biển Mỹ Khê, boutique cổ điển trong phố cổ Hội An — chọn nơi chốn xứng tầm cho mọi chuyến đi."
+      subtitle="Resort 5 sao bên Mỹ Khê, boutique cổ kính trong phố cổ Hội An."
       stats={[
         { icon: BedDouble,   label: "Chỗ nghỉ",       value: "128+" },
         { icon: Trophy,      label: "Đánh giá TB",    value: "4.8" },

@@ -60,10 +60,11 @@ export default function Destinations() {
   return (
     <CategoryShell
       themeKey="destinations"
+      heroVariant="banner"
       badge={{ icon: Compass, text: "Nhật ký khám phá · 2026" }}
-      titleLines={["Khám phá", "đó đây.", "Mỗi điểm đến · một câu chuyện."]}
+      titleLines={["Khám phá", "Đà Nẵng."]}
       gradientLineIndex={1}
-      subtitle="Bãi cát Mỹ Khê, đèo Hải Vân, phố cổ Hội An — 85+ điểm đến đáng nhớ trải dài giữa Đà Nẵng và Hội An."
+      subtitle="Biển, núi, di sản — 85+ điểm đến trải dài Đà Nẵng đến Hội An."
       stats={[
         { icon: Camera,  label: "Địa điểm", value: "85+" },
         { icon: Star,    label: "Điểm TB",  value: "4.8" },

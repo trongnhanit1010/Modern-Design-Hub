@@ -125,10 +125,11 @@ export default function LocalFood() {
     <>
       <CategoryShell
         themeKey="localfood"
+        heroVariant="minimal"
         badge={{ icon: Soup, text: `${dishes.length} món gia truyền · Xứ Quảng` }}
-        titleLines={["Món ngon", "mẹ nấu.", "Hồn quê trong từng bát."]}
+        titleLines={["Món ngon", "xứ Quảng."]}
         gradientLineIndex={1}
-        subtitle="Mì Quảng, Cao Lầu, Bánh Xèo, Cơm Gà — công thức truyền đời từ những ngôi nhà cổ Hội An đến gánh hàng Đà Nẵng."
+        subtitle="Mì Quảng, Cao Lầu, Bánh Xèo — công thức truyền đời từ phố cổ đến gánh hàng."
         stats={[
           { icon: Soup,  label: "Món đặc sản",     value: `${dishes.length}+` },
           { icon: Flame, label: "Hương vị TB",      value: "4.8" },

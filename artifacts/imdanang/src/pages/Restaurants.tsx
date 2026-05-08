@@ -76,10 +76,11 @@ export default function Restaurants() {
   return (
     <CategoryShell
       themeKey="restaurants"
+      heroVariant="split"
       badge={{ icon: UtensilsCrossed, text: "Đặc sản xứ Quảng · 240+ quán" }}
-      titleLines={["Ngon khó", "cưỡng lại.", "Hành trình vị giác."]}
+      titleLines={["Ngon khó", "cưỡng lại."]}
       gradientLineIndex={1}
-      subtitle="Hải sản tươi sống Mỹ Khê, fine-dining bên sông Hàn, quán cũ trăm năm trong phố cổ Hội An — bản đồ ẩm thực rực rỡ."
+      subtitle="Hải sản Mỹ Khê, fine-dining sông Hàn, quán cũ phố cổ Hội An."
       stats={[
         { icon: UtensilsCrossed, label: "Nhà hàng",    value: "240+" },
         { icon: Award,           label: "Điểm TB",     value: "4.7"  },
