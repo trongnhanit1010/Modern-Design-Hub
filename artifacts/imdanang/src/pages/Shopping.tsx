@@ -20,11 +20,11 @@ const markets: Market[] = [
 ];
 
 const categoryFilters = [
-  { key: "all",     label: "Tất cả",   emoji: "🛍️" },
-  { key: "market",  label: "Chợ",      emoji: "🥬" },
-  { key: "mall",    label: "TTTM",     emoji: "🏬" },
-  { key: "craft",   label: "Làng nghề",emoji: "💎" },
-  { key: "fashion", label: "Thời trang",emoji: "👗"},
+  { key: "all",     label: "Tất cả",    emoji: "🛍️" },
+  { key: "market",  label: "Chợ",       emoji: "🥬" },
+  { key: "mall",    label: "TTTM",      emoji: "🏬" },
+  { key: "craft",   label: "Làng nghề", emoji: "💎" },
+  { key: "fashion", label: "Thời trang",emoji: "👗" },
 ];
 const sortOptions = [
   { label: "Phổ biến",     value: "popular" },
@@ -96,15 +96,15 @@ export default function Shopping() {
       sortOptions={sortOptions}
       sort={sort}
       setSort={setSort}
-      resultCount={<><span className="text-white font-semibold">{filtered.length}</span> địa điểm phù hợp</>}
+      resultCount={<><span className="text-gray-800 font-semibold">{filtered.length}</span> địa điểm phù hợp</>}
     >
       {/* Quick category cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
         {[
-          { icon: Gem,     label: "Thủ công mỹ nghệ", count: 48  },
-          { icon: Shirt,   label: "Thời trang",        count: 95  },
-          { icon: Coffee,  label: "Đặc sản & Thực phẩm", count: 62 },
-          { icon: Package, label: "Quà lưu niệm",      count: 130 },
+          { icon: Gem,     label: "Thủ công mỹ nghệ",    count: 48  },
+          { icon: Shirt,   label: "Thời trang",           count: 95  },
+          { icon: Coffee,  label: "Đặc sản & Thực phẩm", count: 62  },
+          { icon: Package, label: "Quà lưu niệm",         count: 130 },
         ].map((c, i) => (
           <motion.div
             key={c.label}
@@ -112,25 +112,25 @@ export default function Shopping() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.06 }}
             whileHover={{ y: -3, scale: 1.02 }}
-            className="rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-md p-4 cursor-pointer hover:border-white/25 transition-all"
+            className="rounded-2xl border border-gray-100 bg-white shadow-sm p-4 cursor-pointer hover:shadow-md hover:border-gray-200 transition-all"
           >
             <div
               className="w-10 h-10 rounded-xl flex items-center justify-center mb-2"
               style={{
                 background: `linear-gradient(135deg, ${acc.orbA}, ${acc.orbB})`,
-                boxShadow: `0 6px 18px ${acc.orbA}55`,
+                boxShadow: `0 4px 14px ${acc.orbA}44`,
               }}
             >
               <c.icon size={18} className="text-white" />
             </div>
-            <p className="text-white text-sm font-semibold mb-0.5">{c.label}</p>
-            <p className="text-white/45 text-xs">{c.count} địa điểm</p>
+            <p className="text-gray-900 text-sm font-semibold mb-0.5">{c.label}</p>
+            <p className="text-gray-400 text-xs">{c.count} địa điểm</p>
           </motion.div>
         ))}
       </div>
 
-      <h2 className="text-white font-bold text-lg mt-10 mb-4 flex items-center gap-2">
-        <ShoppingBag size={18} style={{ color: acc.orbC }} /> Chợ & Trung tâm mua sắm
+      <h2 className="text-gray-900 font-bold text-lg mt-10 mb-4 flex items-center gap-2">
+        <ShoppingBag size={18} style={{ color: acc.orbA }} /> Chợ & Trung tâm mua sắm
       </h2>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -143,12 +143,12 @@ export default function Shopping() {
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ delay: i * 0.06 }}
               whileHover={{ y: -6 }}
-              className="group rounded-3xl overflow-hidden border border-white/10 bg-white/[0.04] backdrop-blur-md hover:border-white/25 transition-all"
+              className="group rounded-3xl overflow-hidden border border-gray-100 bg-white shadow-sm hover:shadow-md hover:border-gray-200 transition-all"
               data-testid={`card-shopping-${m.id}`}
             >
               <div className="relative h-44 overflow-hidden">
                 <img src={m.image} alt={m.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
                 <span
                   className="absolute top-3 left-3 text-white text-[10px] font-bold px-2.5 py-1 rounded-full"
                   style={{ background: `linear-gradient(135deg, ${acc.orbA}, ${acc.orbB})` }}
@@ -164,27 +164,27 @@ export default function Shopping() {
               </div>
               <div className="p-4">
                 <div className="flex items-start justify-between gap-2 mb-1">
-                  <h3 className="text-white font-bold text-sm leading-tight">{m.name}</h3>
+                  <h3 className="text-gray-900 font-bold text-sm leading-tight">{m.name}</h3>
                   <div
                     className="shrink-0 flex items-center gap-1 rounded-lg px-2 py-0.5 border"
-                    style={{ background: `${acc.orbA}1f`, borderColor: `${acc.orbA}55`, color: acc.orbC }}
+                    style={{ background: `${acc.orbA}12`, borderColor: `${acc.orbA}40`, color: acc.orbA }}
                   >
                     <Star size={10} className="fill-current" />
                     <span className="text-xs font-bold">{m.rating}</span>
                   </div>
                 </div>
-                <p className="text-white/45 text-xs mb-3">{m.type} · {m.reviews.toLocaleString()} đánh giá</p>
+                <p className="text-gray-400 text-xs mb-3">{m.type} · {m.reviews.toLocaleString()} đánh giá</p>
                 <div className="space-y-1.5 mb-3">
-                  <div className="flex items-center gap-2 text-white/55 text-xs">
-                    <MapPin size={11} className="text-white/35 shrink-0" />{m.location}
+                  <div className="flex items-center gap-2 text-gray-500 text-xs">
+                    <MapPin size={11} className="text-gray-300 shrink-0" />{m.location}
                   </div>
-                  <div className="flex items-center gap-2 text-white/55 text-xs">
-                    <Clock size={11} className="text-white/35 shrink-0" />{m.time}
+                  <div className="flex items-center gap-2 text-gray-500 text-xs">
+                    <Clock size={11} className="text-gray-300 shrink-0" />{m.time}
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {m.specialties.map((s) => (
-                    <span key={s} className="flex items-center gap-1 bg-white/5 text-white/55 text-[10px] px-2 py-0.5 rounded-full border border-white/10">
+                    <span key={s} className="flex items-center gap-1 bg-gray-50 text-gray-500 text-[10px] px-2 py-0.5 rounded-full border border-gray-200">
                       <Tag size={9} />{s}
                     </span>
                   ))}
@@ -197,10 +197,10 @@ export default function Shopping() {
 
       {hasMore && (
         <div className="flex flex-col items-center gap-3 pt-10">
-          <p className="text-white/50 text-sm">
-            Hiển thị <span className="text-white font-semibold">{visible.length}</span> /{" "}
-            <span className="text-white font-semibold">{filtered.length}</span> · còn{" "}
-            <span style={{ color: acc.orbC }} className="font-semibold">{remaining}</span> địa điểm
+          <p className="text-gray-500 text-sm">
+            Hiển thị <span className="text-gray-800 font-semibold">{visible.length}</span> /{" "}
+            <span className="text-gray-800 font-semibold">{filtered.length}</span> · còn{" "}
+            <span style={{ color: acc.orbA }} className="font-semibold">{remaining}</span> địa điểm
           </p>
           <motion.button
             whileHover={{ scale: loadingMore ? 1 : 1.04 }}
@@ -210,7 +210,7 @@ export default function Shopping() {
             className="flex items-center gap-2.5 px-8 py-3 text-white font-semibold rounded-2xl text-sm disabled:opacity-80 min-w-52 justify-center"
             style={{
               background: `linear-gradient(135deg, ${acc.orbA}, ${acc.orbB})`,
-              boxShadow: `0 12px 28px ${acc.orbA}55`,
+              boxShadow: `0 10px 24px ${acc.orbA}44`,
             }}
           >
             {loadingMore ? (
@@ -223,16 +223,16 @@ export default function Shopping() {
       )}
 
       {!hasMore && filtered.length > 0 && (
-        <div className="pt-10 text-center text-white/45 text-sm">
-          Đã hiển thị tất cả <span className="text-white/80 font-semibold">{filtered.length}</span> địa điểm
+        <div className="pt-10 text-center text-gray-400 text-sm">
+          Đã hiển thị tất cả <span className="text-gray-700 font-semibold">{filtered.length}</span> địa điểm
         </div>
       )}
 
       {filtered.length === 0 && (
         <div className="pt-16 flex flex-col items-center justify-center text-center">
-          <ShoppingBag size={40} className="text-white/30 mb-3" />
-          <p className="text-white/80 font-medium">Không tìm thấy địa điểm phù hợp</p>
-          <p className="text-white/40 text-sm mt-1">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
+          <ShoppingBag size={40} className="text-gray-300 mb-3" />
+          <p className="text-gray-700 font-medium">Không tìm thấy địa điểm phù hợp</p>
+          <p className="text-gray-400 text-sm mt-1">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
         </div>
       )}
     </CategoryShell>

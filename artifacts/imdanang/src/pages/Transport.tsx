@@ -15,13 +15,13 @@ interface Mode {
 }
 
 const transportModes: Mode[] = [
-  { key: "all",     icon: Navigation, label: "Tất cả",        desc: "",                                       detail: "" },
-  { key: "plane",   icon: Plane,      label: "Sân bay",       desc: "Sân bay Đà Nẵng – Quốc tế",              detail: "Trung tâm thành phố: 15 phút · Grab: 80–120K · Taxi: 100–150K" },
-  { key: "bus",     icon: Bus,        label: "Xe buýt",       desc: "Mạng lưới 10 tuyến nội thành",           detail: "Giá vé: 5.000₫/lượt · Hoạt động 05:30–21:00 · Thẻ tháng 120K" },
-  { key: "taxi",    icon: Car,        label: "Taxi / Grab",   desc: "Grab, Be, Mai Linh, Tiên Sa",            detail: "Khoảng 15K/km nội thành · Grab Car/Bike sẵn có 24/7" },
-  { key: "bike",    icon: Bike,       label: "Xe máy / Đạp",  desc: "Thuê xe tự lái khắp thành phố",          detail: "Xe máy: 100–200K/ngày · Xe đạp: 50–80K/ngày · Cọc CCCD" },
-  { key: "ship",    icon: Ship,       label: "Tàu thuyền",    desc: "Phà ra đảo Cù Lao Chàm",                 detail: "Cảng Mân Quang → Cù Lao Chàm · 2h · 230K/người" },
-  { key: "ev",      icon: Navigation, label: "Xe điện",       desc: "Xe điện tham quan nội thành",            detail: "Tour 1h30 · Các điểm trên đường ven biển · 80K/người" },
+  { key: "all",   icon: Navigation, label: "Tất cả",        desc: "",                                       detail: "" },
+  { key: "plane", icon: Plane,      label: "Sân bay",       desc: "Sân bay Đà Nẵng – Quốc tế",              detail: "Trung tâm thành phố: 15 phút · Grab: 80–120K · Taxi: 100–150K" },
+  { key: "bus",   icon: Bus,        label: "Xe buýt",       desc: "Mạng lưới 10 tuyến nội thành",           detail: "Giá vé: 5.000₫/lượt · Hoạt động 05:30–21:00 · Thẻ tháng 120K" },
+  { key: "taxi",  icon: Car,        label: "Taxi / Grab",   desc: "Grab, Be, Mai Linh, Tiên Sa",            detail: "Khoảng 15K/km nội thành · Grab Car/Bike sẵn có 24/7" },
+  { key: "bike",  icon: Bike,       label: "Xe máy / Đạp",  desc: "Thuê xe tự lái khắp thành phố",          detail: "Xe máy: 100–200K/ngày · Xe đạp: 50–80K/ngày · Cọc CCCD" },
+  { key: "ship",  icon: Ship,       label: "Tàu thuyền",    desc: "Phà ra đảo Cù Lao Chàm",                 detail: "Cảng Mân Quang → Cù Lao Chàm · 2h · 230K/người" },
+  { key: "ev",    icon: Navigation, label: "Xe điện",       desc: "Xe điện tham quan nội thành",            detail: "Tour 1h30 · Các điểm trên đường ven biển · 80K/người" },
 ];
 
 const routes = [
@@ -67,9 +67,9 @@ export default function Transport() {
       gradientLineIndex={1}
       subtitle="Sân bay, taxi, Grab, xe buýt, xe máy thuê, phà — chọn cách đi & xem giá tham khảo cho mọi tuyến phổ biến."
       stats={[
-        { icon: Bus,   label: "Phương tiện", value: "6"   },
-        { icon: Route, label: "Tuyến gợi ý", value: "12+" },
-        { icon: Clock, label: "Cập nhật",    value: "Live"},
+        { icon: Bus,   label: "Phương tiện", value: "6"    },
+        { icon: Route, label: "Tuyến gợi ý", value: "12+"  },
+        { icon: Clock, label: "Cập nhật",    value: "Live" },
       ]}
       collage={collage}
       floatingBadge={{ icon: Plane, title: "Sân bay quốc tế", subtitle: "★ TRUNG TÂM" }}
@@ -82,8 +82,8 @@ export default function Transport() {
     >
       {/* ── Phương tiện ── */}
       <section className="pt-4 space-y-4">
-        <h2 className="text-white font-bold text-lg flex items-center gap-2">
-          <Bus size={18} style={{ color: acc.orbC }} /> Phương tiện di chuyển
+        <h2 className="text-gray-900 font-bold text-lg flex items-center gap-2">
+          <Bus size={18} style={{ color: acc.orbA }} /> Phương tiện di chuyển
         </h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredModes.map((m, i) => (
@@ -93,25 +93,25 @@ export default function Transport() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.06 }}
               whileHover={{ y: -4 }}
-              className="rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-md p-5 hover:border-white/25 transition-all"
+              className="rounded-3xl border border-gray-100 bg-white shadow-sm p-5 hover:shadow-md hover:border-gray-200 transition-all"
               data-testid={`card-transport-${m.key}`}
             >
               <div
-                className="w-11 h-11 rounded-2xl flex items-center justify-center mb-3"
+                className="w-11 h-11 rounded-2xl flex items-center justify-center mb-3 border"
                 style={{
-                  background: `linear-gradient(135deg, ${acc.orbA}33, ${acc.orbB}22)`,
-                  border: `1px solid ${acc.orbA}55`,
+                  background: `${acc.orbA}10`,
+                  borderColor: `${acc.orbA}30`,
                 }}
               >
-                <m.icon size={20} style={{ color: acc.orbC }} />
+                <m.icon size={20} style={{ color: acc.orbA }} />
               </div>
-              <h3 className="text-white font-bold text-base mb-1">{m.label}</h3>
-              <p className="text-white/65 text-sm mb-2">{m.desc}</p>
-              <p className="text-white/45 text-xs leading-relaxed">{m.detail}</p>
+              <h3 className="text-gray-900 font-bold text-base mb-1">{m.label}</h3>
+              <p className="text-gray-500 text-sm mb-2">{m.desc}</p>
+              <p className="text-gray-400 text-xs leading-relaxed">{m.detail}</p>
             </motion.div>
           ))}
           {filteredModes.length === 0 && (
-            <div className="sm:col-span-2 lg:col-span-3 py-12 text-center text-white/50">
+            <div className="sm:col-span-2 lg:col-span-3 py-12 text-center text-gray-400">
               Không tìm thấy phương tiện phù hợp
             </div>
           )}
@@ -120,8 +120,8 @@ export default function Transport() {
 
       {/* ── Tuyến đường ── */}
       <section className="pt-12 space-y-4">
-        <h2 className="text-white font-bold text-lg flex items-center gap-2">
-          <Route size={18} style={{ color: acc.orbC }} /> Tuyến đường phổ biến
+        <h2 className="text-gray-900 font-bold text-lg flex items-center gap-2">
+          <Route size={18} style={{ color: acc.orbA }} /> Tuyến đường phổ biến
         </h2>
         <div className="grid sm:grid-cols-2 gap-4">
           {routes.map((r, i) => (
@@ -131,35 +131,35 @@ export default function Transport() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 + i * 0.06 }}
               whileHover={{ y: -3 }}
-              className="rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-md overflow-hidden hover:border-white/25 transition-all"
+              className="rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden hover:shadow-md transition-all"
               style={{ borderLeftWidth: 3, borderLeftColor: acc.orbA }}
             >
               <div className="p-4">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="flex-1">
-                    <div className="text-white/45 text-xs mb-0.5">Điểm đi</div>
-                    <div className="text-white font-semibold text-sm flex items-center gap-1.5">
-                      <MapPin size={11} className="text-emerald-400" />{r.from}
+                    <div className="text-gray-400 text-xs mb-0.5">Điểm đi</div>
+                    <div className="text-gray-900 font-semibold text-sm flex items-center gap-1.5">
+                      <MapPin size={11} className="text-emerald-500" />{r.from}
                     </div>
                   </div>
-                  <ArrowRight size={16} className="text-white/30 shrink-0" />
+                  <ArrowRight size={16} className="text-gray-300 shrink-0" />
                   <div className="flex-1 text-right">
-                    <div className="text-white/45 text-xs mb-0.5">Điểm đến</div>
-                    <div className="text-white font-semibold text-sm flex items-center gap-1.5 justify-end">
+                    <div className="text-gray-400 text-xs mb-0.5">Điểm đến</div>
+                    <div className="text-gray-900 font-semibold text-sm flex items-center gap-1.5 justify-end">
                       <MapPin size={11} className="text-rose-400" />{r.to}
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center justify-between pt-3 border-t border-white/10">
-                  <div className="flex items-center gap-1.5 text-xs text-white/55">
-                    <Clock size={12} className="text-white/40" />{r.time}
+                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                  <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                    <Clock size={12} className="text-gray-300" />{r.time}
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-white/55">
-                    <DollarSign size={12} className="text-white/40" />{r.cost}
+                  <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                    <DollarSign size={12} className="text-gray-300" />{r.cost}
                   </div>
                   <span
                     className="text-xs px-2.5 py-0.5 rounded-full font-medium"
-                    style={{ background: `${acc.orbA}22`, color: acc.orbC, border: `1px solid ${acc.orbA}55` }}
+                    style={{ background: `${acc.orbA}12`, color: acc.orbA, border: `1px solid ${acc.orbA}30` }}
                   >
                     {r.via}
                   </span>
@@ -172,8 +172,8 @@ export default function Transport() {
 
       {/* ── Mẹo ── */}
       <section className="pt-12 space-y-4 pb-4">
-        <h2 className="text-white font-bold text-lg flex items-center gap-2">
-          <Zap size={18} style={{ color: acc.orbC }} /> Mẹo di chuyển thông minh
+        <h2 className="text-gray-900 font-bold text-lg flex items-center gap-2">
+          <Zap size={18} style={{ color: acc.orbA }} /> Mẹo di chuyển thông minh
         </h2>
         <div className="grid sm:grid-cols-2 gap-3">
           {tips.map((t, i) => (
@@ -182,15 +182,15 @@ export default function Transport() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 + i * 0.06 }}
-              className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-md p-4 hover:border-white/25 transition-all"
+              className="flex items-start gap-3 rounded-2xl border border-gray-100 bg-white shadow-sm p-4 hover:shadow-md transition-all"
             >
               <div
-                className="shrink-0 mt-0.5 p-2 rounded-xl"
-                style={{ background: `${acc.orbA}22`, border: `1px solid ${acc.orbA}55` }}
+                className="shrink-0 mt-0.5 p-2 rounded-xl border"
+                style={{ background: `${acc.orbA}10`, borderColor: `${acc.orbA}30` }}
               >
-                <t.icon size={16} style={{ color: acc.orbC }} />
+                <t.icon size={16} style={{ color: acc.orbA }} />
               </div>
-              <p className="text-white/70 text-sm leading-relaxed">{t.tip}</p>
+              <p className="text-gray-600 text-sm leading-relaxed">{t.tip}</p>
             </motion.div>
           ))}
         </div>
@@ -200,10 +200,10 @@ export default function Transport() {
         <motion.button
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.97 }}
-          className="flex items-center gap-2 px-6 py-3 text-white font-semibold rounded-2xl text-sm"
+          className="flex items-center gap-2 px-6 py-3 text-white font-semibold rounded-2xl text-sm shadow-md"
           style={{
             background: `linear-gradient(135deg, ${acc.orbA}, ${acc.orbB})`,
-            boxShadow: `0 12px 28px ${acc.orbA}55`,
+            boxShadow: `0 10px 24px ${acc.orbA}44`,
           }}
         >
           Mở bản đồ Đà Nẵng <ChevronRight size={14} />

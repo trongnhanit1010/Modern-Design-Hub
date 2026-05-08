@@ -42,8 +42,7 @@ const CAT_COLOR: Record<Category, string> = {
 
 const MONTHS = ["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6","Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"];
 const DAYS = ["CN","Th2","Th3","Th4","Th5","Th6","Th7"];
-
-const TODAY = { y: 2026, m: 3, d: 24 }; // April 24, 2026
+const TODAY = { y: 2026, m: 3, d: 24 };
 
 function formatAttendees(n: number) {
   if (n >= 1000) return `${(n / 1000).toFixed(0)}K`;
@@ -101,25 +100,25 @@ function MiniCalendar({
   return (
     <div className="select-none">
       <div className="flex items-center justify-between mb-4">
-        <button onClick={onPrev} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
-          <ChevronLeft size={18} className="text-white/60" />
+        <button onClick={onPrev} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+          <ChevronLeft size={18} className="text-gray-400" />
         </button>
-        <span className="text-white font-bold text-base">{MONTHS[month]} {year}</span>
-        <button onClick={onNext} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
-          <ChevronRight size={18} className="text-white/60" />
+        <span className="text-gray-900 font-bold text-base">{MONTHS[month]} {year}</span>
+        <button onClick={onNext} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+          <ChevronRight size={18} className="text-gray-400" />
         </button>
       </div>
 
       <div className="grid grid-cols-7 mb-1">
         {DAYS.map((d) => (
-          <div key={d} className="text-center text-[10px] font-semibold text-white/40 pb-1.5">{d}</div>
+          <div key={d} className="text-center text-[10px] font-semibold text-gray-400 pb-1.5">{d}</div>
         ))}
       </div>
 
       <div className="grid grid-cols-7 gap-0.5">
         {cells.map((day, i) => {
           if (!day) return <div key={`empty-${i}`} />;
-          const isToday = TODAY.y === year && TODAY.m === month && TODAY.d === day;
+          const isToday    = TODAY.y === year && TODAY.m === month && TODAY.d === day;
           const isSelected = selectedDay === day;
           const cats = eventDayMap[day] ?? [];
           const hasEvent = cats.length > 0;
@@ -131,12 +130,12 @@ function MiniCalendar({
               className="relative flex flex-col items-center justify-center h-9 w-full rounded-xl text-xs font-semibold transition-all"
               style={
                 isSelected
-                  ? { background: `linear-gradient(135deg, ${accent.orbA}, ${accent.orbB})`, color: "#fff", boxShadow: `0 6px 16px ${accent.orbA}66` }
+                  ? { background: `linear-gradient(135deg, ${accent.orbA}, ${accent.orbB})`, color: "#fff", boxShadow: `0 4px 12px ${accent.orbA}55` }
                   : isToday
-                  ? { background: `${accent.orbA}22`, color: accent.orbC, border: `1px solid ${accent.orbA}55` }
+                  ? { background: `${accent.orbA}18`, color: accent.orbA, border: `1px solid ${accent.orbA}40` }
                   : hasEvent
-                  ? { background: "transparent", color: "#fff" }
-                  : { background: "transparent", color: "rgba(255,255,255,0.25)", cursor: "default" }
+                  ? { background: "transparent", color: "#374151" }
+                  : { background: "transparent", color: "#d1d5db", cursor: "default" }
               }
             >
               {day}
@@ -145,8 +144,8 @@ function MiniCalendar({
                   {cats.slice(0, 3).map((c, ci) => (
                     <span key={ci} className={`w-1 h-1 rounded-full ${
                       c === "festival" ? "bg-violet-400" :
-                      c === "music"   ? "bg-teal-400"   :
-                      c === "food"    ? "bg-orange-400"  :
+                      c === "music"    ? "bg-teal-400"   :
+                      c === "food"     ? "bg-orange-400"  :
                       "bg-amber-400"
                     }`} />
                   ))}
@@ -159,7 +158,7 @@ function MiniCalendar({
 
       <div className="mt-4 flex flex-wrap gap-2">
         {(["festival","music","food","culture"] as Category[]).map((c) => (
-          <span key={c} className="flex items-center gap-1 text-[10px] text-white/45">
+          <span key={c} className="flex items-center gap-1 text-[10px] text-gray-400">
             <span className={`w-1.5 h-1.5 rounded-full ${
               c === "festival" ? "bg-violet-400" :
               c === "music"    ? "bg-teal-400"   :
@@ -178,10 +177,10 @@ function MiniCalendar({
 function LiveCard({ ev, accent }: { ev: EventItem; accent: { orbA: string; orbB: string; orbC: string } }) {
   const Icon = CAT_ICON[ev.category];
   return (
-    <div className="flex-shrink-0 w-72 md:w-80 rounded-3xl overflow-hidden border border-white/10 bg-white/[0.04] backdrop-blur-md hover:border-white/25 transition-all group cursor-pointer">
+    <div className="flex-shrink-0 w-72 md:w-80 rounded-3xl overflow-hidden border border-gray-100 bg-white shadow-sm hover:shadow-md transition-all group cursor-pointer">
       <div className="relative h-48 overflow-hidden">
         <img src={ev.image} alt={ev.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-red-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-md">
           <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />LIVE
         </div>
@@ -190,21 +189,21 @@ function LiveCard({ ev, accent }: { ev: EventItem; accent: { orbA: string; orbB:
         </div>
       </div>
       <div className="p-4">
-        <h3 className="text-white font-bold text-sm leading-snug mb-2.5 line-clamp-2">{ev.name}</h3>
+        <h3 className="text-gray-900 font-bold text-sm leading-snug mb-2.5 line-clamp-2">{ev.name}</h3>
         <div className="space-y-1 mb-3">
-          <span className="flex items-center gap-1.5 text-white/55 text-xs"><Clock size={11} className="text-white/40 shrink-0" />{ev.time}</span>
-          <span className="flex items-center gap-1.5 text-white/55 text-xs"><MapPin size={11} className="text-white/40 shrink-0" />{ev.location}</span>
+          <span className="flex items-center gap-1.5 text-gray-500 text-xs"><Clock size={11} className="text-gray-300 shrink-0" />{ev.time}</span>
+          <span className="flex items-center gap-1.5 text-gray-500 text-xs"><MapPin size={11} className="text-gray-300 shrink-0" />{ev.location}</span>
         </div>
-        <div className="flex items-center justify-between pt-3 border-t border-white/10">
-          <span className="flex items-center gap-1 text-white/45 text-xs">
+        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+          <span className="flex items-center gap-1 text-gray-400 text-xs">
             <Users size={10} />{formatAttendees(ev.attendees)} quan tâm
           </span>
           <span
             className="text-xs font-bold px-2.5 py-1 rounded-full border"
             style={
               ev.price === "Miễn phí"
-                ? { background: "rgba(16,185,129,0.15)", color: "#6ee7b7", borderColor: "rgba(16,185,129,0.4)" }
-                : { background: `${accent.orbA}22`, color: accent.orbC, borderColor: `${accent.orbA}55` }
+                ? { background: "rgba(16,185,129,0.1)", color: "#059669", borderColor: "rgba(16,185,129,0.3)" }
+                : { background: `${accent.orbA}12`, color: accent.orbA, borderColor: `${accent.orbA}40` }
             }
           >{ev.price}</span>
         </div>
@@ -226,14 +225,14 @@ function UpcomingCard({ ev, index, isInView, accent }: { ev: EventItem; index: n
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ delay: index * 0.07 }}
       whileHover={{ y: -4 }}
-      className="group flex gap-4 rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-md overflow-hidden hover:border-white/25 transition-all cursor-pointer"
+      className="group flex gap-4 rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden hover:shadow-md transition-all cursor-pointer"
     >
       <div
         className="flex-shrink-0 w-16 flex flex-col items-center justify-center py-3 px-2"
         style={{ background: `linear-gradient(180deg, ${accent.orbA}, ${accent.orbB})` }}
       >
         <span className="text-white font-extrabold text-2xl leading-none">{dayNum}</span>
-        <span className="text-white/80 text-[10px] font-medium mt-0.5 text-center leading-tight">{monthName}</span>
+        <span className="text-white/85 text-[10px] font-medium mt-0.5 text-center leading-tight">{monthName}</span>
       </div>
 
       <div className="relative w-24 h-24 flex-shrink-0 overflow-hidden self-center rounded-xl m-2 ml-0">
@@ -246,15 +245,15 @@ function UpcomingCard({ ev, index, isInView, accent }: { ev: EventItem; index: n
             <Icon size={9} />{CAT_LABEL[ev.category]}
           </span>
           {ev.price === "Miễn phí" || ev.price === "Miễn phí vào cửa" ? (
-            <span className="text-emerald-300 text-[10px] font-bold bg-emerald-500/15 border border-emerald-500/40 px-2 py-0.5 rounded-full">
+            <span className="text-emerald-600 text-[10px] font-bold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
               Miễn phí
             </span>
           ) : (
-            <span className="text-white/55 text-[10px] font-medium">{ev.price}</span>
+            <span className="text-gray-400 text-[10px] font-medium">{ev.price}</span>
           )}
         </div>
-        <h3 className="text-white font-bold text-sm leading-tight mb-1.5 line-clamp-2 transition-colors">{ev.name}</h3>
-        <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-white/45 text-xs">
+        <h3 className="text-gray-900 font-bold text-sm leading-tight mb-1.5 line-clamp-2">{ev.name}</h3>
+        <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-gray-400 text-xs">
           <span className="flex items-center gap-1"><Clock size={10} />{ev.time}</span>
           <span className="flex items-center gap-1 truncate"><MapPin size={10} />{ev.location}</span>
         </div>
@@ -269,7 +268,7 @@ export default function Events() {
   const upcomingEvents = ALL_EVENTS.filter((e) => e.status === "upcoming");
 
   const [calYear,  setCalYear]  = useState(2026);
-  const [calMonth, setCalMonth] = useState(3); // April
+  const [calMonth, setCalMonth] = useState(3);
   const [selDay,   setSelDay]   = useState<number | null>(null);
   const [activeCat, setActiveCat] = useState("all");
   const [search, setSearch] = useState("");
@@ -343,24 +342,24 @@ export default function Events() {
       categories={categoryFilters}
       activeCat={activeCat}
       setActiveCat={setActiveCat}
-      resultCount={<><span className="text-white font-semibold">{filteredUpcoming.length}</span> sự kiện sắp tới</>}
+      resultCount={<><span className="text-gray-800 font-semibold">{filteredUpcoming.length}</span> sự kiện sắp tới</>}
     >
       {/* ── Đang diễn ra ── */}
       <section className="pt-2">
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
-            <Radio size={16} className="text-red-400" />
-            <h2 className="text-white font-bold text-lg">Đang diễn ra</h2>
-            <span className="bg-red-500/15 text-red-300 text-[11px] font-bold px-2 py-0.5 rounded-full border border-red-500/40 ml-1">
+            <Radio size={16} className="text-red-500" />
+            <h2 className="text-gray-900 font-bold text-lg">Đang diễn ra</h2>
+            <span className="bg-red-50 text-red-500 text-[11px] font-bold px-2 py-0.5 rounded-full border border-red-200 ml-1">
               {liveEvents.length} sự kiện
             </span>
           </div>
           <div className="flex gap-2">
-            <button onClick={scrollLivePrev} className="p-2 bg-white/[0.06] border border-white/10 hover:bg-white/[0.12] rounded-xl text-white/70 transition-colors">
+            <button onClick={scrollLivePrev} className="p-2 bg-gray-50 border border-gray-200 hover:bg-gray-100 rounded-xl text-gray-500 transition-colors">
               <ChevronLeft size={16} />
             </button>
-            <button onClick={scrollLiveNext} className="p-2 bg-white/[0.06] border border-white/10 hover:bg-white/[0.12] rounded-xl text-white/70 transition-colors">
+            <button onClick={scrollLiveNext} className="p-2 bg-gray-50 border border-gray-200 hover:bg-gray-100 rounded-xl text-gray-500 transition-colors">
               <ChevronRight size={16} />
             </button>
           </div>
@@ -375,12 +374,12 @@ export default function Events() {
       {/* ── Lịch sự kiện ── */}
       <section className="pt-12">
         <div className="flex items-center gap-2 mb-6">
-          <CalendarDays size={20} style={{ color: acc.orbC }} />
-          <h2 className="text-white font-bold text-lg">Lịch sự kiện</h2>
+          <CalendarDays size={20} style={{ color: acc.orbA }} />
+          <h2 className="text-gray-900 font-bold text-lg">Lịch sự kiện</h2>
         </div>
 
         <div className="grid lg:grid-cols-5 gap-6 lg:gap-8">
-          <div className="lg:col-span-2 rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-md p-5">
+          <div className="lg:col-span-2 rounded-3xl border border-gray-200 bg-white shadow-sm p-5">
             <MiniCalendar
               year={calYear} month={calMonth}
               events={ALL_EVENTS}
@@ -393,13 +392,13 @@ export default function Events() {
 
           <div className="lg:col-span-3">
             <div className="flex items-center justify-between mb-4">
-              <p className="text-white/55 text-sm">
+              <p className="text-gray-500 text-sm">
                 {selDay
                   ? `Sự kiện ngày ${selDay} tháng ${calMonth + 1}, ${calYear}`
                   : `Sự kiện tháng ${calMonth + 1}/${calYear}`}
               </p>
               {selDay && (
-                <button onClick={() => setSelDay(null)} className="text-white/45 hover:text-white/85 text-xs transition-colors">
+                <button onClick={() => setSelDay(null)} className="text-gray-400 hover:text-gray-700 text-xs transition-colors">
                   Xem tất cả tháng
                 </button>
               )}
@@ -414,7 +413,7 @@ export default function Events() {
                 className="space-y-3 max-h-80 lg:max-h-96 overflow-y-auto pr-1 scrollbar-hide"
               >
                 {calPanelEvents.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-12 text-white/30">
+                  <div className="flex flex-col items-center justify-center py-12 text-gray-300">
                     <CalendarDays size={36} strokeWidth={1} />
                     <p className="mt-3 text-sm">Không có sự kiện trong ngày này</p>
                   </div>
@@ -427,7 +426,7 @@ export default function Events() {
                         initial={{ opacity: 0, x: 12 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.06 }}
-                        className="flex gap-3 rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-md hover:border-white/25 hover:bg-white/[0.07] p-3.5 cursor-pointer transition-all group"
+                        className="flex gap-3 rounded-2xl border border-gray-100 bg-white hover:shadow-sm hover:border-gray-200 p-3.5 cursor-pointer transition-all group"
                       >
                         <div className="relative w-16 h-16 flex-shrink-0 rounded-xl overflow-hidden">
                           <img src={ev.image} alt={ev.name} className="w-full h-full object-cover" />
@@ -435,22 +434,22 @@ export default function Events() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5 mb-1">
                             {ev.status === "live" && (
-                              <span className="flex items-center gap-1 bg-red-500/15 text-red-300 text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-red-500/40">
-                                <span className="w-1 h-1 rounded-full bg-red-400 animate-pulse" />LIVE
+                              <span className="flex items-center gap-1 bg-red-50 text-red-500 text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-red-200">
+                                <span className="w-1 h-1 rounded-full bg-red-500 animate-pulse" />LIVE
                               </span>
                             )}
                             <span className={`flex items-center gap-0.5 ${CAT_COLOR[ev.category]} text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full`}>
                               <Icon size={8} />{CAT_LABEL[ev.category]}
                             </span>
                           </div>
-                          <h4 className="text-white font-semibold text-xs leading-tight mb-1 line-clamp-2 transition-colors">{ev.name}</h4>
-                          <div className="flex gap-2 text-white/45 text-[10px]">
+                          <h4 className="text-gray-900 font-semibold text-xs leading-tight mb-1 line-clamp-2">{ev.name}</h4>
+                          <div className="flex gap-2 text-gray-400 text-[10px]">
                             <span className="flex items-center gap-0.5"><Clock size={9} />{ev.time}</span>
                             <span className="flex items-center gap-0.5 truncate"><MapPin size={9} />{ev.location}</span>
                           </div>
                         </div>
                         <div className="flex items-center shrink-0">
-                          <ArrowRight size={14} style={{ color: acc.orbC }} className="opacity-60 group-hover:opacity-100 transition-opacity" />
+                          <ArrowRight size={14} style={{ color: acc.orbA }} className="opacity-50 group-hover:opacity-100 transition-opacity" />
                         </div>
                       </motion.div>
                     );
@@ -465,8 +464,8 @@ export default function Events() {
       {/* ── Sắp diễn ra ── */}
       <section className="pt-12 pb-2" ref={upcomingRef}>
         <div className="flex items-center gap-2 mb-5">
-          <Flame size={20} style={{ color: acc.orbC }} />
-          <h2 className="text-white font-bold text-lg">Sắp diễn ra</h2>
+          <Flame size={20} style={{ color: acc.orbA }} />
+          <h2 className="text-gray-900 font-bold text-lg">Sắp diễn ra</h2>
         </div>
 
         <AnimatePresence mode="wait">
@@ -478,7 +477,7 @@ export default function Events() {
             className="grid sm:grid-cols-2 gap-3"
           >
             {filteredUpcoming.length === 0 ? (
-              <div className="sm:col-span-2 flex flex-col items-center py-16 text-white/40">
+              <div className="sm:col-span-2 flex flex-col items-center py-16 text-gray-300">
                 <Tag size={36} strokeWidth={1} />
                 <p className="mt-3 text-sm">Không có sự kiện nào trong danh mục này</p>
               </div>

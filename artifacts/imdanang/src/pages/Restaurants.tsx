@@ -96,7 +96,7 @@ export default function Restaurants() {
       sortOptions={sortOptions}
       sort={sort}
       setSort={setSort}
-      resultCount={<><span className="text-white font-semibold">{filtered.length}</span> nhà hàng phù hợp</>}
+      resultCount={<><span className="text-gray-800 font-semibold">{filtered.length}</span> nhà hàng phù hợp</>}
     >
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 pt-4">
         <AnimatePresence>
@@ -108,12 +108,12 @@ export default function Restaurants() {
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ delay: i * 0.06, duration: 0.4 }}
               whileHover={{ y: -6 }}
-              className="group rounded-3xl overflow-hidden border border-white/10 bg-white/[0.04] backdrop-blur-md hover:border-white/25 transition-all"
+              className="group rounded-3xl overflow-hidden border border-gray-100 bg-white shadow-sm hover:shadow-md hover:border-gray-200 transition-all"
               data-testid={`card-restaurant-${r.id}`}
             >
               <div className="relative h-52 overflow-hidden">
                 <img src={r.image} alt={r.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
                 <div
                   className="absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-full text-white"
                   style={{ background: `linear-gradient(135deg, ${acc.orbA}, ${acc.orbB})` }}
@@ -129,32 +129,32 @@ export default function Restaurants() {
               </div>
               <div className="p-4">
                 <div className="flex items-start justify-between gap-2 mb-2">
-                  <h3 className="text-white font-bold text-base leading-tight">{r.name}</h3>
+                  <h3 className="text-gray-900 font-bold text-base leading-tight">{r.name}</h3>
                   <div
                     className="shrink-0 flex items-center gap-1 rounded-lg px-2 py-0.5 border"
-                    style={{ background: `${acc.orbA}1f`, borderColor: `${acc.orbA}55`, color: acc.orbC }}
+                    style={{ background: `${acc.orbA}12`, borderColor: `${acc.orbA}40`, color: acc.orbA }}
                   >
                     <Star size={11} className="fill-current" />
                     <span className="text-xs font-bold">{r.rating}</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-1 text-white/55 text-xs mb-3">
-                  <MapPin size={11} className="shrink-0 text-white/40" /><span>{r.location}</span>
+                <div className="flex items-center gap-1 text-gray-400 text-xs mb-3">
+                  <MapPin size={11} className="shrink-0 text-gray-300" /><span>{r.location}</span>
                   <span className="mx-1">·</span><span>{r.reviews.toLocaleString()} đ.giá</span>
                 </div>
-                <div className="flex items-center gap-3 mb-4 text-xs text-white/55">
-                  <div className="flex items-center gap-1"><Clock size={11} className="text-white/40" />{r.time}</div>
-                  <div className="flex items-center gap-1"><TrendingUp size={11} style={{ color: acc.orbC }} />{r.price}</div>
+                <div className="flex items-center gap-3 mb-4 text-xs text-gray-400">
+                  <div className="flex items-center gap-1"><Clock size={11} className="text-gray-300" />{r.time}</div>
+                  <div className="flex items-center gap-1"><TrendingUp size={11} style={{ color: acc.orbA }} />{r.price}</div>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-white/55 bg-white/5 border border-white/10 px-2 py-0.5 rounded-full">{r.area}</span>
+                  <span className="text-xs text-gray-400 bg-gray-50 border border-gray-200 px-2 py-0.5 rounded-full">{r.area}</span>
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.96 }}
-                    className="flex items-center gap-1 text-white text-sm font-semibold px-4 py-2 rounded-xl"
+                    className="flex items-center gap-1 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-md"
                     style={{
                       background: `linear-gradient(135deg, ${acc.orbA}, ${acc.orbB})`,
-                      boxShadow: `0 8px 24px ${acc.orbA}55`,
+                      boxShadow: `0 6px 18px ${acc.orbA}44`,
                     }}
                   >
                     Xem menu <ChevronRight size={14} />
@@ -168,10 +168,10 @@ export default function Restaurants() {
 
       {hasMore && (
         <div className="flex flex-col items-center gap-3 pt-10">
-          <p className="text-white/50 text-sm">
-            Hiển thị <span className="text-white font-semibold">{visible.length}</span> /{" "}
-            <span className="text-white font-semibold">{filtered.length}</span> · còn{" "}
-            <span style={{ color: acc.orbC }} className="font-semibold">{remaining}</span> quán
+          <p className="text-gray-500 text-sm">
+            Hiển thị <span className="text-gray-800 font-semibold">{visible.length}</span> /{" "}
+            <span className="text-gray-800 font-semibold">{filtered.length}</span> · còn{" "}
+            <span style={{ color: acc.orbA }} className="font-semibold">{remaining}</span> quán
           </p>
           <motion.button
             whileHover={{ scale: loadingMore ? 1 : 1.04 }}
@@ -181,7 +181,7 @@ export default function Restaurants() {
             className="flex items-center gap-2.5 px-8 py-3 text-white font-semibold rounded-2xl text-sm disabled:opacity-80 min-w-52 justify-center"
             style={{
               background: `linear-gradient(135deg, ${acc.orbA}, ${acc.orbB})`,
-              boxShadow: `0 12px 28px ${acc.orbA}55`,
+              boxShadow: `0 10px 24px ${acc.orbA}44`,
             }}
           >
             {loadingMore ? (
@@ -194,16 +194,16 @@ export default function Restaurants() {
       )}
 
       {!hasMore && filtered.length > 0 && (
-        <div className="pt-10 text-center text-white/45 text-sm">
-          Đã hiển thị tất cả <span className="text-white/80 font-semibold">{filtered.length}</span> nhà hàng
+        <div className="pt-10 text-center text-gray-400 text-sm">
+          Đã hiển thị tất cả <span className="text-gray-700 font-semibold">{filtered.length}</span> nhà hàng
         </div>
       )}
 
       {filtered.length === 0 && (
         <div className="pt-16 flex flex-col items-center justify-center text-center">
-          <UtensilsCrossed size={40} className="text-white/30 mb-3" />
-          <p className="text-white/80 font-medium">Không tìm thấy nhà hàng phù hợp</p>
-          <p className="text-white/40 text-sm mt-1">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
+          <UtensilsCrossed size={40} className="text-gray-300 mb-3" />
+          <p className="text-gray-700 font-medium">Không tìm thấy nhà hàng phù hợp</p>
+          <p className="text-gray-400 text-sm mt-1">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
         </div>
       )}
     </CategoryShell>

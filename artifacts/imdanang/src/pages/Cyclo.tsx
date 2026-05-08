@@ -11,7 +11,7 @@ const SEPIA_BG =
   "https://images.unsplash.com/photo-1528127269322-539801943592?w=1800&auto=format&fit=crop";
 
 /* ─── Animated audio waveform ────────────────────────────── */
-function Waveform({ playing, bars = 28, color = "#fbbf24" }: { playing: boolean; bars?: number; color?: string }) {
+function Waveform({ playing, bars = 28, color = "#d97706" }: { playing: boolean; bars?: number; color?: string }) {
   return (
     <div className="flex items-end gap-[3px] h-9">
       {Array.from({ length: bars }).map((_, i) => (
@@ -44,15 +44,15 @@ function SpeakerPulse({ playing }: { playing: boolean }) {
         [0, 1, 2].map((i) => (
           <motion.span
             key={i}
-            className="absolute inset-0 rounded-full border-2 border-amber-400"
+            className="absolute inset-0 rounded-full border-2 border-amber-500"
             initial={{ scale: 0.6, opacity: 0.7 }}
             animate={{ scale: 1.8, opacity: 0 }}
             transition={{ duration: 1.6, repeat: Infinity, delay: i * 0.5, ease: "easeOut" }}
           />
         ))}
       <div
-        className="relative w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center shadow-lg"
-        style={{ boxShadow: "0 0 24px rgba(251,191,36,0.6)" }}
+        className="relative w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg"
+        style={{ boxShadow: "0 0 20px rgba(217,119,6,0.4)" }}
       >
         <Headphones size={20} className="text-white" />
       </div>
@@ -64,19 +64,17 @@ function SpeakerPulse({ playing }: { playing: boolean }) {
 function CycloIcon({ size = 64 }: { size?: number }) {
   return (
     <svg viewBox="0 0 120 64" width={size} height={(size * 64) / 120} fill="none">
-      {/* big wheel */}
       <motion.g
         animate={{ rotate: 360 }}
         transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
         style={{ transformOrigin: "92px 46px" }}
       >
-        <circle cx="92" cy="46" r="14" stroke="#7c2d12" strokeWidth="2" />
-        <line x1="92" y1="32" x2="92" y2="60" stroke="#7c2d12" strokeWidth="1.2" />
-        <line x1="78" y1="46" x2="106" y2="46" stroke="#7c2d12" strokeWidth="1.2" />
-        <line x1="82" y1="36" x2="102" y2="56" stroke="#7c2d12" strokeWidth="1.2" />
-        <line x1="82" y1="56" x2="102" y2="36" stroke="#7c2d12" strokeWidth="1.2" />
+        <circle cx="92" cy="46" r="14" stroke="#92400e" strokeWidth="2" />
+        <line x1="92" y1="32" x2="92" y2="60" stroke="#92400e" strokeWidth="1.2" />
+        <line x1="78" y1="46" x2="106" y2="46" stroke="#92400e" strokeWidth="1.2" />
+        <line x1="82" y1="36" x2="102" y2="56" stroke="#92400e" strokeWidth="1.2" />
+        <line x1="82" y1="56" x2="102" y2="36" stroke="#92400e" strokeWidth="1.2" />
       </motion.g>
-      {/* small wheels */}
       {[20, 50].map((cx) => (
         <motion.g
           key={cx}
@@ -84,20 +82,17 @@ function CycloIcon({ size = 64 }: { size?: number }) {
           transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
           style={{ transformOrigin: `${cx}px 50px` }}
         >
-          <circle cx={cx} cy="50" r="10" stroke="#7c2d12" strokeWidth="2" />
-          <line x1={cx - 10} y1="50" x2={cx + 10} y2="50" stroke="#7c2d12" strokeWidth="1.2" />
-          <line x1={cx} y1="40" x2={cx} y2="60" stroke="#7c2d12" strokeWidth="1.2" />
+          <circle cx={cx} cy="50" r="10" stroke="#92400e" strokeWidth="2" />
+          <line x1={cx - 10} y1="50" x2={cx + 10} y2="50" stroke="#92400e" strokeWidth="1.2" />
+          <line x1={cx} y1="40" x2={cx} y2="60" stroke="#92400e" strokeWidth="1.2" />
         </motion.g>
       ))}
-      {/* Seat / canopy */}
-      <path d="M10 30 L40 30 L40 14 L20 14 Z" fill="#fbbf24" stroke="#7c2d12" strokeWidth="2" />
-      <path d="M10 30 L20 14" stroke="#7c2d12" strokeWidth="2" />
-      {/* Frame */}
-      <line x1="40" y1="30" x2="92" y2="46" stroke="#7c2d12" strokeWidth="3" />
-      <line x1="40" y1="30" x2="50" y2="50" stroke="#7c2d12" strokeWidth="3" />
-      {/* Rider */}
-      <circle cx="80" cy="22" r="5" fill="#7c2d12" />
-      <line x1="80" y1="27" x2="86" y2="40" stroke="#7c2d12" strokeWidth="2.5" />
+      <path d="M10 30 L40 30 L40 14 L20 14 Z" fill="#fbbf24" stroke="#92400e" strokeWidth="2" />
+      <path d="M10 30 L20 14" stroke="#92400e" strokeWidth="2" />
+      <line x1="40" y1="30" x2="92" y2="46" stroke="#92400e" strokeWidth="3" />
+      <line x1="40" y1="30" x2="50" y2="50" stroke="#92400e" strokeWidth="3" />
+      <circle cx="80" cy="22" r="5" fill="#92400e" />
+      <line x1="80" y1="27" x2="86" y2="40" stroke="#92400e" strokeWidth="2.5" />
     </svg>
   );
 }
@@ -110,7 +105,6 @@ export default function Cyclo() {
   const [heroPlaying, setHeroPlaying] = useState(true);
   const [progress, setProgress] = useState(0);
 
-  // Auto-progress audio bar in hero
   useEffect(() => {
     if (!heroPlaying) return;
     const id = setInterval(() => setProgress((p) => (p >= 100 ? 0 : p + 0.6)), 80);
@@ -131,28 +125,19 @@ export default function Cyclo() {
   );
 
   return (
-    <div className="min-h-screen" style={{ background: "linear-gradient(180deg,#1a1108 0%, #2a1810 60%, #1a1108 100%)" }}>
+    <div className="min-h-screen bg-white">
       {/* ─── HERO ─────────────────────────────────────────── */}
-      <section className="relative overflow-hidden border-b border-amber-900/50">
-        {/* Sepia background */}
-        <div className="absolute inset-0">
-          <img src={SEPIA_BG} alt="" className="w-full h-full object-cover opacity-25" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#1a1108]/80 via-[#2a1810]/60 to-[#1a1108]" />
-          {/* Vintage paper texture overlay */}
-          <div
-            className="absolute inset-0 opacity-30"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 20% 20%, #fbbf24 0%, transparent 40%), radial-gradient(circle at 80% 60%, #b45309 0%, transparent 40%)",
-            }}
-          />
-        </div>
+      <section className="relative overflow-hidden border-b border-amber-100">
+        {/* Light amber wash */}
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-orange-50 to-white" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[180px] opacity-40"
+          style={{ background: "radial-gradient(circle, #fde68a, transparent)" }} />
 
         {/* Decorative dotted route line */}
-        <svg className="absolute inset-x-0 bottom-0 w-full h-24 opacity-50" viewBox="0 0 1200 100" preserveAspectRatio="none">
+        <svg className="absolute inset-x-0 bottom-0 w-full h-24 opacity-30" viewBox="0 0 1200 100" preserveAspectRatio="none">
           <motion.path
             d="M0 50 Q 200 10, 400 50 T 800 50 T 1200 50"
-            stroke="#fbbf24"
+            stroke="#d97706"
             strokeWidth="2"
             strokeDasharray="8 8"
             fill="none"
@@ -161,21 +146,21 @@ export default function Cyclo() {
             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
           />
           {[100, 350, 600, 850, 1100].map((x, i) => (
-            <circle key={i} cx={x} cy="50" r="5" fill="#fbbf24" />
+            <circle key={i} cx={x} cy="50" r="4" fill="#d97706" />
           ))}
         </svg>
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
           <div className="grid lg:grid-cols-[1.2fr,1fr] gap-8 items-center">
-            {/* LEFT: Title + cyclo */}
+            {/* LEFT */}
             <div>
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/15 border border-amber-500/40 backdrop-blur-sm mb-4"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-100 border border-amber-200 mb-4"
               >
-                <Sparkles size={12} className="text-amber-400" />
-                <span className="text-amber-300 text-xs font-semibold tracking-wider uppercase">
+                <Sparkles size={12} className="text-amber-600" />
+                <span className="text-amber-700 text-xs font-semibold tracking-wider uppercase">
                   Trải nghiệm hoài niệm · Có audio guide
                 </span>
               </motion.div>
@@ -187,17 +172,16 @@ export default function Cyclo() {
                 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-none mb-3"
                 style={{ fontFamily: "Georgia, serif" }}
               >
-                <span className="text-amber-100">Xích Lô</span>{" "}
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-300 to-orange-400">
+                <span className="text-amber-900">Xích Lô</span>{" "}
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700">
                   Du Lịch
                 </span>
               </motion.h1>
 
-              <p className="text-amber-200/70 text-base max-w-xl mb-6">
+              <p className="text-amber-800/70 text-base max-w-xl mb-6">
                 Mỗi vòng bánh xe là một câu chuyện. Tai nghe sẽ tự động kể bạn nghe khi đến từng điểm dừng – như có hướng dẫn viên riêng đi theo.
               </p>
 
-              {/* Live cyclo + waveform */}
               <div className="flex items-center gap-5 mb-6">
                 <motion.div
                   animate={{ x: [0, 6, 0] }}
@@ -205,21 +189,20 @@ export default function Cyclo() {
                 >
                   <CycloIcon size={88} />
                 </motion.div>
-                <div className="h-12 w-px bg-amber-500/30" />
+                <div className="h-12 w-px bg-amber-200" />
                 <div className="flex items-center gap-3">
                   <SpeakerPulse playing={heroPlaying} />
                   <div>
-                    <div className="text-amber-300 text-[10px] uppercase tracking-widest font-semibold">Audio guide</div>
-                    <Waveform playing={heroPlaying} bars={32} />
+                    <div className="text-amber-600 text-[10px] uppercase tracking-widest font-semibold">Audio guide</div>
+                    <Waveform playing={heroPlaying} bars={32} color="#d97706" />
                   </div>
                 </div>
               </div>
 
-              {/* Stats */}
-              <div className="flex gap-5 text-amber-200/80 text-sm">
-                <span className="flex items-center gap-1.5"><Bike size={14} className="text-amber-400" /><b className="text-amber-100">{cycloTours.length}</b> tour</span>
-                <span className="flex items-center gap-1.5"><Headphones size={14} className="text-amber-400" /> 6 ngôn ngữ</span>
-                <span className="flex items-center gap-1.5"><Star size={14} className="text-amber-400 fill-amber-400" /> 4.8 trung bình</span>
+              <div className="flex gap-5 text-amber-800/70 text-sm">
+                <span className="flex items-center gap-1.5"><Bike size={14} className="text-amber-600" /><b className="text-amber-900">{cycloTours.length}</b> tour</span>
+                <span className="flex items-center gap-1.5"><Headphones size={14} className="text-amber-600" /> 6 ngôn ngữ</span>
+                <span className="flex items-center gap-1.5"><Star size={14} className="text-amber-500 fill-amber-500" /> 4.8 trung bình</span>
               </div>
             </div>
 
@@ -230,95 +213,81 @@ export default function Cyclo() {
               transition={{ delay: 0.3, type: "spring" }}
               className="relative"
             >
-              {/* Vintage radio device frame */}
               <div
-                className="relative rounded-3xl p-6 border border-amber-900/60"
-                style={{
-                  background:
-                    "linear-gradient(145deg, #3a2a18 0%, #2a1810 60%, #1a1008 100%)",
-                  boxShadow:
-                    "0 24px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(251,191,36,0.15), inset 0 -2px 6px rgba(0,0,0,0.6)",
-                }}
+                className="relative rounded-3xl p-6 border border-amber-200 bg-white shadow-xl"
+                style={{ boxShadow: "0 24px 60px rgba(217,119,6,0.12), 0 4px 16px rgba(0,0,0,0.06)" }}
               >
-                {/* Top row: brand */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <Radio size={16} className="text-amber-400" />
-                    <span className="text-amber-300 font-bold tracking-widest text-xs">IMDANANG · AUDIO</span>
+                    <Radio size={16} className="text-amber-600" />
+                    <span className="text-amber-700 font-bold tracking-widest text-xs">IMDANANG · AUDIO</span>
                   </div>
-                  <div className="flex items-center gap-1 text-amber-400/80 text-[10px] font-mono">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <div className="flex items-center gap-1 text-amber-600/80 text-[10px] font-mono">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     PHÁT TRỰC TIẾP
                   </div>
                 </div>
 
-                {/* Now playing screen */}
                 <div
-                  className="rounded-2xl p-4 mb-4 border border-amber-900/60"
-                  style={{ background: "radial-gradient(ellipse at top, #3a1f10, #1a0d05)" }}
+                  className="rounded-2xl p-4 mb-4 border border-amber-100 bg-amber-50"
                 >
-                  <div className="text-amber-300/60 text-[10px] uppercase tracking-widest mb-1">
+                  <div className="text-amber-500 text-[10px] uppercase tracking-widest mb-1">
                     Điểm dừng 02 / 04
                   </div>
-                  <div className="text-amber-100 font-bold text-lg leading-tight" style={{ fontFamily: "Georgia, serif" }}>
+                  <div className="text-amber-900 font-bold text-lg leading-tight" style={{ fontFamily: "Georgia, serif" }}>
                     Chùa Cầu Nhật Bản
                   </div>
-                  <div className="text-amber-200/60 text-xs mt-1 mb-3">
+                  <div className="text-amber-700/60 text-xs mt-1 mb-3">
                     "Cây cầu được xây dựng giữa thế kỷ 17, là minh chứng cho sự giao thoa giữa hai nền văn hóa…"
                   </div>
 
-                  {/* waveform inside screen */}
-                  <Waveform playing={heroPlaying} bars={36} color="#fcd34d" />
+                  <Waveform playing={heroPlaying} bars={36} color="#d97706" />
 
-                  {/* Progress */}
                   <div className="mt-3 space-y-1">
-                    <div className="h-1 rounded-full bg-amber-900/60 overflow-hidden">
+                    <div className="h-1 rounded-full bg-amber-100 overflow-hidden">
                       <motion.div
-                        className="h-full bg-gradient-to-r from-amber-400 to-orange-400"
+                        className="h-full bg-gradient-to-r from-amber-500 to-orange-500"
                         animate={{ width: `${progress}%` }}
                         transition={{ duration: 0.1, ease: "linear" }}
                       />
                     </div>
-                    <div className="flex justify-between text-amber-300/60 text-[10px] font-mono">
+                    <div className="flex justify-between text-amber-400 text-[10px] font-mono">
                       <span>{Math.floor((progress / 100) * 240).toString().padStart(2, "0")}:00</span>
                       <span>04:00</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Controls */}
                 <div className="flex items-center justify-center gap-4">
-                  <button className="w-10 h-10 rounded-full bg-amber-900/40 text-amber-300/80 flex items-center justify-center hover:text-amber-200">
+                  <button className="w-10 h-10 rounded-full bg-amber-50 border border-amber-200 text-amber-500 flex items-center justify-center hover:bg-amber-100 transition-colors">
                     <ChevronRight size={16} className="rotate-180" />
                   </button>
                   <button
                     onClick={() => setHeroPlaying((p) => !p)}
-                    className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 text-white flex items-center justify-center shadow-lg hover:scale-105 transition-transform"
-                    style={{ boxShadow: "0 8px 20px rgba(251,191,36,0.4)" }}
+                    className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 text-white flex items-center justify-center shadow-lg hover:scale-105 transition-transform"
+                    style={{ boxShadow: "0 8px 20px rgba(217,119,6,0.35)" }}
                   >
                     {heroPlaying ? <Pause size={20} /> : <Play size={20} className="ml-0.5" />}
                   </button>
-                  <button className="w-10 h-10 rounded-full bg-amber-900/40 text-amber-300/80 flex items-center justify-center hover:text-amber-200">
+                  <button className="w-10 h-10 rounded-full bg-amber-50 border border-amber-200 text-amber-500 flex items-center justify-center hover:bg-amber-100 transition-colors">
                     <ChevronRight size={16} />
                   </button>
                 </div>
 
-                {/* Volume */}
-                <div className="flex items-center gap-2 mt-4 text-amber-400/60">
+                <div className="flex items-center gap-2 mt-4 text-amber-500">
                   <Volume2 size={12} />
-                  <div className="flex-1 h-1 rounded-full bg-amber-900/60 overflow-hidden">
-                    <div className="h-full w-3/4 bg-amber-500/80" />
+                  <div className="flex-1 h-1 rounded-full bg-amber-100 overflow-hidden">
+                    <div className="h-full w-3/4 bg-amber-400" />
                   </div>
                   <Languages size={12} />
-                  <span className="text-[10px] font-mono">VI</span>
+                  <span className="text-[10px] font-mono text-amber-600">VI</span>
                 </div>
               </div>
 
-              {/* Decorative headphones cable */}
-              <svg className="absolute -top-6 -right-3 w-16 h-16 opacity-60" viewBox="0 0 64 64">
+              <svg className="absolute -top-6 -right-3 w-16 h-16 opacity-40" viewBox="0 0 64 64">
                 <motion.path
                   d="M10 10 Q 20 30, 30 20 T 54 30"
-                  stroke="#fbbf24"
+                  stroke="#d97706"
                   strokeWidth="2"
                   fill="none"
                   initial={{ pathLength: 0 }}
@@ -329,21 +298,15 @@ export default function Cyclo() {
             </motion.div>
           </div>
 
-          {/* ─── SEARCH bar (vintage stamp) ─────────────────── */}
+          {/* ─── SEARCH bar ─────────────────── */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
             className="mt-10 relative max-w-3xl mx-auto"
           >
-            <div
-              className="rounded-2xl p-2 sm:p-3 flex items-center gap-2 border-2 border-dashed border-amber-500/40"
-              style={{
-                background: "linear-gradient(145deg, rgba(251,191,36,0.06), rgba(124,45,18,0.20))",
-                backdropFilter: "blur(4px)",
-              }}
-            >
-              <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-500/10 text-amber-300 text-xs font-bold uppercase tracking-widest">
+            <div className="rounded-2xl p-2 sm:p-3 flex items-center gap-2 bg-white border border-amber-200 shadow-sm">
+              <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-50 text-amber-700 text-xs font-bold uppercase tracking-widest border border-amber-100">
                 <Route size={14} /> Tour
               </div>
               <div className="flex-1 flex items-center gap-2 px-3">
@@ -352,7 +315,7 @@ export default function Cyclo() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Tìm hành trình xích lô của bạn..."
-                  className="bg-transparent flex-1 text-amber-100 placeholder:text-amber-200/40 text-sm focus:outline-none py-2"
+                  className="bg-transparent flex-1 text-amber-900 placeholder:text-amber-400/70 text-sm focus:outline-none py-2"
                 />
               </div>
               <div className="flex items-center gap-1 pr-1">
@@ -362,8 +325,8 @@ export default function Cyclo() {
                     onClick={() => setActiveArea(a)}
                     className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                       activeArea === a
-                        ? "bg-amber-500 text-amber-950"
-                        : "text-amber-300/70 hover:text-amber-200 hover:bg-amber-500/10"
+                        ? "bg-amber-500 text-white"
+                        : "text-amber-600 hover:text-amber-800 hover:bg-amber-50"
                     }`}
                   >
                     {a}
@@ -378,11 +341,11 @@ export default function Cyclo() {
       {/* ─── TOUR LIST ──────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-amber-100 text-lg font-bold flex items-center gap-2">
-            <Bike size={18} className="text-amber-400" />
+          <h2 className="text-amber-900 text-lg font-bold flex items-center gap-2">
+            <Bike size={18} className="text-amber-600" />
             {filtered.length} hành trình có sẵn
           </h2>
-          <span className="text-amber-200/50 text-xs">Chạm vào sóng âm để nghe thử</span>
+          <span className="text-amber-600/60 text-xs">Chạm vào sóng âm để nghe thử</span>
         </div>
 
         <div className="grid md:grid-cols-2 gap-5">
@@ -397,7 +360,7 @@ export default function Cyclo() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.96 }}
                   transition={{ delay: idx * 0.05 }}
-                  className="group relative rounded-3xl overflow-hidden border border-amber-900/40 bg-gradient-to-br from-[#2a1a10] to-[#1a0f08] hover:border-amber-500/40 transition-colors"
+                  className="group relative rounded-3xl overflow-hidden border border-amber-100 bg-white shadow-sm hover:shadow-md hover:border-amber-200 transition-all"
                 >
                   {/* IMAGE */}
                   <div className="relative h-56 overflow-hidden">
@@ -406,17 +369,15 @@ export default function Cyclo() {
                       alt={tour.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#1a0f08] via-[#1a0f08]/30 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent" />
 
-                    {/* Area badge */}
-                    <div className="absolute top-3 left-3 flex items-center gap-1 bg-amber-500/90 text-amber-950 text-[10px] font-bold px-2.5 py-1 rounded-full">
+                    <div className="absolute top-3 left-3 flex items-center gap-1 bg-amber-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
                       <MapPin size={10} /> {tour.area}
                     </div>
-                    <div className="absolute top-3 right-3 flex items-center gap-1 bg-black/60 backdrop-blur text-amber-300 text-[10px] font-bold px-2.5 py-1 rounded-full">
-                      <Star size={10} className="fill-amber-300" /> {tour.rating}
+                    <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/90 backdrop-blur text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-full">
+                      <Star size={10} className="fill-amber-500 text-amber-500" /> {tour.rating}
                     </div>
 
-                    {/* Floating cyclo */}
                     <motion.div
                       className="absolute bottom-2 right-2 opacity-90"
                       animate={{ x: [0, -6, 0] }}
@@ -425,12 +386,11 @@ export default function Cyclo() {
                       <CycloIcon size={56} />
                     </motion.div>
 
-                    {/* Title overlay */}
                     <div className="absolute bottom-3 left-3 right-20">
-                      <h3 className="text-amber-100 font-bold text-xl leading-tight" style={{ fontFamily: "Georgia, serif" }}>
+                      <h3 className="text-white font-bold text-xl leading-tight" style={{ fontFamily: "Georgia, serif" }}>
                         {tour.name}
                       </h3>
-                      <div className="flex items-center gap-3 text-amber-200/70 text-[11px] mt-1">
+                      <div className="flex items-center gap-3 text-white/75 text-[11px] mt-1">
                         <span className="flex items-center gap-1"><Clock size={10} />{tour.duration}</span>
                         <span className="flex items-center gap-1"><Route size={10} />{tour.distanceKm} km</span>
                       </div>
@@ -440,56 +400,60 @@ export default function Cyclo() {
                   {/* AUDIO ROW */}
                   <div className="px-4 pt-3 pb-4">
                     <div
-                      className="flex items-center gap-3 rounded-2xl border border-amber-900/50 px-3 py-2.5 mb-3"
-                      style={{ background: "linear-gradient(145deg, rgba(251,191,36,0.08), rgba(0,0,0,0.4))" }}
+                      className="flex items-center gap-3 rounded-2xl border border-amber-100 bg-amber-50 px-3 py-2.5 mb-3"
                     >
                       <button
                         onClick={() => setPlayingId(isPlaying ? null : tour.id)}
-                        className="shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 text-amber-950 flex items-center justify-center hover:scale-105 transition-transform shadow-lg"
-                        style={{ boxShadow: "0 4px 12px rgba(251,191,36,0.4)" }}
+                        className="shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 text-white flex items-center justify-center hover:scale-105 transition-transform shadow-md"
+                        style={{ boxShadow: "0 4px 12px rgba(217,119,6,0.35)" }}
                       >
                         {isPlaying ? <Pause size={14} /> : <Play size={14} className="ml-0.5" />}
                       </button>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between text-[10px] mb-1">
-                          <span className="text-amber-300 uppercase tracking-widest font-bold">Audio preview</span>
-                          <span className="text-amber-300/60 font-mono">04:00</span>
+                          <span className="text-amber-600 uppercase tracking-widest font-bold">Audio preview</span>
+                          <span className="text-amber-400 font-mono">04:00</span>
                         </div>
-                        <Waveform playing={isPlaying} bars={26} />
+                        <Waveform playing={isPlaying} bars={26} color="#d97706" />
                       </div>
                     </div>
 
-                    {/* Description */}
-                    <p className="text-amber-200/70 text-xs leading-relaxed line-clamp-2 mb-3">
+                    <p className="text-amber-800/65 text-xs leading-relaxed line-clamp-2 mb-3">
                       {tour.shortDesc}
                     </p>
 
-                    {/* Stops count + languages */}
                     <div className="flex items-center justify-between text-[11px] mb-3">
-                      <div className="flex items-center gap-3 text-amber-200/60">
+                      <div className="flex items-center gap-3 text-amber-700/60">
                         <span className="flex items-center gap-1">
-                          <MapPin size={11} className="text-amber-400" />
+                          <MapPin size={11} className="text-amber-500" />
                           {tour.stops.length} điểm dừng
                         </span>
                         <span className="flex items-center gap-1">
-                          <Globe size={11} className="text-amber-400" />
+                          <Globe size={11} className="text-amber-500" />
                           {tour.languages.length} ngôn ngữ
                         </span>
                       </div>
                     </div>
 
-                    {/* Footer */}
-                    <div className="flex items-center justify-between pt-3 border-t border-amber-900/40">
+                    <div className="flex items-center justify-between pt-3 border-t border-amber-100">
                       <div>
-                        <div className="text-amber-300 text-xl font-bold">
+                        <div className="text-amber-700 text-xl font-bold">
                           {tour.price.toLocaleString("vi-VN")}đ
                         </div>
-                        <div className="text-amber-200/50 text-[10px]">/ người · bao audio guide</div>
+                        <div className="text-amber-500/70 text-[10px]">/ người · bao audio guide</div>
                       </div>
                       <Link href={`/xich-lo-du-lich/${tour.slug}`}>
-                        <button className="flex items-center gap-1.5 bg-amber-500 hover:bg-amber-400 text-amber-950 font-bold text-xs px-4 py-2.5 rounded-xl transition-colors">
-                          Đặt ngay <ChevronRight size={14} />
-                        </button>
+                        <motion.button
+                          whileHover={{ scale: 1.04 }}
+                          whileTap={{ scale: 0.97 }}
+                          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-bold shadow-md"
+                          style={{
+                            background: "linear-gradient(135deg, #d97706, #b45309)",
+                            boxShadow: "0 6px 18px rgba(217,119,6,0.35)",
+                          }}
+                        >
+                          Đặt tour <ChevronRight size={14} />
+                        </motion.button>
                       </Link>
                     </div>
                   </div>
@@ -500,10 +464,10 @@ export default function Cyclo() {
         </div>
 
         {filtered.length === 0 && (
-          <div className="text-center py-20 text-amber-200/60">
-            <Bike size={48} className="mx-auto mb-3 opacity-50" />
-            <p className="font-semibold text-amber-100">Không tìm thấy tour phù hợp</p>
-            <p className="text-sm mt-1">Hãy thử khu vực khác hoặc xóa từ khóa</p>
+          <div className="py-20 flex flex-col items-center text-center">
+            <Bike size={40} className="text-amber-200 mb-3" />
+            <p className="text-amber-700 font-medium">Không tìm thấy tour phù hợp</p>
+            <p className="text-amber-400 text-sm mt-1">Thử thay đổi khu vực hoặc từ khóa tìm kiếm</p>
           </div>
         )}
       </section>

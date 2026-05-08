@@ -94,10 +94,10 @@ const dishes: Dish[] = [
 ];
 
 const categoryFilters = [
-  { key: "all",     label: "Tất cả",   emoji: "🍽️" },
-  { key: "bun-mi",  label: "Bún & Mì", emoji: "🍜" },
+  { key: "all",     label: "Tất cả",    emoji: "🍽️" },
+  { key: "bun-mi",  label: "Bún & Mì",  emoji: "🍜" },
   { key: "banh",    label: "Bánh & Xôi",emoji: "🥖" },
-  { key: "dac-san", label: "Đặc sản",  emoji: "⭐" },
+  { key: "dac-san", label: "Đặc sản",   emoji: "⭐" },
 ];
 
 const collage = [
@@ -130,9 +130,9 @@ export default function LocalFood() {
         gradientLineIndex={1}
         subtitle="Mì Quảng, Cao Lầu, Bánh Xèo, Cơm Gà — công thức truyền đời từ những ngôi nhà cổ Hội An đến gánh hàng Đà Nẵng."
         stats={[
-          { icon: Soup,  label: "Món đặc sản", value: `${dishes.length}+` },
-          { icon: Flame, label: "Hương vị TB", value: "4.8" },
-          { icon: Award, label: "Quán gia truyền", value: "30+" },
+          { icon: Soup,  label: "Món đặc sản",     value: `${dishes.length}+` },
+          { icon: Flame, label: "Hương vị TB",      value: "4.8" },
+          { icon: Award, label: "Quán gia truyền",  value: "30+" },
         ]}
         collage={collage}
         floatingBadge={{ icon: Flame, title: "Mì Quảng", subtitle: "★ ICONIC" }}
@@ -142,7 +142,7 @@ export default function LocalFood() {
         categories={categoryFilters}
         activeCat={activeCat}
         setActiveCat={setActiveCat}
-        resultCount={<><span className="text-white font-semibold">{filtered.length}</span> món đặc sản</>}
+        resultCount={<><span className="text-gray-800 font-semibold">{filtered.length}</span> món đặc sản</>}
       >
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 pt-4">
           <AnimatePresence mode="popLayout">
@@ -157,12 +157,12 @@ export default function LocalFood() {
                 onClick={() => setSelectedDish(dish)}
                 role="button"
                 whileHover={{ y: -6 }}
-                className="group rounded-3xl overflow-hidden border border-white/10 bg-white/[0.04] backdrop-blur-md hover:border-white/25 transition-all cursor-pointer"
+                className="group rounded-3xl overflow-hidden border border-gray-100 bg-white shadow-sm hover:shadow-md hover:border-gray-200 transition-all cursor-pointer"
                 data-testid={`card-dish-${dish.id}`}
               >
                 <div className="relative h-44 overflow-hidden">
                   <img src={dish.image} alt={dish.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent" />
                   <div className="absolute top-3 left-3 w-9 h-9 rounded-xl bg-black/40 backdrop-blur flex items-center justify-center text-xl">
                     {dish.emoji}
                   </div>
@@ -177,11 +177,11 @@ export default function LocalFood() {
                   </div>
                 </div>
                 <div className="p-3">
-                  <h3 className="font-bold text-sm leading-tight text-white mb-1">{dish.name}</h3>
-                  <p className="text-[11px] leading-relaxed line-clamp-2 mb-3 text-white/55">{dish.desc}</p>
+                  <h3 className="font-bold text-sm leading-tight text-gray-900 mb-1">{dish.name}</h3>
+                  <p className="text-[11px] leading-relaxed line-clamp-2 mb-3 text-gray-500">{dish.desc}</p>
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-white/40">{dish.restaurants.length} nhà hàng</span>
-                    <div className="flex items-center gap-1 text-[11px] font-semibold" style={{ color: acc.orbC }}>
+                    <span className="text-[10px] text-gray-400">{dish.restaurants.length} nhà hàng</span>
+                    <div className="flex items-center gap-1 text-[11px] font-semibold" style={{ color: acc.orbA }}>
                       Xem chi tiết <ChevronRight size={11} />
                     </div>
                   </div>
@@ -193,9 +193,9 @@ export default function LocalFood() {
 
         {filtered.length === 0 && (
           <div className="pt-16 flex flex-col items-center justify-center text-center">
-            <UtensilsCrossed size={40} className="text-white/30 mb-3" />
-            <p className="text-white/80 font-medium">Không tìm thấy món ngon phù hợp</p>
-            <p className="text-white/40 text-sm mt-1">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
+            <UtensilsCrossed size={40} className="text-gray-300 mb-3" />
+            <p className="text-gray-700 font-medium">Không tìm thấy món ngon phù hợp</p>
+            <p className="text-gray-400 text-sm mt-1">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
           </div>
         )}
       </CategoryShell>
@@ -209,7 +209,7 @@ export default function LocalFood() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{ background: "rgba(0,0,0,0.78)", backdropFilter: "blur(6px)" }}
+            style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(6px)" }}
             onClick={(e) => { if (e.target === e.currentTarget) setSelectedDish(null); }}
           >
             <motion.div
@@ -218,12 +218,12 @@ export default function LocalFood() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.94, y: 20 }}
               transition={{ type: "spring", stiffness: 320, damping: 28 }}
-              className="relative w-full max-w-2xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col bg-[#160611] border border-white/10"
-              style={{ boxShadow: "0 32px 80px rgba(0,0,0,0.6)" }}
+              className="relative w-full max-w-2xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col bg-white border border-gray-200"
+              style={{ boxShadow: "0 32px 80px rgba(0,0,0,0.2)" }}
             >
               <div className="relative h-52 shrink-0 overflow-hidden">
                 <img src={selectedDish.image} alt={selectedDish.name} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
                 <button
                   onClick={() => setSelectedDish(null)}
                   className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/50 backdrop-blur flex items-center justify-center text-white hover:bg-black/70 transition-colors"
@@ -248,13 +248,13 @@ export default function LocalFood() {
               </div>
 
               <div className="overflow-y-auto flex-1">
-                <div className="px-5 py-4 border-b border-white/10">
-                  <h3 className="text-xs font-semibold uppercase tracking-wider mb-2 text-white/40">Giới thiệu</h3>
-                  <p className="text-sm leading-relaxed text-white/75">{selectedDish.longDesc}</p>
+                <div className="px-5 py-4 border-b border-gray-100">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider mb-2 text-gray-400">Giới thiệu</h3>
+                  <p className="text-sm leading-relaxed text-gray-600">{selectedDish.longDesc}</p>
                 </div>
 
                 <div className="px-5 py-4">
-                  <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 text-white/40">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider mb-3 text-gray-400">
                     {selectedDish.restaurants.length} nhà hàng phục vụ
                   </h3>
                   <div className="space-y-3">
@@ -264,28 +264,28 @@ export default function LocalFood() {
                         initial={{ opacity: 0, x: -12 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.07 }}
-                        className="rounded-2xl border p-4 bg-white/[0.04] border-white/10"
+                        className="rounded-2xl border border-gray-100 bg-gray-50 p-4"
                       >
                         <div className="flex gap-3 mb-3">
                           <img src={r.image} alt={r.name} className="w-14 h-14 rounded-xl object-cover shrink-0" />
                           <div className="flex-1 min-w-0">
-                            <p className="font-bold text-sm leading-tight mb-1 text-white">{r.name}</p>
+                            <p className="font-bold text-sm leading-tight mb-1 text-gray-900">{r.name}</p>
                             <div className="flex items-center gap-2 flex-wrap">
                               <div className="flex items-center gap-1">
-                                <Star size={10} style={{ color: acc.orbC }} className="fill-current" />
-                                <span style={{ color: acc.orbC }} className="text-xs font-bold">{r.rating}</span>
+                                <Star size={10} style={{ color: acc.orbA }} className="fill-current" />
+                                <span style={{ color: acc.orbA }} className="text-xs font-bold">{r.rating}</span>
                               </div>
-                              <span className="text-[10px] text-white/45">{r.hours}</span>
-                              <span className="text-[10px] font-medium text-emerald-400">{r.priceRange}</span>
+                              <span className="text-[10px] text-gray-400">{r.hours}</span>
+                              <span className="text-[10px] font-medium text-emerald-600">{r.priceRange}</span>
                             </div>
                           </div>
                         </div>
 
                         <div className="space-y-2">
-                          <ContactRow icon={<MapPin size={12} />} value={r.address} color="text-rose-300" />
-                          <ContactRow icon={<Phone size={12} />} value={r.phone} color="text-indigo-300" href={`tel:${r.phone.replace(/\s/g, "")}`} />
-                          <ContactRow icon={<Mail size={12} />} value={r.email} color="text-sky-300" href={`mailto:${r.email}`} />
-                          <ContactRow icon={<Globe size={12} />} value={r.website} color="text-emerald-300" href={`https://${r.website}`} external />
+                          <ContactRow icon={<MapPin size={12} />} value={r.address} color="text-rose-500" />
+                          <ContactRow icon={<Phone size={12} />} value={r.phone} color="text-indigo-500" href={`tel:${r.phone.replace(/\s/g, "")}`} />
+                          <ContactRow icon={<Mail size={12} />} value={r.email} color="text-sky-500" href={`mailto:${r.email}`} />
+                          <ContactRow icon={<Globe size={12} />} value={r.website} color="text-emerald-600" href={`https://${r.website}`} external />
                         </div>
                       </motion.div>
                     ))}
@@ -305,7 +305,7 @@ function ContactRow({
   icon, value, color, href, external,
 }: { icon: React.ReactNode; value: string; color: string; href?: string; external?: boolean }) {
   const inner = (
-    <div className="flex items-start gap-2 text-xs text-white/60">
+    <div className="flex items-start gap-2 text-xs text-gray-500">
       <span className={`mt-0.5 shrink-0 ${color}`}>{icon}</span>
       <span className={`leading-snug break-all ${href ? "hover:underline" : ""} ${href ? color : ""}`}>{value}</span>
     </div>
