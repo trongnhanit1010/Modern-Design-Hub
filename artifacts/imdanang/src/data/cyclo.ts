@@ -1,8 +1,7 @@
 export interface CycloStop {
   id: number;
   name: string;
-  durationMin: number;
-  audioLengthSec: number;
+  durationMin?: number;
   description: string;
 }
 
@@ -10,246 +9,143 @@ export interface CycloTour {
   id: number;
   slug: string;
   name: string;
-  area: "Đà Nẵng" | "Hội An";
+  tagline: string;
   duration: string;
   durationMin: number;
-  distanceKm: number;
-  price: number;
+  price: number | null;
+  priceNote?: string;
   rating: number;
-  reviews: number;
-  languages: string[];
-  startTime: string;
+  hours: string;
   image: string;
   gallery: string[];
-  shortDesc: string;
-  longDesc: string;
+  overview: string;
   highlights: string[];
   stops: CycloStop[];
-  audioPreview: string;
-  driverName: string;
-  capacity: number;
+  driverName?: string;
+  color: string;
+  accentHex: string;
 }
 
 export const cycloTours: CycloTour[] = [
   {
     id: 1,
-    slug: "pho-co-hoi-an-vintage",
-    name: "Phố Cổ Hội An – Hoài Niệm",
-    area: "Hội An",
-    duration: "60 phút",
-    durationMin: 60,
-    distanceKm: 4.2,
-    price: 250000,
-    rating: 4.9,
-    reviews: 482,
-    languages: ["Việt", "English", "Français"],
-    startTime: "07:00 – 21:00",
-    image: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=1400&auto=format&fit=crop",
+    slug: "dao-ven-song-han",
+    name: "Dạo Ven Sông Hàn",
+    tagline: "City Tour",
+    duration: "45 phút",
+    durationMin: 45,
+    price: 230000,
+    rating: 4.8,
+    hours: "08:00 – 21:00",
+    image: "https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1400&auto=format&fit=crop&q=80",
     gallery: [
+      "https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1533294455009-a77b7557d2d1?w=800&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=800&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1528127269322-539801943592?w=800&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=800&auto=format&fit=crop",
     ],
-    shortDesc: "Vòng quanh phố cổ trên xích lô, nghe câu chuyện 400 năm qua tai nghe.",
-    longDesc:
-      "Hành trình xích lô đi qua những con phố vàng đặc trưng của Hội An, dừng tại Chùa Cầu, Hội Quán Phúc Kiến, nhà cổ Tấn Ký. Mỗi điểm dừng, thiết bị âm thanh tự động phát kể chuyện bằng giọng kể truyền cảm với nhạc nền đệm.",
+    overview: "Dành cho những du khách mong muốn cảm nhận Đà Nẵng theo cách nhẹ nhàng, gần gũi với nhịp sống người dân địa phương. Tour đưa du khách dạo quanh các tuyến phố du lịch ven sông Hàn, đi qua các công trình mang tính biểu tượng. Gọn nhẹ, dễ đi, dễ yêu – đúng chất \"đi chậm giữa lịch trình nhanh\".",
     highlights: [
-      "Đèn lồng rực rỡ vào buổi tối",
-      "Tự động kể chuyện theo từng điểm dừng",
-      "Tai nghe không dây cho từng khách",
-      "Bác tài 20+ năm kinh nghiệm",
+      "Cảnh quan sông Hàn và các cây cầu biểu tượng",
+      "Dừng chân tham quan Nhà thờ Chính tòa (15 phút)",
+      "Hành trình nhẹ nhàng, phù hợp mọi lứa tuổi",
+      "Có trang bị audio guide đa ngôn ngữ (tùy chọn)",
     ],
     stops: [
-      { id: 1, name: "Chùa Cầu Nhật Bản", durationMin: 8,  audioLengthSec: 240, description: "Biểu tượng 400 năm của Hội An, do người Nhật xây dựng giữa thế kỷ 17." },
-      { id: 2, name: "Hội Quán Phúc Kiến", durationMin: 10, audioLengthSec: 320, description: "Nơi thờ Thiên Hậu Thánh Mẫu, kiến trúc Trung Hoa cổ tinh xảo." },
-      { id: 3, name: "Nhà Cổ Tấn Ký",      durationMin: 7,  audioLengthSec: 210, description: "Ngôi nhà cổ 200 năm tuổi, chứng nhân của thương cảng phồn hoa." },
-      { id: 4, name: "Bến Bạch Đằng",      durationMin: 6,  audioLengthSec: 180, description: "Ngắm sông Hoài, nơi hoa đăng được thả mỗi đêm rằm." },
+      { id: 1, name: "Bảo tàng Điêu khắc Chăm", description: "Điểm đón khách – Bảo tàng điêu khắc Chăm pa lớn nhất thế giới" },
+      { id: 2, name: "Công viên APEC", description: "Công viên biểu tượng soi bóng bên sông Hàn" },
+      { id: 3, name: "Đường Bạch Đằng – Quang Trung", description: "Cung đường ven sông đẹp nhất Đà Nẵng" },
+      { id: 4, name: "Nhà thờ Chính tòa Đà Nẵng", description: "Công trình kiến trúc Pháp hơn 100 năm tuổi · Tham quan 15 phút" },
+      { id: 5, name: "Trả khách tại Bảo tàng Chăm", description: "Kết thúc hành trình" },
     ],
-    audioPreview: "Chào mừng quý khách đến với Hội An – đô thị cổ được UNESCO công nhận năm 1999...",
-    driverName: "Bác Tám",
-    capacity: 1,
+    color: "from-amber-600 to-orange-500",
+    accentHex: "#d97706",
   },
   {
     id: 2,
-    slug: "song-han-dem-danang",
-    name: "Sông Hàn Đêm – Đà Nẵng",
-    area: "Đà Nẵng",
-    duration: "75 phút",
-    durationMin: 75,
-    distanceKm: 5.5,
-    price: 320000,
-    rating: 4.8,
-    reviews: 351,
-    languages: ["Việt", "English", "한국어"],
-    startTime: "18:00 – 23:00",
-    image: "https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=1400&auto=format&fit=crop",
+    slug: "dau-an-thoi-gian",
+    name: "Dấu Ấn Thời Gian",
+    tagline: "Xích lô & Bảo tàng Đà Nẵng",
+    duration: "120 phút",
+    durationMin: 120,
+    price: null,
+    priceNote: "Liên hệ để biết giá",
+    rating: 4.9,
+    hours: "08:00 – 15:30",
+    image: "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=1400&auto=format&fit=crop&q=80",
     gallery: [
-      "https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=800&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=800&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1533294455009-a77b7557d2d1?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1528127269322-539801943592?w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1596422846543-75c6fc197f11?w=800&auto=format&fit=crop",
     ],
-    shortDesc: "Ngắm Cầu Rồng phun lửa, đèn đêm rực rỡ ven sông Hàn.",
-    longDesc:
-      "Tour xích lô buổi tối dọc bờ sông Hàn, đi qua Cầu Rồng, Cầu Tình Yêu, Tượng Cá Chép Hóa Rồng. Tai nghe phát kể chuyện về sự phát triển của Đà Nẵng từ làng chài thành thành phố đáng sống nhất Việt Nam.",
+    overview: "Tour đưa du khách thong thả khám phá Đà Nẵng qua những công trình mang dấu ấn lịch sử và văn hóa. Hành trình ngắm nhìn con đường du lịch ven sông Hàn – nơi mỗi điểm dừng đều kể một câu chuyện về thành phố. Dành cho những ai muốn hiểu Đà Nẵng từ chiều sâu văn hóa, chậm rãi và đầy cảm xúc.",
     highlights: [
-      "Cầu Rồng phun lửa lúc 21:00 cuối tuần",
-      "Đèn led 7 màu sông Hàn",
-      "Audio guide đa ngôn ngữ",
-      "Có chỗ chụp hình check-in",
+      "Tham quan Bảo tàng Đà Nẵng – 60 phút khám phá lịch sử",
+      "Chiêm ngưỡng Nhà thờ Chính tòa – kiến trúc hơn 100 năm",
+      "Ngắm Công viên APEC, Cầu Rồng, cầu Sông Hàn",
+      "Trải nghiệm nhịp sống địa phương chậm rãi, gần gũi",
     ],
     stops: [
-      { id: 1, name: "Cầu Rồng",          durationMin: 10, audioLengthSec: 280, description: "Cây cầu hình rồng dài 666m, biểu tượng Đà Nẵng hiện đại." },
-      { id: 2, name: "Cầu Tình Yêu",      durationMin: 8,  audioLengthSec: 220, description: "Nơi treo những ổ khóa tình yêu, view sông Hàn lung linh." },
-      { id: 3, name: "Cá Chép Hóa Rồng",  durationMin: 6,  audioLengthSec: 160, description: "Tượng đá trắng cao 7.5m, tâm linh và phong thủy của thành phố." },
-      { id: 4, name: "Bến Du Thuyền",     durationMin: 7,  audioLengthSec: 200, description: "Nơi xuất phát các tour du thuyền sông Hàn buổi tối." },
+      { id: 1, name: "Bảo tàng Điêu khắc Chăm", description: "Điểm đón khách" },
+      { id: 2, name: "Công viên APEC", description: "Biểu tượng bên bờ sông Hàn" },
+      { id: 3, name: "Đường Bạch Đằng – ven sông", description: "Cung đường lãng mạn nhất thành phố" },
+      { id: 4, name: "Bảo tàng Đà Nẵng", description: "Tham quan 60 phút · Lưu giữ văn hóa và lịch sử thành phố" },
+      { id: 5, name: "Nhà thờ Chính tòa", description: "Tham quan 15 phút · Kiến trúc Pháp cổ điển" },
+      { id: 6, name: "Trả khách tại Bảo tàng Chăm", description: "Kết thúc hành trình" },
     ],
-    audioPreview: "Đêm đến, sông Hàn khoác lên mình tấm áo ánh sáng lộng lẫy...",
-    driverName: "Anh Hùng",
-    capacity: 1,
+    color: "from-stone-700 to-amber-800",
+    accentHex: "#92400e",
   },
   {
     id: 3,
-    slug: "lang-nghe-truyen-thong",
-    name: "Làng Nghề Truyền Thống",
-    area: "Hội An",
-    duration: "120 phút",
-    durationMin: 120,
-    distanceKm: 8.0,
-    price: 480000,
+    slug: "huong-vi-viet",
+    name: "Xích Lô Hương Vị Việt",
+    tagline: "Văn hóa cà phê truyền thống",
+    duration: "80 phút",
+    durationMin: 80,
+    price: null,
+    priceNote: "Liên hệ để biết giá",
     rating: 4.9,
-    reviews: 218,
-    languages: ["Việt", "English"],
-    startTime: "08:00 – 16:00",
-    image: "https://images.unsplash.com/photo-1528127269322-539801943592?w=1400&auto=format&fit=crop",
+    hours: "08:00 – 15:30",
+    image: "https://images.unsplash.com/photo-1622484212850-eb596d769edc?w=1400&auto=format&fit=crop&q=80",
     gallery: [
-      "https://images.unsplash.com/photo-1528127269322-539801943592?w=800&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1542315192-1f61a1792f33?w=800&auto=format&fit=crop",
-    ],
-    shortDesc: "Khám phá làng gốm Thanh Hà, làng mộc Kim Bồng & làng rau Trà Quế.",
-    longDesc:
-      "Tour dài đưa du khách qua 3 làng nghề trứ danh của Hội An. Audio guide kể về lịch sử mỗi làng, kỹ thuật làm nghề và những nghệ nhân hơn 50 năm tuổi nghề.",
-    highlights: [
-      "Trải nghiệm nặn gốm tại làng",
-      "Học làm rau Trà Quế truyền thống",
-      "Audio guide có phần phỏng vấn nghệ nhân",
-      "Tour dài, kèm nước & khăn lạnh",
-    ],
-    stops: [
-      { id: 1, name: "Làng Gốm Thanh Hà", durationMin: 30, audioLengthSec: 480, description: "Làng nghề 500 năm với những lò gốm đỏ rực." },
-      { id: 2, name: "Làng Mộc Kim Bồng", durationMin: 25, audioLengthSec: 420, description: "Làng mộc cung cấp gỗ cho Kinh Thành Huế xưa." },
-      { id: 3, name: "Làng Rau Trà Quế",  durationMin: 25, audioLengthSec: 360, description: "Ruộng rau hữu cơ thơm dậy hương khắp đồng." },
-    ],
-    audioPreview: "Hội An không chỉ có phố cổ, mà còn có ba làng nghề trứ danh...",
-    driverName: "Bác Sáu",
-    capacity: 1,
-  },
-  {
-    id: 4,
-    slug: "binh-minh-bien-my-khe",
-    name: "Bình Minh Biển Mỹ Khê",
-    area: "Đà Nẵng",
-    duration: "90 phút",
-    durationMin: 90,
-    distanceKm: 6.0,
-    price: 380000,
-    rating: 4.7,
-    reviews: 165,
-    languages: ["Việt", "English"],
-    startTime: "05:00 – 07:00",
-    image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=1400&auto=format&fit=crop",
-    gallery: [
-      "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop",
-    ],
-    shortDesc: "Đón bình minh trên biển Mỹ Khê – top 6 bãi biển đẹp nhất hành tinh.",
-    longDesc:
-      "Khởi hành từ 5 giờ sáng, xích lô đưa bạn dọc đường Hoàng Sa – Trường Sa, dừng tại các điểm ngắm bình minh đẹp nhất. Audio guide phát nhạc thiền nhẹ và lời kể về biển Đà Nẵng.",
-    highlights: [
-      "Bình minh tuyệt đẹp lúc 5:30",
-      "Ngắm thuyền cá làng chài Mân Thái",
-      "Nhạc thiền sáng sớm thư giãn",
-      "Khăn ấm & bữa sáng nhẹ",
-    ],
-    stops: [
-      { id: 1, name: "Bãi Mỹ Khê",        durationMin: 25, audioLengthSec: 300, description: "Top 6 bãi biển quyến rũ nhất hành tinh theo Forbes." },
-      { id: 2, name: "Làng Chài Mân Thái", durationMin: 20, audioLengthSec: 240, description: "Làng chài cổ với thuyền thúng đặc trưng." },
-      { id: 3, name: "Bãi Phạm Văn Đồng", durationMin: 20, audioLengthSec: 220, description: "Bãi tắm công cộng đẹp nhất Đà Nẵng." },
-    ],
-    audioPreview: "Bình minh trên biển Đà Nẵng là một trong những khoảnh khắc đẹp nhất...",
-    driverName: "Anh Tâm",
-    capacity: 1,
-  },
-  {
-    id: 5,
-    slug: "ngu-hanh-son-tam-linh",
-    name: "Ngũ Hành Sơn Tâm Linh",
-    area: "Đà Nẵng",
-    duration: "150 phút",
-    durationMin: 150,
-    distanceKm: 12.0,
-    price: 550000,
-    rating: 4.8,
-    reviews: 142,
-    languages: ["Việt", "English"],
-    startTime: "07:00 – 14:00",
-    image: "https://images.unsplash.com/photo-1545579133-99bb5ab189bd?w=1400&auto=format&fit=crop",
-    gallery: [
-      "https://images.unsplash.com/photo-1545579133-99bb5ab189bd?w=800&auto=format&fit=crop",
-    ],
-    shortDesc: "Hành trình tâm linh qua 5 ngọn núi đá vôi linh thiêng.",
-    longDesc:
-      "Tour kết hợp xích lô + leo bộ khám phá quần thể Ngũ Hành Sơn. Audio guide kể chuyện thần thoại Kim – Mộc – Thủy – Hỏa – Thổ và các ngôi chùa cổ.",
-    highlights: [
-      "Leo 156 bậc lên đỉnh Thủy Sơn",
-      "Thăm động Huyền Không huyền bí",
-      "Audio guide có nhạc thiền chuông chùa",
-      "Bao gồm vé vào cửa & nước",
-    ],
-    stops: [
-      { id: 1, name: "Chùa Linh Ứng",     durationMin: 30, audioLengthSec: 380, description: "Ngôi chùa cổ trên đỉnh Thủy Sơn." },
-      { id: 2, name: "Động Huyền Không",  durationMin: 25, audioLengthSec: 320, description: "Hang động lớn nhất, ánh sáng tự nhiên huyền ảo." },
-      { id: 3, name: "Làng Đá Mỹ Nghệ",   durationMin: 20, audioLengthSec: 260, description: "Làng nghề điêu khắc đá nổi tiếng dưới chân núi." },
-    ],
-    audioPreview: "Ngũ Hành Sơn – nơi giao thoa giữa tín ngưỡng và thiên nhiên kỳ vĩ...",
-    driverName: "Bác Long",
-    capacity: 1,
-  },
-  {
-    id: 6,
-    slug: "hoi-an-am-thuc-ban-dem",
-    name: "Hội An Ẩm Thực Đêm",
-    area: "Hội An",
-    duration: "90 phút",
-    durationMin: 90,
-    distanceKm: 5.0,
-    price: 380000,
-    rating: 4.9,
-    reviews: 297,
-    languages: ["Việt", "English", "日本語"],
-    startTime: "18:00 – 22:00",
-    image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1400&auto=format&fit=crop",
-    gallery: [
+      "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=800&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop",
     ],
-    shortDesc: "Tour xích lô + thử 5 món đặc sản Hội An tại các quán địa phương.",
-    longDesc:
-      "Vừa đi vừa ăn! Bác tài đưa bạn đến 5 hàng quán nổi tiếng nhất phố cổ. Audio guide giới thiệu lịch sử món ăn, công thức cổ truyền và mẹo thưởng thức.",
+    overview: "Không chỉ là dạo phố, tour đưa du khách \"chạm tay\" vào văn hóa Việt qua trải nghiệm quy trình pha chế cà phê truyền thống. Vừa ngắm thành phố, hoà nhịp vào đời sống người dân địa phương, vừa dừng lại để tự tay pha chế và cảm nhận hương vị cà phê Việt. Một hành trình tương tác, vui, gần gũi và rất \"đời\".",
     highlights: [
-      "5 món: Cao Lầu, Mì Quảng, Bánh Mì, Hoành Thánh, Chè",
-      "Audio kể chuyện đầu bếp 3 đời",
-      "Ngắm đèn lồng dọc đường",
-      "Bao trọn gói món ăn",
+      "Dạo quanh đường Bạch Đằng ven sông Hàn",
+      "Thực hành pha cà phê phin truyền thống",
+      "Thưởng thức: cà phê dừa / cà phê muối / cà phê trứng",
+      "Chụp ảnh tại quán cà phê phong cách bản địa Trình Café",
     ],
     stops: [
-      { id: 1, name: "Cao Lầu Bà Bé",       durationMin: 18, audioLengthSec: 200, description: "Quán Cao Lầu gia truyền 3 đời." },
-      { id: 2, name: "Bánh Mì Phượng",      durationMin: 15, audioLengthSec: 180, description: "Bánh mì nổi tiếng nhất Hội An, được Anthony Bourdain ca ngợi." },
-      { id: 3, name: "Hoành Thánh Hội An",  durationMin: 15, audioLengthSec: 180, description: "Món hoành thánh chiên giòn rụm độc đáo." },
-      { id: 4, name: "Chè Bà Hai",          durationMin: 12, audioLengthSec: 140, description: "Chè ngọt dịu, tráng miệng hoàn hảo." },
+      { id: 1, name: "Bảo tàng Điêu khắc Chăm", description: "Điểm đón khách" },
+      { id: 2, name: "Công viên APEC", description: "Ngắm cảnh ven sông Hàn" },
+      { id: 3, name: "Bạch Đằng – Quang Trung – Trần Phú", description: "Cung đường trung tâm thành phố" },
+      { id: 4, name: "Trình Café", description: "Trải nghiệm pha chế & thưởng thức cà phê: 40 phút" },
+      { id: 5, name: "Trả khách tại Bảo tàng Chăm", description: "Kết thúc hành trình" },
     ],
-    audioPreview: "Ẩm thực Hội An là sự pha trộn của ba nền văn hóa Việt – Hoa – Nhật...",
-    driverName: "Bác Hùng",
-    capacity: 1,
+    color: "from-amber-800 to-yellow-700",
+    accentHex: "#b45309",
   },
+];
+
+export const cycloContacts = [
+  { name: "Chị Phương", phone: "0903 978 437" },
+  { name: "Anh Thịnh",  phone: "0905 499 639" },
+  { name: "Anh Minh",   phone: "0905 717 574" },
+];
+
+export const cycloParking = [
+  "Bãi đỗ xe Bảo tàng Chăm Đà Nẵng, đường 2/9",
+  "Nhà thờ Chính tòa Đà Nẵng, 156 Trần Phú, Hải Châu",
+  "Công viên APEC, đường 2/9",
+  "Khu vực chợ Hàn, trung tâm thành phố",
+];
+
+export const audioGuideLanguages = [
+  "Tiếng Việt", "English", "中文", "日本語", "한국어",
+  "ภาษาไทย", "Русский", "Français", "Português", "हिन्दी",
+  "Deutsch", "Ελληνικά", "Italiano", "Polski", "Español",
 ];
 
 export function findCycloBySlug(slug: string) {
