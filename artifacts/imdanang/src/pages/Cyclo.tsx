@@ -127,11 +127,7 @@ export default function Cyclo() {
   return (
     <div className="min-h-screen bg-white">
       {/* ─── HERO ─────────────────────────────────────────── */}
-      <section className="relative overflow-hidden border-b border-amber-100">
-        {/* Light amber wash */}
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-orange-50 to-white" />
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[180px] opacity-40"
-          style={{ background: "radial-gradient(circle, #fde68a, transparent)" }} />
+      <section className="relative overflow-hidden border-b border-gray-100">
 
         {/* Decorative dotted route line */}
         <svg className="absolute inset-x-0 bottom-0 w-full h-24 opacity-30" viewBox="0 0 1200 100" preserveAspectRatio="none">
