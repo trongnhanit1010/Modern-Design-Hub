@@ -90,142 +90,157 @@ export function CategoryShell({
   return (
     <div className="min-h-screen bg-white">
 
-      {/* ════════════ HERO — Centered overlay ════════════ */}
-      <section className="relative h-[82vh] min-h-[560px] max-h-[780px] overflow-hidden">
+      {/* ════════════ HERO — Editorial full-bleed ════════════ */}
+      <section className="relative w-full overflow-hidden" style={{ height: "88vh", minHeight: 580, maxHeight: 860 }}>
 
-        {/* Background image */}
+        {/* Background — Ken Burns slow zoom */}
         {collage.length > 0 && (
           <motion.img
             src={collage[0].src}
             alt=""
             initial={{ scale: 1.08 }}
             animate={{ scale: 1 }}
-            transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 9, ease: "easeOut" }}
             className="absolute inset-0 w-full h-full object-cover"
           />
         )}
 
-        {/* Overlay layers */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/45 to-black/65" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+        {/* Layered overlays — heavy bottom, light top */}
+        <div className="absolute inset-0" style={{
+          background: "linear-gradient(to top, rgba(5,8,20,0.92) 0%, rgba(5,8,20,0.55) 38%, rgba(5,8,20,0.18) 65%, transparent 100%)"
+        }} />
+        <div className="absolute inset-0" style={{
+          background: "linear-gradient(to right, rgba(5,8,20,0.4) 0%, transparent 55%)"
+        }} />
 
-        {/* Center content */}
-        <div className="absolute inset-0 flex items-center justify-center px-4">
+        {/* Thin accent left border */}
+        <div
+          className="absolute left-0 top-[20%] bottom-[20%] w-[3px] rounded-full"
+          style={{ background: `linear-gradient(to bottom, transparent, ${bd.orbA}, transparent)` }}
+        />
+
+        {/* Floating badge — top right, glass pill */}
+        {floatingBadge && (
           <motion.div
-            initial={{ opacity: 0, y: 30, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="bg-white rounded-[2rem] shadow-2xl px-10 py-10 sm:px-14 sm:py-12 max-w-2xl w-full text-center"
-            style={{ boxShadow: "0 32px 80px -8px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.9)" }}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.45 }}
+            className="absolute top-6 right-6 sm:top-8 sm:right-8 flex items-center gap-2.5 rounded-2xl px-4 py-2.5"
+            style={{
+              background: "rgba(255,255,255,0.1)",
+              backdropFilter: "blur(16px)",
+              border: "1px solid rgba(255,255,255,0.18)",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+            }}
           >
-            {/* Badge */}
-            {badge && (
-              <div className="mb-6">
-                <span
-                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide"
-                  style={{
-                    background: `${bd.orbA}10`,
-                    color: bd.orbA,
-                    border: `1px solid ${bd.orbA}30`,
-                  }}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: bd.orbA }} />
-                  {badge.text}
-                </span>
-              </div>
-            )}
-
-            {/* Title */}
-            <h1 className="font-serif font-black leading-[0.92] tracking-[-0.03em] text-gray-950 text-[2.8rem] sm:text-[3.6rem]">
-              {titleLines.map((line, i) => (
-                <span key={i} className="block">
-                  {i === gradientLineIndex
-                    ? <span style={gradientStyle}>{line}</span>
-                    : line}
-                </span>
-              ))}
-            </h1>
-
-            {/* Divider */}
             <div
-              className="mx-auto mt-5 h-[2px] w-10 rounded-full"
-              style={{ background: `linear-gradient(90deg, ${bd.orbA}, ${bd.orbC})` }}
-            />
+              className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0"
+              style={{ background: `linear-gradient(135deg, ${bd.orbA}, ${bd.orbB})` }}
+            >
+              <floatingBadge.icon size={12} className="text-white" />
+            </div>
+            <div>
+              <div className="text-[9px] text-white/55 leading-none tracking-widest uppercase">{floatingBadge.subtitle}</div>
+              <div className="text-[12px] font-bold text-white leading-none mt-0.5">{floatingBadge.title}</div>
+            </div>
+          </motion.div>
+        )}
 
-            {/* Subtitle */}
-            {subtitle && (
-              <p className="mt-5 text-gray-500 text-sm leading-[1.8] max-w-sm mx-auto">
-                {subtitle}
-              </p>
-            )}
+        {/* Bottom-anchored editorial content */}
+        <div className="absolute inset-x-0 bottom-0 px-6 sm:px-10 xl:px-14 pb-10 sm:pb-14">
 
-            {/* Stats */}
-            {stats && stats.length > 0 && (
-              <div className="mt-7 flex items-center justify-center gap-0 divide-x divide-gray-100">
-                {stats.map(({ label, value }) => (
-                  <div key={label} className="flex flex-col items-center gap-0.5 px-6">
-                    <span
-                      className="text-[1.6rem] font-black leading-none tracking-tight"
-                      style={{ color: bd.orbA }}
-                    >
-                      {value}
-                    </span>
-                    <span className="text-[10px] text-gray-400 uppercase tracking-widest mt-1">
-                      {label}
-                    </span>
-                  </div>
+          {/* Badge */}
+          {badge && (
+            <motion.div
+              initial={{ opacity: 0, x: -16 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="mb-5"
+            >
+              <span
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-semibold tracking-widest uppercase"
+                style={{
+                  background: "rgba(255,255,255,0.12)",
+                  color: "rgba(255,255,255,0.85)",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  backdropFilter: "blur(8px)",
+                }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: bd.orbC }} />
+                {badge.text}
+              </span>
+            </motion.div>
+          )}
+
+          {/* Two-column bottom: title left — stats+CTA right */}
+          <div className="flex items-end justify-between gap-8 flex-wrap">
+
+            {/* Title block */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.65, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <h1 className="font-serif font-black leading-[0.88] tracking-[-0.03em] text-white text-[3.4rem] sm:text-[4.8rem] xl:text-[5.6rem] max-w-[660px]">
+                {titleLines.map((line, i) => (
+                  <span key={i} className="block">
+                    {i === gradientLineIndex
+                      ? (
+                        <span style={{
+                          backgroundImage: `linear-gradient(100deg, #93c5fd, ${bd.orbC})`,
+                          WebkitBackgroundClip: "text",
+                          WebkitTextFillColor: "transparent",
+                          backgroundClip: "text",
+                        }}>
+                          {line}
+                        </span>
+                      )
+                      : line}
+                  </span>
                 ))}
-              </div>
-            )}
+              </h1>
+              {subtitle && (
+                <p className="mt-4 text-white/60 text-sm leading-relaxed max-w-[420px]">
+                  {subtitle}
+                </p>
+              )}
+            </motion.div>
 
-            {/* CTA */}
-            <div className="mt-8">
+            {/* Right: stats + CTA */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              className="flex flex-col items-end gap-5 shrink-0"
+            >
+              {/* Stats row */}
+              {stats && stats.length > 0 && (
+                <div className="flex items-center gap-5">
+                  {stats.map(({ label, value }, i) => (
+                    <div key={label} className={`text-right ${i > 0 ? "pl-5 border-l border-white/15" : ""}`}>
+                      <div className="text-[1.6rem] font-black text-white leading-none tracking-tight">{value}</div>
+                      <div className="text-[10px] text-white/50 uppercase tracking-widest mt-1">{label}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* CTA */}
               <motion.button
-                whileHover={{ scale: 1.04, y: -1 }}
+                whileHover={{ scale: 1.04, y: -2 }}
                 whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-2xl text-white font-semibold text-sm"
+                className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl text-white font-semibold text-sm"
                 style={{
                   background: `linear-gradient(135deg, ${bd.orbA}, ${bd.orbB})`,
-                  boxShadow: `0 8px 28px -4px ${bd.orbA}55`,
+                  boxShadow: `0 10px 32px -4px ${bd.orbA}70`,
                 }}
               >
                 Khám phá ngay
                 <ArrowRight size={15} />
               </motion.button>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </div>
-
-        {/* Floating badge — bottom right corner */}
-        {floatingBadge && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.4 }}
-            className="absolute bottom-6 right-6 flex items-center gap-2.5 rounded-xl px-4 py-3 text-white"
-            style={{
-              background: "rgba(15,23,42,0.7)",
-              backdropFilter: "blur(12px)",
-              border: "1px solid rgba(255,255,255,0.12)",
-              boxShadow: "0 8px 28px rgba(0,0,0,0.3)",
-            }}
-          >
-            <div
-              className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
-              style={{ background: `linear-gradient(135deg, ${bd.orbA}, ${bd.orbB})` }}
-            >
-              <floatingBadge.icon size={14} />
-            </div>
-            <div>
-              <div className="text-[10px] text-white/60 leading-none tracking-wide uppercase">
-                {floatingBadge.subtitle}
-              </div>
-              <div className="text-[13px] font-bold leading-none mt-1 text-white">
-                {floatingBadge.title}
-              </div>
-            </div>
-          </motion.div>
-        )}
       </section>
 
       {/* ════════════ SEARCH + FILTER ════════════ */}
