@@ -42,7 +42,7 @@ export default function MapPage() {
     : mapPins.filter((p) => typeLabels[p.type] === activeCategory);
 
   return (
-    <div className="min-h-screen bg-white flex flex-col" ref={ref}>
+    <div className="bg-white flex flex-col" ref={ref}>
 
       {/* ── Top bar ── */}
       <div className="relative z-20 h-14 bg-white border-b border-gray-200 flex items-center gap-2 px-3 shadow-sm shrink-0">

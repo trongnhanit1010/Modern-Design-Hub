@@ -133,7 +133,7 @@ export default function HotelDetail() {
   const reviewsInView = useInView(reviewRef, { once: true, margin: "-80px" });
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="bg-slate-50">
 
       {/* ── Gallery ───────────────────────────────────────────── */}
       <div className="relative h-[58vh] max-h-[520px]">

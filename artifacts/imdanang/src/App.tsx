@@ -29,7 +29,9 @@ import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import BottomNav from "@/components/layout/BottomNav";
 import BackToTopButton from "@/components/layout/BackToTopButton";
+import Footer from "@/components/sections/Footer";
 import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
+import { useLocation } from "wouter";
 import { DarkModeProvider } from "@/context/DarkModeContext";
 
 NProgress.configure({ showSpinner: false, speed: 400, minimum: 0.2 });
@@ -45,9 +47,12 @@ function PageLoader() {
   return null;
 }
 
+const NO_FOOTER_PATHS = ["/ai", "/ban-do"];
+
 function Layout() {
   const { isExpanded } = useSidebar();
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+  const [location] = useLocation();
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -55,14 +60,18 @@ function Layout() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
+  const showFooter = !NO_FOOTER_PATHS.includes(location);
+
+  const marginLeft = isMobile ? 0 : isExpanded ? 224 : 60;
+
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
+    <div className="flex flex-col min-h-screen bg-background overflow-x-hidden">
       <Header />
       <Sidebar />
       <BottomNav />
       <BackToTopButton />
       <motion.div
-        animate={{ marginLeft: isMobile ? 0 : isExpanded ? 224 : 60 }}
+        animate={{ marginLeft }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
         className="pt-14 pb-16 md:pb-0"
       >
@@ -88,6 +97,14 @@ function Layout() {
           <Route component={NotFound} />
         </Switch>
       </motion.div>
+      {showFooter && (
+        <motion.div
+          animate={{ marginLeft }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        >
+          <Footer />
+        </motion.div>
+      )}
     </div>
   );
 }

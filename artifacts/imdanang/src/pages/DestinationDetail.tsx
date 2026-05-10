@@ -21,7 +21,7 @@ export default function DestinationDetail() {
 
   if (!place) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center gap-4">
+      <div className="bg-gray-50 flex flex-col items-center justify-center gap-4" style={{ minHeight: '60vh' }}>
         <Compass size={48} className="text-gray-300" />
         <p className="text-gray-600 font-semibold text-lg">Không tìm thấy địa điểm</p>
         <Link href="/destinations">
@@ -46,7 +46,7 @@ export default function DestinationDetail() {
   const nextPhoto     = () => setLightboxIdx(i => i !== null ? (i + 1) % place.gallery.length : 0);
 
   return (
-    <div className="min-h-screen bg-gray-50" ref={ref}>
+    <div className="bg-gray-50" ref={ref}>
 
       {/* ── Lightbox ── */}
       <AnimatePresence>

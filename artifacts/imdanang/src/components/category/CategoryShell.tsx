@@ -88,7 +88,7 @@ export function CategoryShell({
   );
 
   return (
-    <div className="min-h-screen bg-[#f5f5f4]">
+    <div className="bg-[#f5f5f4]">
 
       {/* ════════════ HERO — Search-first, full-bleed ════════════ */}
       <section className="relative w-full overflow-hidden" style={{ minHeight: 520 }}>

@@ -11,8 +11,6 @@ import ExperiencesSection from "@/components/sections/ExperiencesSection";
 import EventCalendar from "@/components/sections/EventCalendar";
 import TouristMap from "@/components/sections/TouristMap";
 import NeedToKnow from "@/components/sections/NeedToKnow";
-import Footer from "@/components/sections/Footer";
-
 export default function Home() {
   return (
     <main data-testid="page-home">
@@ -29,7 +27,6 @@ export default function Home() {
       <EventCalendar />
       <TouristMap />
       <NeedToKnow />
-      <Footer />
     </main>
   );
 }

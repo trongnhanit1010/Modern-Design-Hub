@@ -249,7 +249,7 @@ export default function Cyclo() {
   }, [heroPlaying]);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="bg-white">
 
       {/* ─── HERO ─────────────────────────────────────────── */}
       <section className="relative overflow-hidden border-b border-gray-100">

@@ -123,7 +123,7 @@ export default function EntertainmentDetail() {
     .slice(0, 4);
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="bg-slate-50">
       {/* ── GALLERY ── */}
       <div className="relative h-[60vh] max-h-[560px]">
         <div className="grid grid-cols-4 grid-rows-2 gap-1.5 h-full overflow-hidden">
