@@ -1,4 +1,4 @@
-import { useMemo, type ReactNode } from "react";
+import { useMemo, useRef, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import { Search, ArrowRight, type LucideIcon } from "lucide-react";
 import { type CategoryKey } from "@/lib/categoryThemes";
@@ -76,6 +76,31 @@ export function CategoryShell({
   children,
 }: CategoryShellProps) {
   const bd = themeBackdrops[themeKey];
+
+  const filterRowRef = useRef<HTMLDivElement>(null);
+  const drag = useRef({ active: false, startX: 0, scrollLeft: 0 });
+
+  const onMouseDown = (e: React.MouseEvent) => {
+    drag.current.active = true;
+    drag.current.startX = e.pageX - (filterRowRef.current?.offsetLeft ?? 0);
+    drag.current.scrollLeft = filterRowRef.current?.scrollLeft ?? 0;
+    if (filterRowRef.current) filterRowRef.current.style.cursor = "grabbing";
+  };
+  const onMouseLeave = () => {
+    drag.current.active = false;
+    if (filterRowRef.current) filterRowRef.current.style.cursor = "";
+  };
+  const onMouseUp = () => {
+    drag.current.active = false;
+    if (filterRowRef.current) filterRowRef.current.style.cursor = "";
+  };
+  const onMouseMove = (e: React.MouseEvent) => {
+    if (!drag.current.active) return;
+    e.preventDefault();
+    const x = e.pageX - (filterRowRef.current?.offsetLeft ?? 0);
+    const walk = (x - drag.current.startX) * 1.5;
+    if (filterRowRef.current) filterRowRef.current.scrollLeft = drag.current.scrollLeft - walk;
+  };
 
   const gradientStyle = useMemo(
     () => ({
@@ -203,8 +228,13 @@ export function CategoryShell({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.35 }}
-                className="flex items-center gap-2 mt-3 overflow-x-auto pb-1 md:justify-center"
-                style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
+                ref={filterRowRef}
+                className="flex items-center gap-2 mt-3 overflow-x-auto pb-1 md:justify-center select-none cursor-grab"
+                style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch", paddingLeft: 4, paddingRight: 4 } as React.CSSProperties}
+                onMouseDown={onMouseDown}
+                onMouseLeave={onMouseLeave}
+                onMouseUp={onMouseUp}
+                onMouseMove={onMouseMove}
               >
                 {categories.map((c) => {
                   const active = activeCat === c.key;
