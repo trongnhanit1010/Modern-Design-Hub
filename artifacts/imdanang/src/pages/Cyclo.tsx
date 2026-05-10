@@ -146,7 +146,7 @@ export default function Cyclo() {
           ))}
         </svg>
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-14">
           <div className="grid lg:grid-cols-[1.2fr,1fr] gap-8 items-center">
             {/* LEFT */}
             <div>
@@ -174,40 +174,44 @@ export default function Cyclo() {
                 </span>
               </motion.h1>
 
-              <p className="text-amber-800/70 text-base max-w-xl mb-6">
+              <p className="text-amber-800/70 text-sm sm:text-base max-w-xl mb-5">
                 Mỗi vòng bánh xe là một câu chuyện. Tai nghe sẽ tự động kể bạn nghe khi đến từng điểm dừng – như có hướng dẫn viên riêng đi theo.
               </p>
 
-              <div className="flex items-center gap-5 mb-6">
+              {/* Cyclo icon + audio guide row — responsive */}
+              <div className="flex items-center gap-4 mb-5 overflow-hidden">
                 <motion.div
                   animate={{ x: [0, 6, 0] }}
                   transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+                  className="shrink-0"
                 >
-                  <CycloIcon size={88} />
+                  <CycloIcon size={64} />
                 </motion.div>
-                <div className="h-12 w-px bg-amber-200" />
-                <div className="flex items-center gap-3">
+                <div className="h-10 w-px bg-amber-200 shrink-0" />
+                <div className="flex items-center gap-2 min-w-0">
                   <SpeakerPulse playing={heroPlaying} />
-                  <div>
-                    <div className="text-amber-600 text-[10px] uppercase tracking-widest font-semibold">Audio guide</div>
-                    <Waveform playing={heroPlaying} bars={32} color="#d97706" />
+                  <div className="min-w-0 flex-1">
+                    <div className="text-amber-600 text-[10px] uppercase tracking-widest font-semibold mb-1">Audio guide</div>
+                    <div className="overflow-hidden">
+                      <Waveform playing={heroPlaying} bars={20} color="#d97706" />
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex gap-5 text-amber-800/70 text-sm">
+              <div className="flex flex-wrap gap-x-5 gap-y-2 text-amber-800/70 text-sm">
                 <span className="flex items-center gap-1.5"><Bike size={14} className="text-amber-600" /><b className="text-amber-900">{cycloTours.length}</b> tour</span>
                 <span className="flex items-center gap-1.5"><Headphones size={14} className="text-amber-600" /> 6 ngôn ngữ</span>
                 <span className="flex items-center gap-1.5"><Star size={14} className="text-amber-500 fill-amber-500" /> 4.8 trung bình</span>
               </div>
             </div>
 
-            {/* RIGHT: Audio device mockup */}
+            {/* RIGHT: Audio device mockup — desktop only */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95, rotate: 2 }}
               animate={{ opacity: 1, scale: 1, rotate: 0 }}
               transition={{ delay: 0.3, type: "spring" }}
-              className="relative"
+              className="relative hidden lg:block"
             >
               <div
                 className="relative rounded-3xl p-6 border border-amber-200 bg-white shadow-xl"
@@ -299,36 +303,38 @@ export default function Cyclo() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="mt-10 relative max-w-3xl mx-auto"
+            className="mt-8 relative max-w-3xl mx-auto"
           >
-            <div className="rounded-2xl p-2 sm:p-3 flex items-center gap-2 bg-white border border-amber-200 shadow-sm">
-              <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-50 text-amber-700 text-xs font-bold uppercase tracking-widest border border-amber-100">
-                <Route size={14} /> Tour
-              </div>
+            {/* Search input row */}
+            <div className="rounded-2xl p-2 flex items-center gap-2 bg-white border border-amber-200 shadow-sm mb-2">
               <div className="flex-1 flex items-center gap-2 px-3">
-                <Search size={16} className="text-amber-400" />
+                <Search size={16} className="text-amber-400 shrink-0" />
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Tìm hành trình xích lô của bạn..."
-                  className="bg-transparent flex-1 text-amber-900 placeholder:text-amber-400/70 text-sm focus:outline-none py-2"
+                  placeholder="Tìm hành trình xích lô..."
+                  className="bg-transparent flex-1 text-amber-900 placeholder:text-amber-400/70 text-sm focus:outline-none py-2 min-w-0"
                 />
               </div>
-              <div className="flex items-center gap-1 pr-1">
-                {(["Tất cả", "Đà Nẵng", "Hội An"] as const).map((a) => (
-                  <button
-                    key={a}
-                    onClick={() => setActiveArea(a)}
-                    className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                      activeArea === a
-                        ? "bg-amber-500 text-white"
-                        : "text-amber-600 hover:text-amber-800 hover:bg-amber-50"
-                    }`}
-                  >
-                    {a}
-                  </button>
-                ))}
+              <div className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-50 text-amber-700 text-xs font-bold uppercase tracking-widest border border-amber-100">
+                <Route size={13} /> Tour
               </div>
+            </div>
+            {/* Area filter pills — horizontal scroll on mobile */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+              {(["Tất cả", "Đà Nẵng", "Hội An"] as const).map((a) => (
+                <button
+                  key={a}
+                  onClick={() => setActiveArea(a)}
+                  className={`shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-all border ${
+                    activeArea === a
+                      ? "bg-amber-500 text-white border-amber-500"
+                      : "text-amber-700 border-amber-200 bg-white hover:bg-amber-50"
+                  }`}
+                >
+                  {a}
+                </button>
+              ))}
             </div>
           </motion.div>
         </div>
@@ -341,7 +347,7 @@ export default function Cyclo() {
             <Bike size={18} className="text-amber-600" />
             {filtered.length} hành trình có sẵn
           </h2>
-          <span className="text-amber-600/60 text-xs">Chạm vào sóng âm để nghe thử</span>
+          <span className="hidden sm:inline text-amber-600/60 text-xs">Chạm vào sóng âm để nghe thử</span>
         </div>
 
         <div className="grid md:grid-cols-2 gap-5">
