@@ -14,24 +14,52 @@ const tips = [
     title: "Tiền tệ & Thanh toán",
     desc: "Đồng Việt Nam (VND). Tỷ giá: 1 USD ≈ 25,000 VND. ATM có sẵn khắp nơi. Thẻ tín dụng được chấp nhận tại hầu hết khách sạn.",
     icon: Banknote,
+    iconBg: "bg-emerald-100 dark:bg-emerald-950/60",
+    iconColor: "text-emerald-600 dark:text-emerald-400",
+    iconHoverBg: "group-hover:bg-emerald-500",
+    accentBorder: "group-hover:border-emerald-200 dark:group-hover:border-emerald-800",
+    badgeBg: "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400",
+    linkColor: "text-emerald-600 dark:text-emerald-400",
+    glowColor: "group-hover:shadow-emerald-900/10",
   },
   {
     id: 2,
     title: "An toàn & Sức khỏe",
     desc: "Đà Nẵng rất an toàn. Nên có bảo hiểm du lịch. Uống nước đóng chai. Thoa kem chống nắng SPF 50+ khi ra biển.",
     icon: Shield,
+    iconBg: "bg-amber-100 dark:bg-amber-950/60",
+    iconColor: "text-amber-600 dark:text-amber-400",
+    iconHoverBg: "group-hover:bg-amber-500",
+    accentBorder: "group-hover:border-amber-200 dark:group-hover:border-amber-800",
+    badgeBg: "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400",
+    linkColor: "text-amber-600 dark:text-amber-400",
+    glowColor: "group-hover:shadow-amber-900/10",
   },
   {
     id: 3,
     title: "Liên lạc khẩn cấp",
     desc: "Cảnh sát: 113 · Cứu hỏa: 114 · Cấp cứu: 115. Đường dây hỗ trợ du lịch: 1800 599 954 (miễn phí).",
     icon: PhoneCall,
+    iconBg: "bg-rose-100 dark:bg-rose-950/60",
+    iconColor: "text-rose-600 dark:text-rose-400",
+    iconHoverBg: "group-hover:bg-rose-500",
+    accentBorder: "group-hover:border-rose-200 dark:group-hover:border-rose-800",
+    badgeBg: "bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400",
+    linkColor: "text-rose-600 dark:text-rose-400",
+    glowColor: "group-hover:shadow-rose-900/10",
   },
   {
     id: 4,
     title: "Di chuyển & Giao thông",
     desc: "Grab là ứng dụng gọi xe phổ biến nhất. Thuê xe máy ~150K VND/ngày. Sân bay cách trung tâm chỉ 3km.",
     icon: Plane,
+    iconBg: "bg-violet-100 dark:bg-violet-950/60",
+    iconColor: "text-violet-600 dark:text-violet-400",
+    iconHoverBg: "group-hover:bg-violet-500",
+    accentBorder: "group-hover:border-violet-200 dark:group-hover:border-violet-800",
+    badgeBg: "bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400",
+    linkColor: "text-violet-600 dark:text-violet-400",
+    glowColor: "group-hover:shadow-violet-900/10",
   },
 ];
 
@@ -94,20 +122,20 @@ export default function NeedToKnow() {
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: i * 0.1 + 0.15, duration: 0.5 }}
                 whileHover={{ y: -5 }}
-                className="group rounded-3xl border border-border bg-card p-5 shadow-sm transition-all hover:border-primary/25 hover:shadow-xl hover:shadow-slate-900/10"
+                className={`group rounded-3xl border border-border bg-card p-5 shadow-sm transition-all hover:shadow-xl ${tip.accentBorder} ${tip.glowColor}`}
                 data-testid={`card-needtoknow-${tip.id}`}
               >
                 <div className="mb-4 flex items-start justify-between gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-2xl transition-all ${tip.iconBg} ${tip.iconColor} ${tip.iconHoverBg} group-hover:text-white`}>
                     <tip.icon size={22} />
                   </div>
-                  <span className="rounded-full bg-muted px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${tip.badgeBg}`}>
                     0{tip.id}
                   </span>
                 </div>
                 <h4 className="text-base font-bold text-foreground">{tip.title}</h4>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{tip.desc}</p>
-                <button className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
+                <button className={`mt-4 inline-flex items-center gap-1.5 text-sm font-semibold ${tip.linkColor}`}>
                   Chi tiết <ArrowRight size={13} className="transition-transform group-hover:translate-x-1" />
                 </button>
               </motion.div>
@@ -136,7 +164,7 @@ export default function NeedToKnow() {
                 transition={{ delay: i * 0.08, duration: 0.4 }}
                 className="flex gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm"
               >
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${tip.iconBg} ${tip.iconColor}`}>
                   <tip.icon size={20} />
                 </div>
                 <div>
