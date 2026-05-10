@@ -194,7 +194,7 @@ export default function AIAssistant() {
   const botBubble = isDark ? "bg-white/8 border border-white/10 text-white/90" : "bg-white border border-slate-200 text-slate-700 shadow-sm";
 
   return (
-    <div className={`h-[calc(100vh-56px)] flex flex-col overflow-hidden ${bg}`} data-testid="page-ai-assistant">
+    <div className={`h-[calc(100vh-56px-64px)] md:h-[calc(100vh-56px)] flex flex-col overflow-hidden ${bg}`} data-testid="page-ai-assistant">
 
       {/* ── Body ── */}
       <div className="flex-1 overflow-hidden flex flex-col">
@@ -208,61 +208,63 @@ export default function AIAssistant() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
-              className="flex-1 overflow-hidden px-5 py-4 flex flex-col items-center text-center"
+              className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-3 flex flex-col items-center text-center"
             >
-              {/* Mascot */}
-              <DaNaMascot />
+              {/* Mascot — smaller on mobile */}
+              <div className="scale-75 sm:scale-100 origin-top">
+                <DaNaMascot />
+              </div>
 
               {/* Title */}
-              <div className="mt-3 mb-3">
-                <h1 className={`text-xl md:text-2xl font-bold tracking-tight ${txPrimary}`}>
+              <div className="mt-1 sm:mt-3 mb-2 sm:mb-3">
+                <h1 className={`text-lg sm:text-2xl font-bold tracking-tight ${txPrimary}`}>
                   Xin chào! Tôi là{" "}
                   <span style={{ background: "linear-gradient(135deg,#f97316,#eab308)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                     DaNa
                   </span>
                 </h1>
-                <p className={`text-xs md:text-sm mt-1 ${txMid}`}>Trợ lý AI du lịch thông minh của bạn tại Đà Nẵng</p>
+                <p className={`text-xs mt-1 ${txMid}`}>Trợ lý AI du lịch thông minh của bạn tại Đà Nẵng</p>
               </div>
 
               {/* Feature pills */}
-              <div className="flex items-center gap-3 flex-wrap justify-center mb-3">
+              <div className="flex items-center gap-3 sm:gap-4 flex-wrap justify-center mb-3">
                 {features.map((f) => (
                   <div key={f.label} className="flex flex-col items-center gap-1">
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: `${f.color}18` }}>
-                      <f.icon size={15} style={{ color: f.color }} />
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center" style={{ background: `${f.color}18` }}>
+                      <f.icon size={13} style={{ color: f.color }} />
                     </div>
                     <span className={`text-[10px] font-medium ${txMid}`}>{f.label}</span>
                   </div>
                 ))}
               </div>
 
-              {/* Category cards */}
-              <div className="grid grid-cols-4 gap-2.5 w-full max-w-[760px] mb-4">
+              {/* Category cards — 2 cols on mobile, 4 on desktop */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 w-full max-w-[760px] mb-3">
                 {categories.map((c) => (
                   <motion.button
                     key={c.label}
                     whileHover={{ y: -4, scale: 1.04 }}
                     whileTap={{ scale: 0.96 }}
                     onClick={() => sendMessage(categoryMessages[c.label] || c.label)}
-                    className={`flex flex-col items-center gap-2 p-3 rounded-2xl ${card} transition-all`}
+                    className={`flex items-center sm:flex-col gap-3 sm:gap-2 p-3 rounded-2xl ${card} transition-all text-left sm:text-center`}
                     data-testid={`button-ai-cat-${c.label}`}
                   >
                     <div
-                      className="w-10 h-10 rounded-2xl flex items-center justify-center"
+                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl flex items-center justify-center shrink-0"
                       style={{ background: c.bg, boxShadow: `0 4px 12px ${c.color}35` }}
                     >
-                      <c.icon size={20} className="text-white" />
+                      <c.icon size={18} className="text-white" />
                     </div>
                     <div>
                       <p className={`text-xs font-semibold leading-tight ${txPrimary}`}>{c.label}</p>
-                      <p className={`text-[10px] leading-snug mt-0.5 ${txSub}`}>{c.sub}</p>
+                      <p className={`text-[10px] leading-snug mt-0.5 ${txSub} hidden sm:block`}>{c.sub}</p>
                     </div>
                   </motion.button>
                 ))}
               </div>
 
               {/* FAQ */}
-              <div className="w-full max-w-[920px]">
+              <div className="w-full">
                 <div className={`flex items-center gap-2 mb-2 ${txSub}`}>
                   <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center shrink-0">
                     <span className="text-white text-[8px] font-bold">?</span>
@@ -270,7 +272,7 @@ export default function AIAssistant() {
                   <span className="text-[11px] font-semibold uppercase tracking-wider">Câu hỏi thường gặp</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2">
                   {faqs.map((faq) => (
                     <motion.button
                       key={faq.q}
@@ -284,7 +286,7 @@ export default function AIAssistant() {
                         <faq.icon size={13} className="text-slate-500" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className={`text-xs font-medium leading-snug whitespace-nowrap overflow-hidden text-ellipsis ${txMid}`}>{faq.q}</p>
+                        <p className={`text-xs font-medium leading-snug line-clamp-2 text-left ${txMid}`}>{faq.q}</p>
                       </div>
                       <ChevronRight size={13} className={`shrink-0 ${txSub}`} />
                     </motion.button>
@@ -292,7 +294,7 @@ export default function AIAssistant() {
                 </div>
               </div>
 
-              <div className="h-2" />
+              <div className="h-3" />
             </motion.div>
 
           ) : (
