@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
-import { ChevronLeft, ChevronRight, Search, MapPin, Utensils, Hotel, X, Clock, TrendingUp, Trash2, CalendarDays } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, MapPin, Utensils, Hotel, X, Clock, TrendingUp, Trash2, CalendarDays } from "lucide-react"; // MapPin kept for quickSuggestions; CalendarDays kept for quickSuggestions
 import { useLocation } from "wouter";
 
 const slides = [
@@ -53,18 +53,6 @@ const recentSearches = ["Bà Nà Hills", "Nhà hàng hải sản"];
 
 const trending = ["Pháo hoa Đà Nẵng", "Cầu Vàng", "Hội An đêm", "Cù Lao Chàm", "Bà Nà Hills", "Resort Mỹ Khê"];
 
-const topSearches = [
-  { rank: 1, title: "Cầu Vàng Bà Nà Hills", sub: "Đà Nẵng", price: "Từ $45", img: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=100&auto=format&fit=crop" },
-  { rank: 2, title: "Tour Phố cổ Hội An", sub: "Hội An, Quảng Nam", price: "Từ $30", img: "https://images.unsplash.com/photo-1548013146-72479768bada?w=100&auto=format&fit=crop" },
-  { rank: 3, title: "Lặn biển Cù Lao Chàm", sub: "Quảng Nam", price: "Từ $60", img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=100&auto=format&fit=crop" },
-];
-
-const trendingDest = [
-  { rank: 1, title: "Đà Nẵng", sub: "Nghỉ dưỡng & Biển đẹp", img: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=100&auto=format&fit=crop" },
-  { rank: 2, title: "Hội An", sub: "Di sản & Ẩm thực", img: "https://images.unsplash.com/photo-1548013146-72479768bada?w=100&auto=format&fit=crop" },
-  { rank: 3, title: "Bà Nà Hills", sub: "Tham quan & Giải trí", img: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=100&auto=format&fit=crop" },
-];
-
 type DropdownRect = { top: number; left: number; width: number };
 
 interface SearchDropdownProps {
@@ -72,12 +60,9 @@ interface SearchDropdownProps {
   rect: DropdownRect;
   searchVal: string;
   setSearchVal: (v: string) => void;
-  setShowSuggestions: () => void;
-  filteredTop: typeof topSearches;
-  filteredDest: typeof trendingDest;
 }
 
-function SearchDropdown({ show, rect, searchVal, setSearchVal, setShowSuggestions, filteredTop, filteredDest }: SearchDropdownProps) {
+function SearchDropdown({ show, rect, searchVal, setSearchVal }: SearchDropdownProps) {
   if (!show || rect.width === 0) return null;
   return createPortal(
     <AnimatePresence>
@@ -94,111 +79,48 @@ function SearchDropdown({ show, rect, searchVal, setSearchVal, setShowSuggestion
           width: rect.width,
           zIndex: 99999,
           background: "#ffffff",
-          maxHeight: "min(75vh, 480px)",
+          maxHeight: "min(75vh, 320px)",
           overflowY: "auto",
         }}
         className="rounded-2xl shadow-2xl"
         data-testid="search-suggestions"
       >
         <div className="p-4 space-y-4">
-          {!searchVal && (
-            <>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-gray-700">
-                  <Clock size={14} className="text-gray-400" />
-                  <span className="text-sm font-semibold">Lịch sử tìm kiếm</span>
-                </div>
-                <button className="text-gray-400 hover:text-gray-600">
-                  <Trash2 size={14} />
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {recentSearches.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setSearchVal(s)}
-                    className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm rounded-full transition-colors"
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2 text-gray-700">
-                    <TrendingUp size={14} className="text-gray-400" />
-                    <span className="text-sm font-semibold">Mọi người đang tìm kiếm</span>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {trending.map((t) => (
-                    <button
-                      key={t}
-                      onClick={() => setSearchVal(t)}
-                      className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-sm rounded-full transition-colors"
-                    >
-                      {t}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
-          <div className="border-t border-gray-100 my-1" />
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                {searchVal ? "Địa điểm phù hợp" : "Top tìm kiếm"}
-              </p>
-              <div className="space-y-1">
-                {filteredTop.map((item) => (
-                  <button
-                    key={item.rank}
-                    onClick={() => { setSearchVal(item.title); setShowSuggestions(); }}
-                    className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-gray-50 transition-colors text-left"
-                  >
-                    <span className="w-5 h-5 rounded-full bg-blue-500 text-white text-xs font-bold flex items-center justify-center shrink-0">
-                      {item.rank}
-                    </span>
-                    <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0">
-                      <img src={item.img} alt={item.title} className="w-full h-full object-cover" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-gray-800 line-clamp-1">{item.title}</p>
-                      <div className="flex items-center gap-1">
-                        <MapPin size={9} className="text-gray-400" />
-                        <p className="text-xs text-gray-400 line-clamp-1">{item.sub}</p>
-                      </div>
-                    </div>
-                    <p className="text-xs text-blue-600 font-medium shrink-0 ml-auto">{item.price}</p>
-                  </button>
-                ))}
-              </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-gray-700">
+              <Clock size={14} className="text-gray-400" />
+              <span className="text-sm font-semibold">Lịch sử tìm kiếm</span>
             </div>
-            <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                {searchVal ? "Điểm đến" : "Điểm đến theo xu hướng"}
-              </p>
-              <div className="space-y-1">
-                {filteredDest.map((item) => (
-                  <button
-                    key={item.rank}
-                    onClick={() => { setSearchVal(item.title); setShowSuggestions(); }}
-                    className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-gray-50 transition-colors text-left"
-                  >
-                    <span className="w-5 h-5 rounded-full bg-amber-500 text-white text-xs font-bold flex items-center justify-center shrink-0">
-                      {item.rank}
-                    </span>
-                    <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0">
-                      <img src={item.img} alt={item.title} className="w-full h-full object-cover" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-gray-800 line-clamp-1">{item.title}</p>
-                      <p className="text-xs text-gray-400 line-clamp-1">{item.sub}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
+            <button className="text-gray-400 hover:text-gray-600">
+              <Trash2 size={14} />
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {recentSearches.map((s) => (
+              <button
+                key={s}
+                onClick={() => setSearchVal(s)}
+                className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm rounded-full transition-colors"
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+          <div>
+            <div className="flex items-center gap-2 text-gray-700 mb-2">
+              <TrendingUp size={14} className="text-gray-400" />
+              <span className="text-sm font-semibold">Mọi người đang tìm kiếm</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {trending.map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setSearchVal(t)}
+                  className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-sm rounded-full transition-colors"
+                >
+                  {t}
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -293,14 +215,6 @@ export default function HeroSlider() {
       window.removeEventListener("resize", update);
     };
   }, [showSuggestions]);
-
-  const filteredTop = searchVal
-    ? topSearches.filter((s) => s.title.toLowerCase().includes(searchVal.toLowerCase()))
-    : topSearches;
-  const filteredDest = searchVal
-    ? trendingDest.filter((s) => s.title.toLowerCase().includes(searchVal.toLowerCase()))
-    : trendingDest;
-  const hasSearchResults = !searchVal || filteredTop.length > 0 || filteredDest.length > 0;
 
   return (
     <section
@@ -434,13 +348,10 @@ export default function HeroSlider() {
           </motion.div>
 
           <SearchDropdown
-            show={showSuggestions && hasSearchResults}
+            show={showSuggestions}
             rect={dropdownRect}
             searchVal={searchVal}
             setSearchVal={setSearchVal}
-            setShowSuggestions={closeDropdown}
-            filteredTop={filteredTop}
-            filteredDest={filteredDest}
           />
         </motion.div>
       </div>
