@@ -67,8 +67,8 @@ export default function Header() {
           </div>
         </a>
 
-        <div className="flex-1 max-w-xl mx-auto">
-          <div className="relative">
+        <div className="hidden md:flex flex-1 max-w-xl mx-auto">
+          <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
             <input
               type="search"
@@ -82,7 +82,7 @@ export default function Header() {
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
-          <div className="relative hidden sm:block" ref={langRef}>
+          <div className="relative" ref={langRef}>
             <button
               onClick={() => setLangOpen((v) => !v)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-muted/50 hover:bg-muted text-sm font-medium text-foreground transition-all"
