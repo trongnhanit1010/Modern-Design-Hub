@@ -90,143 +90,139 @@ export function CategoryShell({
   return (
     <div className="min-h-screen bg-white">
 
-      {/* ════════════ HERO — Bento Grid ════════════ */}
-      <section className="w-full px-3 sm:px-4 pt-3 sm:pt-4 pb-0" style={{ background: "#f0f2f5" }}>
+      {/* ════════════ HERO — Photo Stack ════════════ */}
+      <section className="w-full border-b border-gray-100">
         <div
-          className="grid gap-3"
-          style={{ gridTemplate: '"img title" "img stats" "img cta" / 1.15fr 1fr', height: 460 }}
+          className="max-w-7xl mx-auto px-6 sm:px-10 xl:px-14 py-12 sm:py-16 grid lg:grid-cols-2 gap-10 xl:gap-16 items-center"
         >
-          {/* ── Cell A: Main image ── */}
+          {/* ── LEFT: Text ── */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-            className="relative rounded-3xl overflow-hidden"
-            style={{ gridArea: "img", boxShadow: "0 2px 20px rgba(0,0,0,0.10)" }}
+            initial={{ opacity: 0, x: -24 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="flex flex-col justify-center"
           >
-            {collage.length > 0 && (
-              <img
-                src={collage[0].src}
-                alt=""
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-
-            {/* Badge on image */}
             {badge && (
-              <div className="absolute top-4 left-4">
+              <div className="mb-6">
                 <span
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold tracking-wide text-white"
-                  style={{
-                    background: "rgba(0,0,0,0.38)",
-                    backdropFilter: "blur(10px)",
-                    border: "1px solid rgba(255,255,255,0.18)",
-                  }}
+                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide"
+                  style={{ background: `${bd.orbA}12`, color: bd.orbA, border: `1px solid ${bd.orbA}30` }}
                 >
-                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: bd.orbC }} />
+                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: bd.orbA }} />
                   {badge.text}
                 </span>
               </div>
             )}
 
-            {/* Floating badge bottom */}
-            {floatingBadge && (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.4 }}
-                className="absolute bottom-4 left-4 flex items-center gap-2.5 rounded-2xl px-3.5 py-2.5 text-white"
-                style={{
-                  background: `linear-gradient(135deg, ${bd.orbA}ee, ${bd.orbB}ee)`,
-                  backdropFilter: "blur(10px)",
-                  boxShadow: `0 6px 20px ${bd.orbA}50`,
-                }}
-              >
-                <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
-                  <floatingBadge.icon size={12} />
-                </div>
-                <div>
-                  <div className="text-[9px] opacity-70 leading-none tracking-widest uppercase">{floatingBadge.subtitle}</div>
-                  <div className="text-[12px] font-bold leading-none mt-0.5">{floatingBadge.title}</div>
-                </div>
-              </motion.div>
-            )}
-          </motion.div>
-
-          {/* ── Cell B: Title card ── */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.55, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-            className="rounded-3xl bg-white flex flex-col justify-center px-8 py-6"
-            style={{ gridArea: "title", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}
-          >
-            <h1 className="font-serif font-black leading-[0.9] tracking-[-0.03em] text-gray-950 text-[2.4rem] xl:text-[2.8rem]">
+            <h1 className="font-serif font-black leading-[0.9] tracking-[-0.03em] text-gray-950 text-[3rem] sm:text-[3.8rem] xl:text-[4.4rem]">
               {titleLines.map((line, i) => (
                 <span key={i} className="block">
-                  {i === gradientLineIndex
-                    ? <span style={gradientStyle}>{line}</span>
-                    : line}
+                  {i === gradientLineIndex ? <span style={gradientStyle}>{line}</span> : line}
                 </span>
               ))}
             </h1>
-            {subtitle && (
-              <p className="mt-3 text-gray-400 text-sm leading-relaxed max-w-xs">{subtitle}</p>
-            )}
-          </motion.div>
 
-          {/* ── Cell C: Stats card ── */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.55, delay: 0.14, ease: [0.22, 1, 0.36, 1] }}
-            className="rounded-3xl bg-white flex items-center px-8"
-            style={{ gridArea: "stats", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}
-          >
+            {subtitle && (
+              <p className="mt-5 text-gray-500 text-[0.95rem] leading-relaxed max-w-sm">{subtitle}</p>
+            )}
+
             {stats && stats.length > 0 && (
-              <div className="flex items-center gap-0 divide-x divide-gray-100 w-full">
-                {stats.map(({ label, value }) => (
-                  <div key={label} className="flex-1 flex flex-col items-center gap-1 py-2">
-                    <span
-                      className="text-[1.7rem] font-black leading-none tracking-tight"
-                      style={{ color: bd.orbA }}
-                    >
-                      {value}
-                    </span>
-                    <span className="text-[10px] text-gray-400 uppercase tracking-widest text-center">
-                      {label}
-                    </span>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="mt-8 flex items-center gap-6 flex-wrap"
+              >
+                {stats.map(({ label, value }, i) => (
+                  <div key={label} className={`flex flex-col gap-1 ${i > 0 ? "pl-6 border-l border-gray-100" : ""}`}>
+                    <span className="text-[1.8rem] font-black leading-none tracking-tight" style={{ color: bd.orbA }}>{value}</span>
+                    <span className="text-[10px] text-gray-400 uppercase tracking-widest">{label}</span>
                   </div>
                 ))}
-              </div>
+              </motion.div>
             )}
-          </motion.div>
 
-          {/* ── Cell D: CTA card ── */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.55, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="rounded-3xl flex items-center justify-between px-8 py-5 overflow-hidden relative"
-            style={{
-              gridArea: "cta",
-              background: `linear-gradient(135deg, ${bd.orbA}, ${bd.orbB})`,
-              boxShadow: `0 4px 24px -4px ${bd.orbA}60`,
-            }}
-          >
-            {/* Decorative circle */}
-            <div className="absolute -right-8 -top-8 w-36 h-36 rounded-full bg-white/8" />
-            <div className="absolute -right-2 -bottom-6 w-24 h-24 rounded-full bg-white/6" />
-
-            <span className="text-white font-bold text-base relative z-10">Khám phá ngay</span>
             <motion.div
-              whileHover={{ x: 4 }}
-              className="w-10 h-10 rounded-2xl bg-white/15 flex items-center justify-center relative z-10"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.45 }}
+              className="mt-9"
             >
-              <ArrowRight size={18} className="text-white" />
+              <motion.button
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl text-white font-semibold text-sm"
+                style={{ background: `linear-gradient(135deg, ${bd.orbA}, ${bd.orbB})`, boxShadow: `0 8px 28px -4px ${bd.orbA}55` }}
+              >
+                Khám phá ngay <ArrowRight size={15} />
+              </motion.button>
             </motion.div>
           </motion.div>
+
+          {/* ── RIGHT: Photo stack ── */}
+          <div className="relative hidden lg:flex items-center justify-center" style={{ height: 420 }}>
+
+            {/* Card 3 — back, most rotated */}
+            {collage[2] && (
+              <motion.div
+                initial={{ opacity: 0, rotate: 0, x: 40 }}
+                animate={{ opacity: 1, rotate: 8, x: 40 }}
+                transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute rounded-[22px] overflow-hidden shadow-xl border-4 border-white"
+                style={{ width: 280, height: 370, top: "50%", left: "50%", translateX: "-50%", translateY: "-50%", zIndex: 1 }}
+                whileHover={{ rotate: 11, x: 55 }}
+              >
+                <img src={collage[2].src} alt="" className="w-full h-full object-cover" />
+              </motion.div>
+            )}
+
+            {/* Card 2 — middle */}
+            {collage[1] && (
+              <motion.div
+                initial={{ opacity: 0, rotate: 0, x: 18 }}
+                animate={{ opacity: 1, rotate: -5, x: 18 }}
+                transition={{ duration: 0.7, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute rounded-[22px] overflow-hidden shadow-xl border-4 border-white"
+                style={{ width: 290, height: 385, top: "50%", left: "50%", translateX: "-50%", translateY: "-50%", zIndex: 2 }}
+                whileHover={{ rotate: -7, x: 24 }}
+              >
+                <img src={collage[1].src} alt="" className="w-full h-full object-cover" />
+              </motion.div>
+            )}
+
+            {/* Card 1 — front, straight */}
+            {collage[0] && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1, rotate: -1 }}
+                transition={{ duration: 0.75, delay: 0.26, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute rounded-[22px] overflow-hidden border-4 border-white"
+                style={{ width: 300, height: 400, top: "50%", left: "50%", translateX: "-60%", translateY: "-50%", zIndex: 3, boxShadow: "0 24px 60px -10px rgba(0,0,0,0.28)" }}
+              >
+                <img src={collage[0].src} alt="" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+
+                {/* Floating badge on front card */}
+                {floatingBadge && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7, duration: 0.4 }}
+                    className="absolute bottom-4 left-4 right-4 flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-white"
+                    style={{ background: `linear-gradient(135deg, ${bd.orbA}ee, ${bd.orbB}ee)`, backdropFilter: "blur(10px)", boxShadow: `0 6px 20px ${bd.orbA}50` }}
+                  >
+                    <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
+                      <floatingBadge.icon size={12} />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[9px] opacity-70 leading-none tracking-widest uppercase">{floatingBadge.subtitle}</div>
+                      <div className="text-[12px] font-bold leading-none mt-0.5 truncate">{floatingBadge.title}</div>
+                    </div>
+                  </motion.div>
+                )}
+              </motion.div>
+            )}
+          </div>
         </div>
       </section>
 
