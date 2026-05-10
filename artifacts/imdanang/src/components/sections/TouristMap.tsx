@@ -104,7 +104,7 @@ function SmartMap({ isInView }: { isInView: boolean }) {
 
       <div className="relative z-20 grid md:grid-cols-5 min-h-[480px]">
         {/* Left panel */}
-        <div className="md:col-span-2 flex flex-col justify-center p-8 md:pr-4">
+        <div className="md:col-span-2 flex flex-col justify-center p-6 md:p-8 md:pr-4">
           <motion.div initial={{ opacity: 0, x: -30 }} animate={isInView ? { opacity: 1, x: 0 } : {}} transition={{ delay: 0.3, duration: 0.6 }}>
             {/* Online badge */}
             <div className="inline-flex items-center gap-2 border border-green-500/40 bg-green-500/10 text-green-400 rounded-full px-4 py-1.5 text-xs font-semibold tracking-widest mb-5">
@@ -145,7 +145,7 @@ function SmartMap({ isInView }: { isInView: boolean }) {
         </div>
 
         {/* Right: map dots + stats */}
-        <div className="md:col-span-3 relative flex items-center p-6">
+        <div className="md:col-span-3 relative flex items-center p-6" style={{ minHeight: 320 }}>
           {/* Dots */}
           <div className="absolute inset-0">
             {smartDots.map((dot, i) => (
@@ -264,8 +264,8 @@ function ModernMap({ isInView }: { isInView: boolean }) {
           </motion.div>
         </div>
 
-        <div className="md:col-span-3 relative flex items-center justify-center p-6">
-          <div className="relative w-full h-full" style={{ minHeight: 380 }}>
+        <div className="md:col-span-3 relative flex items-center justify-center p-6" style={{ minHeight: 340 }}>
+          <div className="relative w-full h-full" style={{ minHeight: 300 }}>
             {locations.map((loc, i) => (
               <motion.div
                 key={loc.id}

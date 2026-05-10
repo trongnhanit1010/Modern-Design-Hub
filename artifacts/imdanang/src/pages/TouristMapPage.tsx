@@ -3,7 +3,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Hotel, UtensilsCrossed, Camera, Star,
-  Search, Map, ChevronRight, Grid3X3, List, ChevronLeft,
+  Search, Map, ChevronRight, Grid3X3, List, ChevronLeft, ChevronUp,
   Waves, MapPin, Heart, X, Navigation, Coffee, SlidersHorizontal, ChevronDown,
 } from "lucide-react";
 import { useDarkMode } from "@/context/DarkModeContext";
@@ -187,6 +187,7 @@ export default function TouristMapPage() {
   const [expandedDishId, setExpandedDishId] = useState<number | null>(null);
   const [liked, setLiked] = useState<number[]>([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [mobileListOpen, setMobileListOpen] = useState(false);
 
   const [hf, setHf] = useState({ stars: [] as number[], type: [] as string[], city: [] as string[] });
   const [af, setAf] = useState({ type: [] as string[] });
@@ -524,9 +525,14 @@ export default function TouristMapPage() {
   return (
     <div className={`flex h-[calc(100vh-56px)] overflow-hidden ${D ? "bg-[#0d0d1a]" : "bg-gray-100"}`}>
 
-      {/* ─── SIDEBAR ─── */}
-      <motion.aside initial={{ opacity: 0, x: -28 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.35 }}
-        className={`w-[400px] shrink-0 flex flex-col overflow-hidden border-r ${sb}`}>
+      {/* ─── SIDEBAR (desktop) / BOTTOM SHEET (mobile) ─── */}
+      <AnimatePresence>
+      {(mobileListOpen || true) && (
+      <motion.aside
+        initial={{ opacity: 0, x: -28 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.35 }}
+        className={`hidden lg:flex w-[400px] shrink-0 flex-col overflow-hidden border-r ${sb}`}>
 
         {/* header */}
         <div className={`px-4 pt-4 pb-3 border-b ${sbB}`}>
@@ -858,6 +864,91 @@ export default function TouristMapPage() {
           </div>
         )}
       </motion.aside>
+      )}
+      </AnimatePresence>
+
+      {/* ─── MOBILE BOTTOM SHEET ─── */}
+      <AnimatePresence>
+        {mobileListOpen && (
+          <motion.div
+            key="mobile-sheet"
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", stiffness: 340, damping: 38 }}
+            className={`lg:hidden absolute bottom-0 left-0 right-0 z-50 flex flex-col rounded-t-3xl border-t overflow-hidden ${sb}`}
+            style={{ height: "72vh" }}
+          >
+            <div className="flex items-center justify-between px-4 pt-3 pb-2 shrink-0">
+              <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto" />
+            </div>
+            <button
+              onClick={() => setMobileListOpen(false)}
+              className={`absolute top-3 right-4 p-1.5 rounded-xl ${D ? "text-white/40 hover:text-white/70 hover:bg-white/10" : "text-gray-400 hover:text-gray-700 hover:bg-gray-100"}`}
+            >
+              <X size={16} />
+            </button>
+
+            {/* Category icons */}
+            <div className={`px-3 pt-1 pb-3 border-b shrink-0 ${sbB}`}>
+              <div className="flex justify-between">
+                {categories.map(c => {
+                  const active = activeCategory === c.id;
+                  return (
+                    <button key={c.id} onClick={() => { setActiveCategory(c.id); setShowFilters(false); }} className="flex flex-col items-center gap-1.5 group">
+                      <div className={`rounded-full flex items-center justify-center transition-all duration-300 ${active ? "w-12 h-12" : "w-9 h-9 opacity-65"}`}
+                        style={{ background: `linear-gradient(135deg, ${c.g1}, ${c.g2})`, boxShadow: active ? `0 0 18px ${c.g1}70, 0 3px 12px ${c.g1}40` : `0 2px 6px ${c.g1}25` }}>
+                        <c.icon size={active ? 18 : 14} className="text-white" />
+                      </div>
+                      <span className={`text-[9px] font-semibold leading-tight text-center max-w-[52px] ${active ? tx : txS}`}>{c.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Search */}
+            <div className={`px-3 py-2 border-b shrink-0 ${sbB}`}>
+              <div className={`flex items-center gap-2 border rounded-xl px-3 py-2 ${inp}`}>
+                <Search size={13} className={`${txS} shrink-0`} />
+                <input value={search} onChange={e => setSearch(e.target.value)} placeholder={`Tìm ${cat.label.toLowerCase()}...`}
+                  className={`bg-transparent text-xs focus:outline-none flex-1 ${txM} ${D ? "placeholder:text-white/25" : "placeholder:text-gray-400"}`} />
+                {search && <button onClick={() => setSearch("")}><X size={11} className={txS} /></button>}
+              </div>
+            </div>
+
+            {/* Result count */}
+            <div className={`px-3 py-1.5 border-b shrink-0 ${sbB}`}>
+              <span className={`text-[10px] ${txS}`}><span className={`font-semibold ${txM}`}>{filteredList.length}</span> kết quả</span>
+            </div>
+
+            {/* Scrollable list */}
+            <div className="flex-1 overflow-y-auto pb-4">
+              {(filteredList as Location[]).map((loc, i) => (
+                <motion.div key={loc.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
+                  <div
+                    role="button"
+                    onClick={() => { setSelectedId(selectedId === loc.id ? null : loc.id); panTo(loc.lat, loc.lng, 16); setMobileListOpen(false); }}
+                    className={`flex gap-3 items-center px-3 py-3 border-b cursor-pointer transition-colors ${selectedId === loc.id ? (D ? "bg-white/5" : "bg-gray-50") : ""} ${sbB}`}
+                  >
+                    <img src={loc.image} alt={loc.name} className="w-12 h-12 rounded-xl object-cover shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className={`font-semibold text-sm leading-tight truncate ${tx}`}>{loc.name}</p>
+                      <p className={`text-[11px] truncate mt-0.5 ${txS}`}>{loc.address}</p>
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <Star size={10} className="text-amber-400 fill-amber-400" />
+                        <span className="text-amber-500 text-[11px] font-semibold">{loc.rating}</span>
+                        {loc.tag && <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: `${cat.g1}18`, color: cat.g1 }}>{loc.tag}</span>}
+                      </div>
+                    </div>
+                    <ChevronRight size={14} className={`shrink-0 ${txS}`} />
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ─── MAP ─── */}
       <div className="flex-1 relative">
@@ -886,6 +977,16 @@ export default function TouristMapPage() {
             <Navigation size={14} />
           </button>
         </div>
+
+        {/* Mobile: floating bottom toggle button */}
+        <button
+          onClick={() => setMobileListOpen(v => !v)}
+          className={`lg:hidden absolute bottom-16 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5 px-5 py-3 rounded-2xl backdrop-blur border shadow-xl text-sm font-semibold transition-all ${D ? "bg-[#0f0f1e]/90 border-white/12 text-white" : "bg-white/95 border-gray-200 text-gray-800 shadow-lg"}`}
+        >
+          <List size={15} />
+          <span>{filteredList.length} {cat.label}</span>
+          <ChevronUp size={13} className={`transition-transform ${mobileListOpen ? "rotate-180" : ""}`} />
+        </button>
 
         {/* Directions input panel */}
         <AnimatePresence>
