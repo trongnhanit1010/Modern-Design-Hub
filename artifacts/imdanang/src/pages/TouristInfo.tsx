@@ -743,7 +743,7 @@ export default function TouristInfo() {
     <div className="bg-[#f5f5f4] min-h-screen">
 
       {/* ── Hero ── */}
-      <div className="relative bg-gradient-to-br from-teal-600 via-teal-500 to-cyan-500 px-4 pt-12 pb-20 overflow-hidden">
+      <div className="relative bg-gradient-to-br from-teal-600 via-teal-500 to-cyan-500 px-4 pt-12 pb-10 overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_30%_50%,white,transparent_70%)]" />
         <div className="max-w-2xl mx-auto relative text-center">
           <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-3 py-1.5 text-white/90 text-xs font-medium mb-4">
@@ -778,7 +778,7 @@ export default function TouristInfo() {
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 -mt-6 pb-20">
+      <div className="max-w-3xl mx-auto px-4 pt-8 pb-20">
 
         {/* ── Category chips ── */}
         <div className="flex gap-2 overflow-x-auto pb-1 mb-6" style={{ scrollbarWidth: "none" } as React.CSSProperties}>
