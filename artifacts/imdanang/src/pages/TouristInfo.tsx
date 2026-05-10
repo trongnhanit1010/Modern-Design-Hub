@@ -796,8 +796,8 @@ export default function TouristInfo() {
         {/* ── Category chips ── */}
         <div
           ref={chipRowRef}
-          className="flex gap-2 overflow-x-auto pb-1 mb-6 cursor-grab select-none"
-          style={{ scrollbarWidth: "none" } as React.CSSProperties}
+          className="flex gap-2 overflow-x-auto pb-2 mb-6 cursor-grab select-none scrollbar-hover"
+          style={{} as React.CSSProperties}
           onMouseDown={onChipMouseDown}
           onMouseUp={onChipMouseUp}
           onMouseLeave={onChipMouseUp}

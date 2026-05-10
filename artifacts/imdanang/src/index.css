@@ -305,6 +305,34 @@
     display: none;
   }
 
+  /* Scrollbar ẩn mặc định, hiện mỏng+đẹp khi hover */
+  .scrollbar-hover {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hover::-webkit-scrollbar {
+    height: 0px;
+    transition: height 0.2s;
+  }
+  .scrollbar-hover:hover {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.55) transparent;
+  }
+  .scrollbar-hover:hover::-webkit-scrollbar {
+    height: 3px;
+  }
+  .scrollbar-hover:hover::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 999px;
+  }
+  .scrollbar-hover:hover::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.55);
+    border-radius: 999px;
+  }
+  .scrollbar-hover:hover::-webkit-scrollbar-thumb:hover {
+    background: rgba(107, 114, 128, 0.75);
+  }
+
   .glass {
     backdrop-filter: blur(12px);
     background: rgba(255,255,255,0.12);

@@ -229,8 +229,8 @@ export function CategoryShell({
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.35 }}
                 ref={filterRowRef}
-                className="flex items-center gap-2 mt-3 overflow-x-auto pb-1 select-none cursor-grab"
-                style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
+                className="flex items-center gap-2 mt-3 overflow-x-auto pb-2 select-none cursor-grab scrollbar-hover"
+                style={{ WebkitOverflowScrolling: "touch" } as React.CSSProperties}
                 onMouseDown={onMouseDown}
                 onMouseLeave={onMouseLeave}
                 onMouseUp={onMouseUp}
