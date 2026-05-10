@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, ChevronDown, MapPin, Phone, Bus, Hotel, Pill,
@@ -724,6 +724,19 @@ export default function TouristInfo() {
   const [search, setSearch] = useState("");
   const [activeCat, setActiveCat] = useState<FaqCategory | "all">("all");
 
+  const chipRowRef = useRef<HTMLDivElement>(null);
+  const chipDrag = useRef({ active: false, startX: 0, scrollLeft: 0 });
+  const onChipMouseDown = (e: React.MouseEvent) => {
+    chipDrag.current = { active: true, startX: e.pageX - (chipRowRef.current?.offsetLeft ?? 0), scrollLeft: chipRowRef.current?.scrollLeft ?? 0 };
+    if (chipRowRef.current) chipRowRef.current.style.cursor = "grabbing";
+  };
+  const onChipMouseUp = () => { chipDrag.current.active = false; if (chipRowRef.current) chipRowRef.current.style.cursor = "grab"; };
+  const onChipMouseMove = (e: React.MouseEvent) => {
+    if (!chipDrag.current.active) return; e.preventDefault();
+    const x = e.pageX - (chipRowRef.current?.offsetLeft ?? 0);
+    if (chipRowRef.current) chipRowRef.current.scrollLeft = chipDrag.current.scrollLeft - (x - chipDrag.current.startX) * 1.5;
+  };
+
   const filtered = useMemo(() => {
     let list = FAQS;
     if (activeCat !== "all") list = list.filter((f) => f.category === activeCat);
@@ -781,7 +794,16 @@ export default function TouristInfo() {
       <div className="max-w-3xl mx-auto px-4 pt-8 pb-20">
 
         {/* ── Category chips ── */}
-        <div className="flex gap-2 overflow-x-auto pb-1 mb-6" style={{ scrollbarWidth: "none" } as React.CSSProperties}>
+        <div
+          ref={chipRowRef}
+          className="flex gap-2 overflow-x-auto pb-1 mb-6 cursor-grab select-none"
+          style={{ scrollbarWidth: "none" } as React.CSSProperties}
+          onMouseDown={onChipMouseDown}
+          onMouseUp={onChipMouseUp}
+          onMouseLeave={onChipMouseUp}
+          onMouseMove={onChipMouseMove}
+        >
+          <div className="shrink-0 w-0.5" aria-hidden="true" />
           {CATEGORIES.map((cat) => {
             const active = activeCat === cat.key;
             const count = cat.key === "all" ? FAQS.length : FAQS.filter((f) => f.category === cat.key).length;
@@ -803,6 +825,7 @@ export default function TouristInfo() {
               </button>
             );
           })}
+          <div className="shrink-0 w-0.5" aria-hidden="true" />
         </div>
 
         {/* ── Popular section (only when no filter/search) ── */}
