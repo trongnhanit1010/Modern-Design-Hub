@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Bus, Car, Bike, Plane, Ship, Navigation, Clock, DollarSign, PhoneCall,
-  ChevronRight, Zap, MapPin, ArrowRight, Route,
+  ChevronRight, Zap, MapPin, ArrowRight, Route, ChevronDown, ExternalLink,
 } from "lucide-react";
 import { CategoryShell, useThemeAccents } from "@/components/category/CategoryShell";
+import { busRoutes } from "@/data/busRoutes";
 
 interface Mode {
   key: string;
@@ -43,6 +44,181 @@ const collage = [
   { src: "https://images.unsplash.com/photo-1502920514313-52581002a659?w=900&auto=format&fit=crop", className: "top-[18%] left-0 w-[48%] h-[52%]" },
   { src: "https://images.unsplash.com/photo-1597211833712-5e41faa202ea?w=900&auto=format&fit=crop", className: "bottom-0 right-[10%] w-[52%] h-[42%]" },
 ];
+
+const TYPE_COLORS: Record<string, { badge: string; dot: string }> = {
+  subsidized:      { badge: "bg-emerald-600 text-white", dot: "bg-emerald-500" },
+  tourist:         { badge: "bg-sky-500 text-white",     dot: "bg-sky-400" },
+  unsubsidized:    { badge: "bg-violet-600 text-white",  dot: "bg-violet-500" },
+  interprovincial: { badge: "bg-orange-500 text-white",  dot: "bg-orange-400" },
+};
+
+function BusCard({ route, acc }: { route: typeof busRoutes[0]; acc: { orbA: string; orbB: string } }) {
+  const [open, setOpen] = useState(false);
+  const colors = TYPE_COLORS[route.type] ?? { badge: "bg-gray-400 text-white", dot: "bg-gray-400" };
+  const hasDetail = !route.pending && !!route.keyStops?.length;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={`rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden ${route.pending ? "opacity-55" : ""}`}
+    >
+      <button
+        onClick={() => hasDetail && setOpen(!open)}
+        className={`w-full flex items-center gap-3 px-4 py-3.5 text-left transition-colors ${hasDetail ? "hover:bg-gray-50 cursor-pointer" : "cursor-default"}`}
+      >
+        <span className={`shrink-0 text-xs font-bold w-14 text-center py-1.5 rounded-xl ${colors.badge}`}>{route.no}</span>
+        <div className="flex-1 min-w-0">
+          <p className="text-gray-900 text-sm font-semibold leading-tight truncate">{route.name}</p>
+          <p className="text-gray-400 text-xs mt-0.5">
+            {route.hours !== "–" ? route.hours : "Chờ vận hành"}
+            {route.price !== "–" ? " · " + route.price : ""}
+          </p>
+        </div>
+        {route.touristFriendly && !route.pending && (
+          <span className="shrink-0 text-xs px-1.5 py-0.5 rounded-md font-medium" style={{ color: acc.orbA, background: `${acc.orbA}12`, border: `1px solid ${acc.orbA}25` }}>
+            Du lịch
+          </span>
+        )}
+        {route.pending && <span className="shrink-0 text-xs text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-md">Sắp mở</span>}
+        {hasDetail && (
+          <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
+            <ChevronDown size={14} className="text-gray-300 shrink-0" />
+          </motion.div>
+        )}
+      </button>
+
+      <AnimatePresence initial={false}>
+        {open && hasDetail && (
+          <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
+            <div className="px-4 pb-4 border-t border-gray-100 bg-gray-50/60">
+              <p className="text-xs text-gray-400 font-medium mt-3 mb-2">Các điểm dừng chính:</p>
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {route.keyStops!.map((stop, i) => (
+                  <span key={i} className="flex items-center gap-1 text-xs bg-white border border-gray-100 rounded-full px-2.5 py-0.5 text-gray-500">
+                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${i === 0 ? "bg-emerald-500" : i === route.keyStops!.length - 1 ? "bg-rose-400" : colors.dot}`} />
+                    {stop}
+                  </span>
+                ))}
+              </div>
+              <div className="flex flex-wrap gap-4 text-xs text-gray-400">
+                {route.distance   && <span className="flex items-center gap-1"><Route size={11} />{route.distance}</span>}
+                {route.frequency !== "–" && <span className="flex items-center gap-1"><Clock size={11} />{route.frequency}</span>}
+                {route.operator   && <span className="flex items-center gap-1"><Bus size={11} />{route.operator}</span>}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+function BusNetworkSection({ acc }: { acc: { orbA: string; orbB: string } }) {
+  const [expanded, setExpanded] = useState(false);
+
+  const touristRoutes = busRoutes.filter((r) => !r.pending && (r.type === "tourist" || (r.type === "unsubsidized" && r.touristFriendly)));
+  const subsidizedRoutes = busRoutes.filter((r) => !r.pending && r.type === "subsidized");
+  const interprovincialRoutes = busRoutes.filter((r) => !r.pending && r.type === "interprovincial");
+  const otherRoutes = busRoutes.filter((r) => !r.pending && r.type === "unsubsidized" && !r.touristFriendly);
+  const pendingRoutes = busRoutes.filter((r) => r.pending);
+
+  return (
+    <section className="pt-12 space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-gray-900 font-bold text-lg flex items-center gap-2">
+          <Bus size={18} style={{ color: acc.orbA }} /> Mạng lưới xe buýt Đà Nẵng
+        </h2>
+        <a
+          href="https://www.danangbus.vn/lo-trinh-tuyen.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+        >
+          danangbus.vn <ExternalLink size={11} />
+        </a>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-3">
+        {[
+          { label: "18+ tuyến", sub: "toàn mạng lưới", dot: "bg-emerald-500" },
+          { label: "05:30–19:00", sub: "giờ hoạt động", dot: "bg-sky-500" },
+          { label: "Từ 8.000đ", sub: "giá vé/lượt", dot: "bg-orange-400" },
+        ].map((s) => (
+          <div key={s.label} className="rounded-2xl border border-gray-100 bg-white shadow-sm p-3.5 text-center">
+            <div className="flex items-center justify-center gap-1.5 mb-1">
+              <span className={`w-2 h-2 rounded-full ${s.dot}`} />
+              <span className="text-sm font-bold text-gray-900">{s.label}</span>
+            </div>
+            <p className="text-xs text-gray-400">{s.sub}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Tourist routes – always shown */}
+      <div>
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-sky-400" /> Tuyến du lịch nổi bật
+        </p>
+        <div className="space-y-2">
+          {[...touristRoutes, ...interprovincialRoutes].map((r) => <BusCard key={r.no} route={r} acc={acc} />)}
+        </div>
+      </div>
+
+      {/* Subsidized routes – always shown */}
+      <div>
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-emerald-500" /> Tuyến có trợ giá · 8.000đ/lượt
+        </p>
+        <div className="space-y-2">
+          {subsidizedRoutes.map((r) => <BusCard key={r.no} route={r} acc={acc} />)}
+        </div>
+      </div>
+
+      {/* Toggle for other routes */}
+      <motion.button
+        onClick={() => setExpanded(!expanded)}
+        whileTap={{ scale: 0.98 }}
+        className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl border border-gray-100 bg-white text-sm text-gray-500 hover:text-gray-700 hover:border-gray-200 transition-all shadow-sm"
+      >
+        {expanded ? "Thu gọn" : `Xem thêm ${otherRoutes.length + pendingRoutes.length} tuyến khác`}
+        <motion.div animate={{ rotate: expanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
+          <ChevronDown size={15} />
+        </motion.div>
+      </motion.button>
+
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25 }}
+            className="overflow-hidden space-y-4"
+          >
+            <div>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-violet-500" /> Tuyến không trợ giá
+              </p>
+              <div className="space-y-2">
+                {otherRoutes.map((r) => <BusCard key={r.no} route={r} acc={acc} />)}
+              </div>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-gray-400" /> Đang làm thủ tục vận hành
+              </p>
+              <div className="space-y-2">
+                {pendingRoutes.map((r) => <BusCard key={r.no} route={r} acc={acc} />)}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </section>
+  );
+}
 
 export default function Transport() {
   const [search, setSearch]       = useState("");
@@ -118,6 +294,9 @@ export default function Transport() {
           )}
         </div>
       </section>
+
+      {/* ── Mạng lưới xe buýt ── */}
+      <BusNetworkSection acc={acc} />
 
       {/* ── Tuyến đường ── */}
       <section className="pt-12 space-y-4">

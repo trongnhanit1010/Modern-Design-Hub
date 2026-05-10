@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   BookOpen, Landmark, Hotel, Bus, Stethoscope, DollarSign,
   MapPin, Phone, ChevronDown, ChevronRight, Clock, Ticket,
-  Star, TreePine, Pill, Building2, Waves, ArrowRight,
+  Star, TreePine, Pill, Building2, Waves, ArrowRight, Route,
 } from "lucide-react";
+import { busRoutes, journeyGuides, type BusRoute, type JourneyGuide } from "@/data/busRoutes";
 
 const TABS = [
   { id: "culture",   label: "Di tích & Văn hóa", icon: Landmark,    color: "text-amber-600",  bg: "bg-amber-50 dark:bg-amber-950/30",  border: "border-amber-200 dark:border-amber-800",  active: "bg-amber-600" },
@@ -81,86 +82,6 @@ const HOTELS: {
   { area: "hoian", location: "beach", stars: "budget", name: "Silkian Hoian Boutique Hotel & Spa", address: "07 Lê Đình Thám, Cẩm Châu, Hội An" },
 ];
 
-const BUS_ROUTES = [
-  {
-    from: "18 Hùng Vương (DVC)",
-    to: "Bà Nà Hills",
-    busNo: "03",
-    time: "07:00 – 18:00",
-    freq: "15–30 phút/chuyến",
-    price: "30.000đ",
-    duration: "~1 giờ 15 phút",
-    steps: [
-      "Đi bộ ~10–15 phút đến đường Nguyễn Văn Linh hoặc Điện Biên Phủ",
-      "Bắt Bus số 03 hướng Bà Nà Hills",
-      "Bus chạy: Sân bay → Nguyễn Văn Linh → Nguyễn Tri Phương → Điện Biên Phủ → Tôn Đức Thắng → Hoàng Văn Thái → Bà Nà Hills",
-      "Xuống bãi xe Bà Nà, mua vé cáp treo lên khu du lịch",
-    ],
-    tip: "Nên đi chuyến trước 8h sáng để tránh đông. Bus quay lại trung tâm khoảng 17:00–19:00.",
-  },
-  {
-    from: "18 Hùng Vương (DVC)",
-    to: "Ngũ Hành Sơn",
-    busNo: "02",
-    time: "05:30 – 17:30",
-    freq: "~20 phút/chuyến",
-    price: "20.000đ",
-    duration: "30–40 phút",
-    steps: [
-      "Đi bộ ~3–5 phút đến điểm bus tại Nhà thờ Con Gà",
-      "Bắt Bus số 02 (Bến xe Trung tâm – TTHC – Cửa Đại)",
-      "Xuống tại 754 Lê Văn Hiến (gần khu thắng cảnh)",
-      "Đi bộ 2–8 phút vào Ngũ Hành Sơn",
-    ],
-    tip: "",
-  },
-  {
-    from: "Hội An",
-    to: "Bà Nà Hills",
-    busNo: "02 + 03",
-    time: "05:10 – 18:00",
-    freq: "15–30 phút/chuyến",
-    price: "30.000đ + 30.000đ",
-    duration: "~2 giờ 30 phút",
-    steps: [
-      "Đến điểm bắt xe buýt: 04 Đường Lý Thường Kiệt, Hội An",
-      "Bắt Bus 02 (Hội An – Đà Nẵng) đến Công viên Apec (đường 2/9) hoặc Đài DRT (256 Bạch Đằng)",
-      "Đi bộ ~10–15 phút ra đường Nguyễn Văn Linh hoặc Điện Biên Phủ",
-      "Bắt Bus 03 đi hướng Bà Nà Hills, xuống bãi xe và mua vé cáp treo",
-    ],
-    tip: "",
-  },
-  {
-    from: "Hội An",
-    to: "Ngũ Hành Sơn",
-    busNo: "02",
-    time: "05:10 – 18:00",
-    freq: "15–30 phút/chuyến",
-    price: "20.000đ",
-    duration: "40–60 phút",
-    steps: [
-      "Đến điểm bắt xe buýt: 04 Đường Lý Thường Kiệt, Hội An",
-      "Bắt Bus số 02 tuyến Hội An – Đà Nẵng",
-      "Xuống tại 722–724 Lê Văn Hiến (Chùa Non Nước, Ngũ Hành Sơn)",
-    ],
-    tip: "",
-  },
-  {
-    from: "Hội An",
-    to: "Mỹ Sơn",
-    busNo: "01DL",
-    time: "08:10 & 14:10 (Hội An)",
-    freq: "2 chuyến/ngày",
-    price: "Liên hệ",
-    duration: "~50 phút",
-    steps: [
-      "Đến điểm bắt xe buýt: 04 Đường Lý Thường Kiệt, Hội An",
-      "Bắt Bus du lịch số 01DL: Hội An – Mỹ Sơn – Cổng trời Đông Giang",
-      "Xuống tại Bãi xe Khu Đền tháp Mỹ Sơn",
-    ],
-    tip: "Giờ xuất bến tại Mỹ Sơn: 09:00 và 15:00.",
-  },
-];
 
 const PHARMACIES = {
   danang: [
@@ -451,62 +372,52 @@ function HotelsTab() {
   );
 }
 
-function RouteCard({ route }: { route: typeof BUS_ROUTES[0] }) {
+function JourneyCard({ guide }: { guide: JourneyGuide }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="bg-card border border-border rounded-2xl overflow-hidden hover:shadow-md transition-shadow">
-      {/* Header */}
       <div className="px-5 py-4 bg-emerald-50 dark:bg-emerald-950/20 border-b border-emerald-100 dark:border-emerald-900/30">
-        <div className="flex items-start justify-between gap-2 mb-3">
+        <div className="flex items-start gap-2 mb-3">
           <div>
             <div className="flex items-center gap-2 flex-wrap mb-1">
-              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-600 text-white">Bus {route.busNo}</span>
-              <InfoBadge color="bg-white dark:bg-card text-emerald-700 dark:text-emerald-300">{route.price}</InfoBadge>
+              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-600 text-white">Bus {guide.busNo}</span>
+              <InfoBadge color="bg-white dark:bg-card text-emerald-700 dark:text-emerald-300">{guide.price}</InfoBadge>
+              <InfoBadge color="bg-white dark:bg-card text-gray-500 dark:text-gray-400">{guide.duration}</InfoBadge>
             </div>
-            <div className="flex items-center gap-1.5 text-sm font-bold text-foreground">
-              <span>{route.from}</span>
+            <div className="flex items-center gap-1.5 text-sm font-bold text-foreground flex-wrap">
+              <span>{guide.from}</span>
               <ArrowRight size={14} className="text-emerald-600 shrink-0" />
-              <span>{route.to}</span>
+              <span>{guide.to}</span>
             </div>
           </div>
         </div>
         <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-          <div className="flex items-center gap-1"><Clock size={12} />{route.time}</div>
-          <div className="flex items-center gap-1"><Bus size={12} />{route.freq}</div>
-          <div className="flex items-center gap-1"><MapPin size={12} />~{route.duration}</div>
+          <div className="flex items-center gap-1"><Clock size={12} />{guide.time}</div>
+          <div className="flex items-center gap-1"><Bus size={12} />{guide.freq}</div>
         </div>
       </div>
-
-      {/* Steps */}
       <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between px-5 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors">
         <span>Xem hướng dẫn chi tiết</span>
         <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
           <ChevronDown size={15} />
         </motion.div>
       </button>
-
       <AnimatePresence initial={false}>
         {open && (
-          <motion.div
-            initial={{ height: 0 }}
-            animate={{ height: "auto" }}
-            exit={{ height: 0 }}
-            transition={{ duration: 0.22 }}
-            className="overflow-hidden"
-          >
-            <div className="px-5 pb-4 space-y-2">
-              {route.steps.map((step, i) => (
-                <div key={i} className="flex gap-3 text-sm">
-                  <div className="shrink-0 w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 flex items-center justify-center text-xs font-bold">
-                    {i + 1}
+          <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} transition={{ duration: 0.22 }} className="overflow-hidden">
+            <div className="px-5 pb-4 space-y-2 border-t border-border">
+              <div className="pt-3 space-y-2">
+                {guide.steps.map((step, i) => (
+                  <div key={i} className="flex gap-3 text-sm">
+                    <div className="shrink-0 w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 flex items-center justify-center text-xs font-bold">{i + 1}</div>
+                    <p className="text-muted-foreground leading-relaxed pt-0.5">{step}</p>
                   </div>
-                  <p className="text-muted-foreground leading-relaxed pt-0.5">{step}</p>
-                </div>
-              ))}
-              {route.tip && (
-                <div className="mt-3 flex gap-2 text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2">
+                ))}
+              </div>
+              {guide.tip && (
+                <div className="flex gap-2 text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2 mt-3">
                   <span className="shrink-0 font-bold">Mẹo:</span>
-                  <span>{route.tip}</span>
+                  <span>{guide.tip}</span>
                 </div>
               )}
             </div>
@@ -517,29 +428,161 @@ function RouteCard({ route }: { route: typeof BUS_ROUTES[0] }) {
   );
 }
 
+function BusRouteCard({ route }: { route: BusRoute }) {
+  const [open, setOpen] = useState(false);
+  const badgeClass: Record<string, string> = {
+    subsidized:      "bg-emerald-600 text-white",
+    unsubsidized:    "bg-violet-600 text-white",
+    tourist:         "bg-sky-500 text-white",
+    interprovincial: "bg-orange-500 text-white",
+  };
+  const dotClass: Record<string, string> = {
+    subsidized:      "bg-emerald-500",
+    unsubsidized:    "bg-violet-500",
+    tourist:         "bg-sky-400",
+    interprovincial: "bg-orange-400",
+  };
+  const badge = route.pending ? "bg-gray-400 text-white" : (badgeClass[route.type] ?? "bg-gray-400 text-white");
+  const dot   = route.pending ? "bg-gray-400"             : (dotClass[route.type]   ?? "bg-gray-400");
+  const hasDetail = !route.pending && !!route.keyStops?.length;
+
+  return (
+    <div className={`border border-border rounded-xl overflow-hidden bg-card ${route.pending ? "opacity-60" : ""}`}>
+      <button
+        onClick={() => hasDetail && setOpen(!open)}
+        className={`w-full flex items-center gap-3 px-4 py-3 transition-colors text-left ${hasDetail ? "hover:bg-muted/40 cursor-pointer" : "cursor-default"}`}
+      >
+        <span className={`shrink-0 text-xs font-bold w-14 text-center py-1 rounded-lg ${badge}`}>{route.no}</span>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-foreground truncate">{route.name}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {route.hours !== "–" ? route.hours : "Chờ vận hành"}
+            {route.price !== "–" ? " · " + route.price : ""}
+          </p>
+        </div>
+        {route.touristFriendly && !route.pending && (
+          <span className="shrink-0 text-xs text-sky-600 bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800 px-1.5 py-0.5 rounded-md font-medium">Du lịch</span>
+        )}
+        {route.pending && (
+          <span className="shrink-0 text-xs text-gray-400 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded-md">Sắp mở</span>
+        )}
+        {hasDetail && (
+          <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
+            <ChevronDown size={14} className="text-muted-foreground shrink-0" />
+          </motion.div>
+        )}
+      </button>
+
+      <AnimatePresence initial={false}>
+        {open && hasDetail && (
+          <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
+            <div className="px-4 pb-3 border-t border-border bg-muted/20">
+              <p className="text-xs text-muted-foreground font-medium mt-2.5 mb-2">Các điểm dừng chính:</p>
+              <div className="flex flex-wrap gap-1.5">
+                {route.keyStops!.map((stop, i) => (
+                  <span key={i} className="flex items-center gap-1 text-xs bg-card border border-border rounded-full px-2 py-0.5 text-muted-foreground">
+                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${i === 0 ? "bg-emerald-500" : i === route.keyStops!.length - 1 ? "bg-rose-400" : dot}`} />
+                    {stop}
+                  </span>
+                ))}
+              </div>
+              <div className="flex flex-wrap gap-4 mt-3 text-xs text-muted-foreground">
+                {route.distance  && <span className="flex items-center gap-1"><Route size={11} />{route.distance}</span>}
+                {route.frequency !== "–" && <span className="flex items-center gap-1"><Clock size={11} />{route.frequency}</span>}
+                {route.operator  && <span className="flex items-center gap-1"><Bus size={11} />{route.operator}</span>}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 function TransportTab() {
-  const [from, setFrom] = useState<"all" | "dvc" | "hoian">("all");
-  const filtered = BUS_ROUTES.filter((r) => {
-    if (from === "all") return true;
-    if (from === "dvc") return r.from.includes("Hùng Vương");
-    return r.from === "Hội An";
-  });
+  const [view, setView] = useState<"network" | "journey">("network");
+
+  const activeRoutes  = busRoutes.filter((r) => !r.pending);
+  const pendingRoutes = busRoutes.filter((r) => r.pending);
+
+  const grouped = {
+    subsidized:      activeRoutes.filter((r) => r.type === "subsidized"),
+    tourist:         activeRoutes.filter((r) => r.type === "tourist"),
+    unsubsidized:    activeRoutes.filter((r) => r.type === "unsubsidized"),
+    interprovincial: activeRoutes.filter((r) => r.type === "interprovincial"),
+  };
+
+  const touristUnsubsidized   = grouped.unsubsidized.filter((r) => r.touristFriendly);
+  const regularUnsubsidized   = grouped.unsubsidized.filter((r) => !r.touristFriendly);
+
   return (
     <div>
+      {/* Stats row */}
+      <div className="grid grid-cols-3 gap-3 mb-5">
+        {[
+          { value: "18+", label: "Tuyến xe buýt" },
+          { value: "05:30–19:00", label: "Giờ hoạt động" },
+          { value: "Từ 8K", label: "Giá vé/lượt" },
+        ].map((s) => (
+          <div key={s.label} className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 rounded-xl p-3 text-center">
+            <p className="text-sm font-bold text-emerald-700 dark:text-emerald-400">{s.value}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{s.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* View switcher */}
       <div className="flex gap-2 mb-5">
-        {([["all", "Tất cả tuyến"], ["dvc", "Từ Danang VC"], ["hoian", "Từ Hội An"]] as const).map(([key, label]) => (
+        {([["network", "Mạng lưới tuyến"], ["journey", "Hành trình A → B"]] as const).map(([key, label]) => (
           <button
             key={key}
-            onClick={() => setFrom(key)}
-            className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${from === key ? "bg-emerald-600 text-white shadow-sm" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
+            onClick={() => setView(key)}
+            className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${view === key ? "bg-emerald-600 text-white shadow-sm" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
           >
             {label}
           </button>
         ))}
       </div>
-      <div className="grid gap-4">
-        {filtered.map((r) => <RouteCard key={`${r.from}-${r.to}`} route={r} />)}
-      </div>
+
+      {/* Network view */}
+      {view === "network" && (
+        <div className="space-y-6">
+          {[
+            { dot: "bg-emerald-500", title: "Tuyến có trợ giá", sub: "5 tuyến · Phương Trang · 8.000đ/lượt", routes: grouped.subsidized },
+            { dot: "bg-sky-400",     title: "Tuyến du lịch",    sub: "Sân bay, Bà Nà Hills, Hội An, Mỹ Sơn", routes: [...grouped.tourist, ...touristUnsubsidized] },
+            { dot: "bg-orange-400",  title: "Tuyến liền kề",    sub: "Đà Nẵng ↔ Huế · 100km · 80.000đ",       routes: grouped.interprovincial },
+            { dot: "bg-violet-500",  title: "Tuyến không trợ giá", sub: "Nội thành & ngoại ô", routes: regularUnsubsidized },
+            { dot: "bg-gray-400",    title: "Đang làm thủ tục vận hành", sub: "Sắp mở · 5 tuyến",             routes: pendingRoutes },
+          ].map(({ dot, title, sub, routes }) => (
+            <div key={title}>
+              <div className="flex items-center gap-2 mb-2.5">
+                <span className={`w-2.5 h-2.5 rounded-full ${dot} shrink-0`} />
+                <h3 className="text-sm font-bold text-foreground">{title}</h3>
+                <span className="text-xs text-muted-foreground hidden sm:inline">· {sub}</span>
+              </div>
+              <div className="space-y-1.5">
+                {routes.map((r) => <BusRouteCard key={r.no} route={r} />)}
+              </div>
+            </div>
+          ))}
+
+          <a
+            href="https://www.danangbus.vn/lo-trinh-tuyen.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-emerald-600 transition-colors py-2"
+          >
+            Nguồn: danangbus.vn <ChevronRight size={11} />
+          </a>
+        </div>
+      )}
+
+      {/* Journey guide view */}
+      {view === "journey" && (
+        <div className="space-y-4">
+          {journeyGuides.map((g) => <JourneyCard key={`${g.from}-${g.to}`} guide={g} />)}
+        </div>
+      )}
     </div>
   );
 }
