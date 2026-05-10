@@ -10,7 +10,7 @@ export default function Footer() {
   return (
     <footer className="bg-[hsl(220_40%_10%)] text-white/70 pt-14 pb-6" data-testid="footer">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
           <div className="col-span-2">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-teal-400 flex items-center justify-center">
