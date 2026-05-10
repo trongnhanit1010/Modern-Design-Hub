@@ -228,7 +228,7 @@ export default function FeaturedGrid() {
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           className="md:hidden grid grid-cols-2 gap-3"
-          style={{ gridTemplateRows: "220px 220px 220px 220px" }}
+          style={{ gridTemplateRows: "220px 220px 220px" }}
         >
           <FeatureCard item={featured.main} className="col-span-2" />
           <FeatureCard item={featured.grid[0]} />
