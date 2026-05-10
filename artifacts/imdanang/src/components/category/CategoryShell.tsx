@@ -160,54 +160,51 @@ export function CategoryShell({
           </motion.div>
 
           {/* ── RIGHT: Photo stack ── */}
-          <div className="relative hidden lg:flex items-center justify-center" style={{ height: 420 }}>
+          <div className="relative hidden lg:block" style={{ height: 440 }}>
 
-            {/* Card 3 — back, most rotated */}
+            {/* Card 3 — back, rotated right */}
             {collage[2] && (
               <motion.div
-                initial={{ opacity: 0, rotate: 0, x: 40 }}
-                animate={{ opacity: 1, rotate: 8, x: 40 }}
-                transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute rounded-[22px] overflow-hidden shadow-xl border-4 border-white"
-                style={{ width: 280, height: 370, top: "50%", left: "50%", translateX: "-50%", translateY: "-50%", zIndex: 1 }}
-                whileHover={{ rotate: 11, x: 55 }}
+                initial={{ opacity: 0, rotate: 4 }}
+                animate={{ opacity: 1, rotate: 10 }}
+                transition={{ duration: 0.7, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute rounded-[22px] overflow-hidden shadow-lg border-[5px] border-white"
+                style={{ width: 270, height: 360, top: 38, left: 120, zIndex: 1 }}
               >
                 <img src={collage[2].src} alt="" className="w-full h-full object-cover" />
               </motion.div>
             )}
 
-            {/* Card 2 — middle */}
+            {/* Card 2 — middle, tilted left */}
             {collage[1] && (
               <motion.div
-                initial={{ opacity: 0, rotate: 0, x: 18 }}
-                animate={{ opacity: 1, rotate: -5, x: 18 }}
-                transition={{ duration: 0.7, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute rounded-[22px] overflow-hidden shadow-xl border-4 border-white"
-                style={{ width: 290, height: 385, top: "50%", left: "50%", translateX: "-50%", translateY: "-50%", zIndex: 2 }}
-                whileHover={{ rotate: -7, x: 24 }}
+                initial={{ opacity: 0, rotate: -2 }}
+                animate={{ opacity: 1, rotate: -6 }}
+                transition={{ duration: 0.7, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute rounded-[22px] overflow-hidden shadow-xl border-[5px] border-white"
+                style={{ width: 282, height: 378, top: 28, left: 68, zIndex: 2 }}
               >
                 <img src={collage[1].src} alt="" className="w-full h-full object-cover" />
               </motion.div>
             )}
 
-            {/* Card 1 — front, straight */}
+            {/* Card 1 — front, slightly upright */}
             {collage[0] && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.92 }}
                 animate={{ opacity: 1, scale: 1, rotate: -1 }}
-                transition={{ duration: 0.75, delay: 0.26, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute rounded-[22px] overflow-hidden border-4 border-white"
-                style={{ width: 300, height: 400, top: "50%", left: "50%", translateX: "-60%", translateY: "-50%", zIndex: 3, boxShadow: "0 24px 60px -10px rgba(0,0,0,0.28)" }}
+                transition={{ duration: 0.75, delay: 0.24, ease: [0.22, 1, 0.36, 1] }}
+                className="absolute rounded-[22px] overflow-hidden border-[5px] border-white"
+                style={{ width: 296, height: 400, top: 20, left: 20, zIndex: 3, boxShadow: "0 20px 56px -8px rgba(0,0,0,0.28)" }}
               >
                 <img src={collage[0].src} alt="" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
 
-                {/* Floating badge on front card */}
                 {floatingBadge && (
                   <motion.div
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.7, duration: 0.4 }}
+                    transition={{ delay: 0.65, duration: 0.4 }}
                     className="absolute bottom-4 left-4 right-4 flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-white"
                     style={{ background: `linear-gradient(135deg, ${bd.orbA}ee, ${bd.orbB}ee)`, backdropFilter: "blur(10px)", boxShadow: `0 6px 20px ${bd.orbA}50` }}
                   >
