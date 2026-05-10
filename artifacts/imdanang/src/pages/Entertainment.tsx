@@ -170,7 +170,8 @@ export default function Entertainment() {
 
                       {/* Tag */}
                       <div
-                        className={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white bg-gradient-to-r ${it.tagColor} shadow`}
+                        className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white shadow"
+                        style={{ background: `linear-gradient(135deg, ${acc.orbA}, ${acc.orbB})` }}
                       >
                         {it.tag}
                       </div>
@@ -253,6 +254,7 @@ function SpotlightCard({
   liked: boolean;
   onLike: () => void;
 }) {
+  const acc = useThemeAccents("entertainment");
   return (
     <motion.div
       whileHover={{ scale: 1.01 }}
@@ -269,7 +271,8 @@ function SpotlightCard({
 
         {/* Tag */}
         <div
-          className={`absolute top-4 left-4 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white bg-gradient-to-r ${item.tagColor} shadow`}
+          className="absolute top-4 left-4 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white shadow"
+          style={{ background: `linear-gradient(135deg, ${acc.orbA}, ${acc.orbB})` }}
         >
           {item.tag}
         </div>

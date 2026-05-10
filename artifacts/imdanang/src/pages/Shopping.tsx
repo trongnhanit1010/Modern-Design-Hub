@@ -166,12 +166,9 @@ export default function Shopping() {
               <div className="p-4">
                 <div className="flex items-start justify-between gap-2 mb-1">
                   <h3 className="text-gray-900 font-bold text-sm leading-tight">{m.name}</h3>
-                  <div
-                    className="shrink-0 flex items-center gap-1 rounded-lg px-2 py-0.5 border"
-                    style={{ background: `${acc.orbA}12`, borderColor: `${acc.orbA}40`, color: acc.orbA }}
-                  >
-                    <Star size={10} className="fill-current" />
-                    <span className="text-xs font-bold">{m.rating}</span>
+                  <div className="shrink-0 flex items-center gap-1 rounded-lg px-2 py-0.5 border border-amber-200 bg-amber-50">
+                    <Star size={10} className="text-amber-400 fill-amber-400" />
+                    <span className="text-xs font-bold text-amber-700">{m.rating}</span>
                   </div>
                 </div>
                 <p className="text-gray-400 text-xs mb-3">{m.type} · {m.reviews.toLocaleString()} đánh giá</p>

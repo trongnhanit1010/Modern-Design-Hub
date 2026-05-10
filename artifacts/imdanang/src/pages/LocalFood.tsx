@@ -273,8 +273,8 @@ export default function LocalFood() {
                             <p className="font-bold text-sm leading-tight mb-1 text-gray-900">{r.name}</p>
                             <div className="flex items-center gap-2 flex-wrap">
                               <div className="flex items-center gap-1">
-                                <Star size={10} style={{ color: acc.orbA }} className="fill-current" />
-                                <span style={{ color: acc.orbA }} className="text-xs font-bold">{r.rating}</span>
+                                <Star size={10} className="text-amber-400 fill-amber-400" />
+                                <span className="text-xs font-bold text-amber-700">{r.rating}</span>
                               </div>
                               <span className="text-[10px] text-gray-400">{r.hours}</span>
                               <span className="text-[10px] font-medium text-emerald-600">{r.priceRange}</span>

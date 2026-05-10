@@ -129,19 +129,16 @@ export default function Hotels() {
                   </button>
                   <div className="absolute bottom-3 left-3 flex gap-0.5">
                     {[...Array(hotel.stars)].map((_, s) => (
-                      <Star key={s} size={11} style={{ color: acc.orbA }} className="fill-current" />
+                      <Star key={s} size={11} className="text-amber-400 fill-amber-400" />
                     ))}
                   </div>
                 </div>
                 <div className="p-4">
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <h3 className="text-gray-900 font-bold text-base leading-tight">{hotel.name}</h3>
-                    <div
-                      className="shrink-0 flex items-center gap-1 rounded-lg px-2 py-0.5 border"
-                      style={{ background: `${acc.orbA}12`, borderColor: `${acc.orbA}40`, color: acc.orbA }}
-                    >
-                      <Star size={11} className="fill-current" />
-                      <span className="text-xs font-bold">{hotel.rating}</span>
+                    <div className="shrink-0 flex items-center gap-1 rounded-lg px-2 py-0.5 border border-amber-200 bg-amber-50">
+                      <Star size={11} className="text-amber-400 fill-amber-400" />
+                      <span className="text-xs font-bold text-amber-700">{hotel.rating}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-1 text-gray-400 text-xs mb-3">
