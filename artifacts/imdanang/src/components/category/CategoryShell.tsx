@@ -91,7 +91,7 @@ export function CategoryShell({
     <div className="min-h-screen bg-[#f5f5f4]">
 
       {/* ════════════ HERO — Search-first, full-bleed ════════════ */}
-      <section className="relative w-full overflow-hidden" style={{ height: 520 }}>
+      <section className="relative w-full overflow-hidden" style={{ minHeight: 520 }}>
 
         {/* Background image mosaic: 3 images side by side, slightly zoomed */}
         <div className="absolute inset-0 flex">
@@ -197,13 +197,14 @@ export function CategoryShell({
               )}
             </div>
 
-            {/* Filter pills inside hero */}
+            {/* Filter pills inside hero — horizontal scroll on mobile */}
             {categories && activeCat !== undefined && setActiveCat && categories.length > 0 && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.35 }}
-                className="flex items-center justify-center gap-2 mt-3 flex-wrap"
+                className="flex items-center gap-2 mt-3 overflow-x-auto pb-1 md:justify-center"
+                style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
               >
                 {categories.map((c) => {
                   const active = activeCat === c.key;

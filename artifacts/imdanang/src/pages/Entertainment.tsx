@@ -97,7 +97,7 @@ export default function Entertainment() {
             {spotlight[0] && (
               <SpotlightCard
                 item={spotlight[0]}
-                className="md:col-span-2 md:row-span-2"
+                className="md:col-span-2 md:row-span-2 h-64 md:h-auto"
                 large
                 liked={liked.includes(spotlight[0].id)}
                 onLike={() => toggleLike(spotlight[0].id)}
@@ -106,7 +106,7 @@ export default function Entertainment() {
             {spotlight[1] && (
               <SpotlightCard
                 item={spotlight[1]}
-                className="md:col-span-1 md:row-span-1"
+                className="md:col-span-1 md:row-span-1 h-44 md:h-auto"
                 liked={liked.includes(spotlight[1].id)}
                 onLike={() => toggleLike(spotlight[1].id)}
               />
@@ -114,7 +114,7 @@ export default function Entertainment() {
             {spotlight[2] && (
               <SpotlightCard
                 item={spotlight[2]}
-                className="md:col-span-1 md:row-span-1"
+                className="md:col-span-1 md:row-span-1 h-44 md:h-auto"
                 liked={liked.includes(spotlight[2].id)}
                 onLike={() => toggleLike(spotlight[2].id)}
               />

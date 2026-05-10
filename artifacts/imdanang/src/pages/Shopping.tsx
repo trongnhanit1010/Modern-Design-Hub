@@ -130,7 +130,7 @@ export default function Shopping() {
         ))}
       </div>
 
-      <h2 className="text-gray-900 font-bold text-lg mt-10 mb-4 flex items-center gap-2">
+      <h2 className="text-gray-900 font-bold text-lg mt-6 mb-4 flex items-center gap-2">
         <ShoppingBag size={18} style={{ color: acc.orbA }} /> Chợ & Trung tâm mua sắm
       </h2>
 
