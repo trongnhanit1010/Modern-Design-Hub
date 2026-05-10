@@ -88,221 +88,185 @@ export function CategoryShell({
   );
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#f5f5f4]">
 
-      {/* ════════════ HERO — Photo Stack ════════════ */}
-      <section className="w-full border-b border-gray-100">
-        <div
-          className="max-w-7xl mx-auto px-6 sm:px-10 xl:px-14 py-12 sm:py-16 grid lg:grid-cols-2 gap-10 xl:gap-16 items-center"
-        >
-          {/* ── LEFT: Text ── */}
-          <motion.div
-            initial={{ opacity: 0, x: -24 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col justify-center"
-          >
-            {badge && (
-              <div className="mb-6">
-                <span
-                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide"
-                  style={{ background: `${bd.orbA}12`, color: bd.orbA, border: `1px solid ${bd.orbA}30` }}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: bd.orbA }} />
-                  {badge.text}
-                </span>
-              </div>
-            )}
+      {/* ════════════ HERO — Search-first, full-bleed ════════════ */}
+      <section className="relative w-full overflow-hidden" style={{ height: 520 }}>
 
-            <h1 className="font-serif font-black leading-[0.9] tracking-[-0.03em] text-gray-950 text-[3rem] sm:text-[3.8rem] xl:text-[4.4rem]">
-              {titleLines.map((line, i) => (
-                <span key={i} className="block">
-                  {i === gradientLineIndex ? <span style={gradientStyle}>{line}</span> : line}
-                </span>
-              ))}
-            </h1>
-
-            {subtitle && (
-              <p className="mt-5 text-gray-500 text-[0.95rem] leading-relaxed max-w-sm">{subtitle}</p>
-            )}
-
-            {stats && stats.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.5 }}
-                className="mt-8 flex items-center gap-6 flex-wrap"
-              >
-                {stats.map(({ label, value }, i) => (
-                  <div key={label} className={`flex flex-col gap-1 ${i > 0 ? "pl-6 border-l border-gray-100" : ""}`}>
-                    <span className="text-[1.8rem] font-black leading-none tracking-tight" style={{ color: bd.orbA }}>{value}</span>
-                    <span className="text-[10px] text-gray-400 uppercase tracking-widest">{label}</span>
-                  </div>
-                ))}
-              </motion.div>
-            )}
-
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.45 }}
-              className="mt-9"
-            >
-              <motion.button
-                whileHover={{ scale: 1.04, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl text-white font-semibold text-sm"
-                style={{ background: `linear-gradient(135deg, ${bd.orbA}, ${bd.orbB})`, boxShadow: `0 8px 28px -4px ${bd.orbA}55` }}
-              >
-                Khám phá ngay <ArrowRight size={15} />
-              </motion.button>
-            </motion.div>
-          </motion.div>
-
-          {/* ── RIGHT: Photo stack ── */}
-          <div className="relative hidden lg:block" style={{ height: 440 }}>
-
-            {/* Card 3 — back, rotated right */}
-            {collage[2] && (
-              <motion.div
-                initial={{ opacity: 0, rotate: 4 }}
-                animate={{ opacity: 1, rotate: 10 }}
-                transition={{ duration: 0.7, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute rounded-[22px] overflow-hidden shadow-lg border-[5px] border-white"
-                style={{ width: 270, height: 360, top: 38, left: 120, zIndex: 1 }}
-              >
-                <img src={collage[2].src} alt="" className="w-full h-full object-cover" />
-              </motion.div>
-            )}
-
-            {/* Card 2 — middle, tilted left */}
-            {collage[1] && (
-              <motion.div
-                initial={{ opacity: 0, rotate: -2 }}
-                animate={{ opacity: 1, rotate: -6 }}
-                transition={{ duration: 0.7, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute rounded-[22px] overflow-hidden shadow-xl border-[5px] border-white"
-                style={{ width: 282, height: 378, top: 28, left: 68, zIndex: 2 }}
-              >
-                <img src={collage[1].src} alt="" className="w-full h-full object-cover" />
-              </motion.div>
-            )}
-
-            {/* Card 1 — front, slightly upright */}
-            {collage[0] && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.92 }}
-                animate={{ opacity: 1, scale: 1, rotate: -1 }}
-                transition={{ duration: 0.75, delay: 0.24, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute rounded-[22px] overflow-hidden border-[5px] border-white"
-                style={{ width: 296, height: 400, top: 20, left: 20, zIndex: 3, boxShadow: "0 20px 56px -8px rgba(0,0,0,0.28)" }}
-              >
-                <img src={collage[0].src} alt="" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
-
-                {floatingBadge && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.65, duration: 0.4 }}
-                    className="absolute bottom-4 left-4 right-4 flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-white"
-                    style={{ background: `linear-gradient(135deg, ${bd.orbA}ee, ${bd.orbB}ee)`, backdropFilter: "blur(10px)", boxShadow: `0 6px 20px ${bd.orbA}50` }}
-                  >
-                    <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
-                      <floatingBadge.icon size={12} />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-[9px] opacity-70 leading-none tracking-widest uppercase">{floatingBadge.subtitle}</div>
-                      <div className="text-[12px] font-bold leading-none mt-0.5 truncate">{floatingBadge.title}</div>
-                    </div>
-                  </motion.div>
-                )}
-              </motion.div>
-            )}
-          </div>
+        {/* Background image mosaic: 3 images side by side, slightly zoomed */}
+        <div className="absolute inset-0 flex">
+          {collage.slice(0, 3).map((img, i) => (
+            <div key={i} className="flex-1 relative overflow-hidden">
+              <img
+                src={img.src}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover scale-105"
+                style={{ filter: i === 1 ? "brightness(0.9)" : "brightness(0.85)" }}
+              />
+            </div>
+          ))}
+          {collage.length === 0 && (
+            <div className="flex-1" style={{ background: `linear-gradient(135deg, ${bd.orbB}, ${bd.orbA})` }} />
+          )}
         </div>
-      </section>
 
-      {/* ════════════ SEARCH + FILTER ════════════ */}
-      <section className="relative px-4 sm:px-6">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
+        {/* Unified dark overlay so everything reads clearly */}
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0.72) 100%)" }} />
+
+        {/* Thin seam lines between images — gives structure */}
+        <div className="absolute inset-0 flex pointer-events-none">
+          <div className="flex-1" />
+          <div className="w-px bg-white/10" />
+          <div className="flex-1" />
+          {collage.length >= 3 && <><div className="w-px bg-white/10" /><div className="flex-1" /></>}
+        </div>
+
+        {/* ── Centered content ── */}
+        <div className="relative z-10 h-full flex flex-col items-center justify-center px-4 text-center">
+
+          {/* Badge */}
+          {badge && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45 }}
+              className="mb-5"
+            >
+              <span
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[11px] font-semibold tracking-widest uppercase text-white/90"
+                style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.25)", backdropFilter: "blur(8px)" }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: bd.orbC }} />
+                {badge.text}
+              </span>
+            </motion.div>
+          )}
+
+          {/* Title */}
+          <motion.h1
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25, duration: 0.45 }}
-            className="mt-6 mb-6 rounded-2xl border border-gray-200 bg-white p-2.5 shadow-sm"
+            transition={{ duration: 0.55, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+            className="font-serif font-black text-white leading-[0.88] tracking-[-0.03em] text-[2.8rem] sm:text-[3.6rem] xl:text-[4.2rem] drop-shadow-lg"
           >
-            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-50 border border-gray-100">
-              <Search size={14} className="text-gray-400 shrink-0" />
+            {titleLines.map((line, i) => (
+              <span key={i} className="block">{line}</span>
+            ))}
+          </motion.h1>
+
+          {subtitle && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.4 }}
+              className="mt-3 text-white/70 text-sm max-w-sm leading-relaxed"
+            >
+              {subtitle}
+            </motion.p>
+          )}
+
+          {/* Search bar */}
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ delay: 0.28, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-7 w-full max-w-xl"
+          >
+            <div className="flex items-center gap-3 bg-white rounded-2xl px-5 py-4 shadow-2xl">
+              <Search size={17} className="text-gray-400 shrink-0" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={searchPlaceholder}
-                className="bg-transparent flex-1 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none min-w-0"
+                className="flex-1 text-[0.95rem] text-gray-800 placeholder:text-gray-400 focus:outline-none bg-transparent min-w-0"
               />
-              {sortOptions && setSort && (
-                <select
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value)}
-                  className="bg-white text-gray-600 text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 cursor-pointer focus:outline-none hidden sm:block"
-                >
-                  {sortOptions.map((o) => (
-                    <option key={o.value} value={o.value} className="bg-white text-gray-800">
-                      {o.label}
-                    </option>
-                  ))}
-                </select>
-              )}
-              {search && (
+              {search ? (
                 <button
                   onClick={() => setSearch("")}
                   className="text-gray-400 text-xs hover:text-gray-600 shrink-0 transition-colors"
                 >
                   Xóa
                 </button>
+              ) : (
+                <div
+                  className="shrink-0 px-4 py-1.5 rounded-xl text-white text-xs font-semibold"
+                  style={{ background: `linear-gradient(135deg, ${bd.orbA}, ${bd.orbB})` }}
+                >
+                  Tìm
+                </div>
               )}
             </div>
 
+            {/* Filter pills inside hero */}
             {categories && activeCat !== undefined && setActiveCat && categories.length > 0 && (
-              <div className="flex items-center gap-1.5 mt-2.5 overflow-x-auto pb-0.5">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.35 }}
+                className="flex items-center justify-center gap-2 mt-3 flex-wrap"
+              >
                 {categories.map((c) => {
                   const active = activeCat === c.key;
                   return (
                     <button
                       key={c.key}
                       onClick={() => setActiveCat(c.key)}
-                      className="shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all border"
+                      className="shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all"
                       style={
                         active
-                          ? {
-                              background: `linear-gradient(135deg, ${bd.orbA}, ${bd.orbB})`,
-                              color: "#fff",
-                              borderColor: "transparent",
-                              boxShadow: `0 2px 10px ${bd.orbA}45`,
-                            }
-                          : {
-                              borderColor: "#e5e7eb",
-                              color: "#6b7280",
-                              background: "transparent",
-                            }
+                          ? { background: "#fff", color: bd.orbA, boxShadow: "0 2px 8px rgba(0,0,0,0.18)" }
+                          : { background: "rgba(255,255,255,0.18)", color: "#fff", border: "1px solid rgba(255,255,255,0.28)", backdropFilter: "blur(6px)" }
                       }
                     >
                       {c.label}
                     </button>
                   );
                 })}
-              </div>
-            )}
-
-            {resultCount && (
-              <div className="mt-2 px-1 text-xs text-gray-400">{resultCount}</div>
+              </motion.div>
             )}
           </motion.div>
+
+          {/* Stats row — bottom of hero */}
+          {stats && stats.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5, duration: 0.4 }}
+              className="mt-6 flex items-center gap-6 divide-x divide-white/20"
+            >
+              {stats.map(({ label, value }) => (
+                <div key={label} className="pl-6 first:pl-0 text-center">
+                  <div className="text-white font-black text-lg leading-none">{value}</div>
+                  <div className="text-white/55 text-[9px] uppercase tracking-widest mt-0.5">{label}</div>
+                </div>
+              ))}
+            </motion.div>
+          )}
         </div>
       </section>
 
+      {/* ── Sort + result count bar ── */}
+      {(sortOptions || resultCount) && (
+        <div className="px-4 sm:px-6 py-3 bg-white border-b border-gray-100">
+          <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+            {resultCount && <span className="text-xs text-gray-400">{resultCount}</span>}
+            {sortOptions && setSort && (
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value)}
+                className="ml-auto bg-white text-gray-600 text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 cursor-pointer focus:outline-none"
+              >
+                {sortOptions.map((o) => (
+                  <option key={o.value} value={o.value} className="bg-white text-gray-800">{o.label}</option>
+                ))}
+              </select>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* ── Children ── */}
-      <section className="relative px-4 sm:px-6 pb-20">
+      <section className="relative px-4 sm:px-6 py-6 pb-20">
         <div className="max-w-7xl mx-auto">{children}</div>
       </section>
     </div>
