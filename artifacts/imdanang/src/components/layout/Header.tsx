@@ -252,7 +252,11 @@ export default function Header() {
         }`}
         data-testid="header"
       >
-        <div className="relative flex items-center h-14 px-4 gap-3">
+        {/*
+          Mobile: [Menu] [flex-1 logo-center] [search] [dark] [lang]
+          Desktop: [Menu] [logo] [flex-1] [search-icon] [dark] [bell] [user] [lang]
+        */}
+        <div className="flex items-center h-14 px-4 gap-2">
 
           {/* Hamburger — always visible */}
           <button
@@ -264,44 +268,34 @@ export default function Header() {
             <Menu size={20} />
           </button>
 
-          {/* Logo — centered on mobile, normal on desktop */}
-          <a
-            href="/"
-            className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 flex items-center gap-1.5 shrink-0"
-            data-testid="link-logo"
-          >
-            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-teal-400 flex items-center justify-center">
-              <span className="text-white text-xs font-bold">i</span>
-            </div>
-            <span className="text-foreground font-bold text-lg tracking-tight">
-              im<span className="text-blue-500">danang</span>
-            </span>
-          </a>
+          {/* Logo — mobile: flex-1 centered | desktop: static */}
+          <div className="flex-1 md:flex-none flex justify-center md:justify-start">
+            <a
+              href="/"
+              className="flex items-center gap-1.5"
+              data-testid="link-logo"
+            >
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-teal-400 flex items-center justify-center">
+                <span className="text-white text-xs font-bold">i</span>
+              </div>
+              <span className="text-foreground font-bold text-lg tracking-tight">
+                im<span className="text-blue-500">danang</span>
+              </span>
+            </a>
+          </div>
 
-          {/* Desktop: fake search pill — click to open modal */}
-          <button
-            onClick={() => setSearchOpen(true)}
-            className="hidden md:flex flex-1 max-w-sm mx-auto items-center gap-2.5 px-4 py-2 rounded-full border border-border bg-muted/60 hover:bg-muted text-muted-foreground text-sm transition-all hover:border-primary/30 group"
-            data-testid="button-search-open"
-          >
-            <Search size={14} className="shrink-0" />
-            <span className="flex-1 text-left text-sm">Tìm kiếm...</span>
-            <kbd className="hidden lg:inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] border border-border bg-background text-muted-foreground font-mono">
-              ⌘K
-            </kbd>
-          </button>
-
-          {/* Spacer on mobile to push right items to edge */}
-          <div className="flex-1 md:hidden" />
+          {/* Desktop spacer */}
+          <div className="hidden md:flex flex-1" />
 
           {/* Right side */}
           <div className="flex items-center gap-1 shrink-0">
 
-            {/* Search icon — mobile only */}
+            {/* Search icon — always just an icon now */}
             <button
               onClick={() => setSearchOpen(true)}
-              className="md:hidden p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               aria-label="Search"
+              data-testid="button-search-open"
             >
               <Search size={18} />
             </button>
