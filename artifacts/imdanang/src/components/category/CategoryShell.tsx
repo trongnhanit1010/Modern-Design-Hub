@@ -229,14 +229,14 @@ export function CategoryShell({
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.35 }}
                 ref={filterRowRef}
-                className="flex items-center gap-2 mt-3 overflow-x-auto pb-1 md:justify-center select-none cursor-grab"
+                className="flex items-center gap-2 mt-3 overflow-x-auto pb-1 select-none cursor-grab"
                 style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
                 onMouseDown={onMouseDown}
                 onMouseLeave={onMouseLeave}
                 onMouseUp={onMouseUp}
                 onMouseMove={onMouseMove}
               >
-                <div className="shrink-0 w-2 md:hidden" aria-hidden="true" />
+                <div className="shrink-0 w-4" aria-hidden="true" />
                 {categories.map((c) => {
                   const active = activeCat === c.key;
                   return (
@@ -254,6 +254,7 @@ export function CategoryShell({
                     </button>
                   );
                 })}
+                <div className="shrink-0 w-4" aria-hidden="true" />
               </motion.div>
             )}
           </motion.div>
