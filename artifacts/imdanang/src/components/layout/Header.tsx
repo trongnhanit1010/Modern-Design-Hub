@@ -48,10 +48,10 @@ export default function Header() {
     >
       <div className="relative flex items-center h-14 px-4 gap-3">
 
-        {/* Hamburger — desktop only */}
+        {/* Hamburger — always visible */}
         <button
           onClick={toggle}
-          className="hidden md:flex p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
+          className="flex p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
           data-testid="button-sidebar-toggle"
           aria-label="Toggle sidebar"
         >
