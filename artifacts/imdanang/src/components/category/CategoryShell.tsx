@@ -4,22 +4,24 @@ import { Search, type LucideIcon } from "lucide-react";
 import { type CategoryKey } from "@/lib/categoryThemes";
 
 /* ─── Theme accents ─── */
+const BLUE = { orbA: "#2563eb", orbB: "#1d4ed8", orbC: "#3b82f6" };
+
 const themeBackdrops: Record<
   CategoryKey,
   { orbA: string; orbB: string; orbC: string }
 > = {
-  home:          { orbA: "#475569", orbB: "#1e293b", orbC: "#334155" },
-  hotels:        { orbA: "#f59e0b", orbB: "#b45309", orbC: "#d97706" },
-  destinations:  { orbA: "#10b981", orbB: "#047857", orbC: "#059669" },
-  restaurants:   { orbA: "#f97316", orbB: "#ea580c", orbC: "#ea580c" },
-  localfood:     { orbA: "#f43f5e", orbB: "#e11d48", orbC: "#e11d48" },
-  transport:     { orbA: "#0ea5e9", orbB: "#1d4ed8", orbC: "#0284c7" },
-  events:        { orbA: "#8b5cf6", orbB: "#5b21b6", orbC: "#7c3aed" },
-  shopping:      { orbA: "#ec4899", orbB: "#db2777", orbC: "#db2777" },
-  entertainment: { orbA: "#d946ef", orbB: "#6366f1", orbC: "#d946ef" },
+  home:          BLUE,
+  hotels:        BLUE,
+  destinations:  BLUE,
+  restaurants:   BLUE,
+  localfood:     BLUE,
+  transport:     BLUE,
+  events:        BLUE,
+  shopping:      BLUE,
+  entertainment: BLUE,
   cyclo:         { orbA: "#d97706", orbB: "#b45309", orbC: "#d97706" },
-  map:           { orbA: "#0891b2", orbB: "#0e7490", orbC: "#0891b2" },
-  ai:            { orbA: "#6366f1", orbB: "#3730a3", orbC: "#6366f1" },
+  map:           BLUE,
+  ai:            BLUE,
 };
 
 /* ─── Public types ─── */
