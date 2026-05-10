@@ -46,27 +46,33 @@ export default function Header() {
       }`}
       data-testid="header"
     >
-      <div className="flex items-center h-14 px-4 gap-4">
+      <div className="relative flex items-center h-14 px-4 gap-3">
+
+        {/* Hamburger — desktop only */}
         <button
           onClick={toggle}
-          className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          className="hidden md:flex p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
           data-testid="button-sidebar-toggle"
           aria-label="Toggle sidebar"
         >
           <Menu size={20} />
         </button>
 
-        <a href="/" className="flex items-center gap-2 shrink-0" data-testid="link-logo">
-          <div className="flex items-center gap-1">
-            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-teal-400 flex items-center justify-center">
-              <span className="text-white text-xs font-bold">i</span>
-            </div>
-            <span className="text-foreground font-bold text-lg tracking-tight">
-              im<span className="text-blue-500">danang</span>
-            </span>
+        {/* Logo — centered on mobile via absolute, normal flow on desktop */}
+        <a
+          href="/"
+          className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 flex items-center gap-1.5 shrink-0"
+          data-testid="link-logo"
+        >
+          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-teal-400 flex items-center justify-center">
+            <span className="text-white text-xs font-bold">i</span>
           </div>
+          <span className="text-foreground font-bold text-lg tracking-tight">
+            im<span className="text-blue-500">danang</span>
+          </span>
         </a>
 
+        {/* Search — desktop only */}
         <div className="hidden md:flex flex-1 max-w-xl mx-auto">
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
@@ -81,11 +87,49 @@ export default function Header() {
           </div>
         </div>
 
-        <div className="flex items-center gap-1 shrink-0">
+        {/* Right side */}
+        <div className="ml-auto flex items-center gap-1 shrink-0">
+
+          {/* Dark mode */}
+          <button
+            onClick={toggleDark}
+            className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            data-testid="button-darkmode"
+            aria-label="Toggle dark mode"
+          >
+            <AnimatePresence mode="wait">
+              {isDark ? (
+                <motion.span key="sun" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                  <Sun size={17} />
+                </motion.span>
+              ) : (
+                <motion.span key="moon" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                  <Moon size={17} />
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </button>
+
+          {/* Bell + User — desktop only */}
+          <button
+            className="relative hidden md:flex p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            data-testid="button-notifications"
+          >
+            <Bell size={18} />
+            <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-amber-400 rounded-full" />
+          </button>
+          <button
+            className="hidden md:flex p-1.5 rounded-full bg-muted hover:bg-muted/80 transition-colors"
+            data-testid="button-user"
+          >
+            <User size={16} className="text-foreground" />
+          </button>
+
+          {/* Language switcher — always visible, far right */}
           <div className="relative" ref={langRef}>
             <button
               onClick={() => setLangOpen((v) => !v)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-muted/50 hover:bg-muted text-sm font-medium text-foreground transition-all"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-border bg-muted/50 hover:bg-muted text-sm font-medium text-foreground transition-all"
               data-testid="button-language"
               aria-label="Switch language"
             >
@@ -136,39 +180,6 @@ export default function Header() {
               )}
             </AnimatePresence>
           </div>
-
-          <button
-            onClick={toggleDark}
-            className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            data-testid="button-darkmode"
-            aria-label="Toggle dark mode"
-          >
-            <AnimatePresence mode="wait">
-              {isDark ? (
-                <motion.span key="sun" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                  <Sun size={17} />
-                </motion.span>
-              ) : (
-                <motion.span key="moon" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.2 }}>
-                  <Moon size={17} />
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </button>
-
-          <button
-            className="relative hidden sm:block p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            data-testid="button-notifications"
-          >
-            <Bell size={18} />
-            <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-amber-400 rounded-full" />
-          </button>
-          <button
-            className="hidden sm:block p-1.5 rounded-full bg-muted hover:bg-muted/80 transition-colors"
-            data-testid="button-user"
-          >
-            <User size={16} className="text-foreground" />
-          </button>
         </div>
       </div>
     </motion.header>
