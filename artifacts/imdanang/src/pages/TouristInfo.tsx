@@ -1,173 +1,702 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  BookOpen, Landmark, Hotel, Bus, Stethoscope, DollarSign,
-  MapPin, Phone, ChevronDown, ChevronRight, Clock, Ticket,
-  Star, TreePine, Pill, Building2, Waves, ArrowRight, Route,
+  Search, ChevronDown, MapPin, Phone, Bus, Hotel, Pill,
+  DollarSign, Landmark, Wifi, Thermometer, Star, X,
+  Clock, Ticket, BookOpen, Zap, Shield,
 } from "lucide-react";
-import { busRoutes, journeyGuides, type BusRoute, type JourneyGuide } from "@/data/busRoutes";
 
-const TABS = [
-  { id: "culture",   label: "Di tích & Văn hóa", icon: Landmark,    color: "text-amber-600",  bg: "bg-amber-50 dark:bg-amber-950/30",  border: "border-amber-200 dark:border-amber-800",  active: "bg-amber-600" },
-  { id: "hotels",    label: "Lưu trú",            icon: Hotel,       color: "text-blue-600",   bg: "bg-blue-50 dark:bg-blue-950/30",    border: "border-blue-200 dark:border-blue-800",    active: "bg-blue-600" },
-  { id: "transport", label: "Di chuyển xe buýt",  icon: Bus,         color: "text-emerald-600",bg: "bg-emerald-50 dark:bg-emerald-950/30",border: "border-emerald-200 dark:border-emerald-800", active: "bg-emerald-600" },
-  { id: "services",  label: "Dịch vụ thiết yếu",  icon: Stethoscope, color: "text-rose-600",   bg: "bg-rose-50 dark:bg-rose-950/30",    border: "border-rose-200 dark:border-rose-800",    active: "bg-rose-600" },
+/* ═══════════════════════════════════════════════════════════════════
+   DATA — toàn bộ câu hỏi FAQ
+═══════════════════════════════════════════════════════════════════ */
+
+export type FaqCategory =
+  | "diadiem"
+  | "dichuyên"
+  | "luutru"
+  | "ytecap"
+  | "tien"
+  | "thongtin";
+
+interface FaqItem {
+  id: string;
+  category: FaqCategory;
+  q: string;
+  tags?: string[];
+  popular?: boolean;
+  answer: React.ReactNode;
+}
+
+const CATEGORIES: { key: FaqCategory | "all"; label: string; icon: typeof MapPin; color: string; dot: string }[] = [
+  { key: "all",      label: "Tất cả",          icon: BookOpen,    color: "#6b7280", dot: "bg-gray-400" },
+  { key: "diadiem",  label: "Địa điểm & Vé",   icon: Landmark,    color: "#d97706", dot: "bg-amber-500" },
+  { key: "dichuyên", label: "Di chuyển",        icon: Bus,         color: "#2563eb", dot: "bg-blue-500" },
+  { key: "luutru",   label: "Lưu trú",          icon: Hotel,       color: "#7c3aed", dot: "bg-violet-500" },
+  { key: "ytecap",   label: "Y tế & Khẩn cấp", icon: Shield,      color: "#dc2626", dot: "bg-red-500" },
+  { key: "tien",     label: "Tiền & Chi phí",   icon: DollarSign,  color: "#059669", dot: "bg-emerald-500" },
+  { key: "thongtin", label: "Thực tế hữu ích",  icon: Wifi,        color: "#0891b2", dot: "bg-cyan-500" },
 ];
 
-// ── DATA ──────────────────────────────────────────────────────────────────────
-
-const HOI_AN_INFO = {
-  title: "Phố cổ Hội An",
-  subtitle: "Di sản văn hóa thế giới UNESCO (1999) · Di tích quốc gia đặc biệt",
-  desc: "Đô thị cổ Hội An với hơn 1.000 di tích giàu giá trị kiến trúc nghệ thuật bao gồm đình, chùa, hội quán, cầu, nhà ở, nhà thờ tộc, giếng cổ và nhiều lễ hội truyền thống đặc sắc.",
-  tickets: [
-    { label: "Khách Việt Nam", price: "80.000đ / người" },
-    { label: "Khách nước ngoài", price: "120.000đ / người" },
-    { label: "Trẻ em dưới 16 tuổi", price: "Miễn phí" },
-  ],
-  selling: [
-    { place: "Bán vé online", address: "49 Phan Chu Trinh, Hội An" },
-    { place: "Điểm bán trực tiếp", address: "Các tuyến đường: Lê Lợi, Nguyễn Huệ, Hai Bà Trưng, Nguyễn Phúc Chu, Nguyễn Thị Minh Khai" },
-  ],
+const DOT: Record<FaqCategory, string> = {
+  diadiem:  "bg-amber-400",
+  dichuyên: "bg-blue-400",
+  luutru:   "bg-violet-400",
+  ytecap:   "bg-red-400",
+  tien:     "bg-emerald-400",
+  thongtin: "bg-cyan-400",
 };
 
-const VILLAGES = [
-  { name: "Làng mộc Kim Bồng", address: "Các tổ dân phố Phước Trung, Trung Hà, Đông Hà, phường Hội An", adult: "35.000đ", child: "", phone: "0901 137 313", contact: "Trần Đình Vũ" },
-  { name: "Làng gốm Thanh Hà", address: "Khối Nam Diêu, phường Hội An Tây", adult: "35.000đ", child: "15.000đ", phone: "0937 021 704", contact: "Hồ Hữu Chánh" },
-  { name: "Làng rau Trà Quế",  address: "Thôn Trà Quế, phường Hội An Tây", adult: "35.000đ", child: "", phone: "0937 021 704", contact: "Hồ Hữu Chánh" },
-];
-
-const HOTELS: {
-  area: "danang" | "hoian";
-  location: "center" | "beach";
-  stars: "budget" | "luxury";
-  name: string;
-  address: string;
-}[] = [
-  // Da Nang center budget
-  { area: "danang", location: "center", stars: "budget", name: "Sunriver", address: "132–136 Bạch Đằng, Sơn Trà" },
-  { area: "danang", location: "center", stars: "budget", name: "Pariat River Front Hotel", address: "202–204 Bạch Đằng, Hải Châu" },
-  { area: "danang", location: "center", stars: "budget", name: "Moonlight Hotel", address: "136–140 Phan Châu Trinh, Hải Châu" },
-  { area: "danang", location: "center", stars: "budget", name: "Tre Xanh Bên Cảng", address: "177 Trần Phú, Hải Châu" },
-  { area: "danang", location: "center", stars: "budget", name: "Val Soleil", address: "186 Trần Phú, Phước Ninh, Sơn Trà" },
-  { area: "danang", location: "center", stars: "budget", name: "Adaline Hotel", address: "45–47 Võ Văn Kiệt, Sơn Trà" },
-  { area: "danang", location: "center", stars: "budget", name: "Hoàng Đại II", address: "97 Võ Văn Kiệt, Phước Mỹ, Sơn Trà" },
-  // Da Nang beach budget
-  { area: "danang", location: "beach", stars: "budget", name: "Seafront Hotel", address: "240 Võ Nguyên Giáp, Sơn Trà" },
-  { area: "danang", location: "beach", stars: "budget", name: "Hùng Anh Hotel", address: "25 Võ Văn Kiệt, Phước Mỹ, Sơn Trà" },
-  { area: "danang", location: "beach", stars: "budget", name: "Nam Hotel & Spa", address: "109A Dương Đình Nghệ, An Hải Bắc, Sơn Trà" },
-  { area: "danang", location: "beach", stars: "budget", name: "Grand Sunrise 3", address: "05 Đường Morrison, Sơn Trà" },
-  { area: "danang", location: "beach", stars: "budget", name: "Titan Hotel", address: "102–104 Hồ Xuân Hương, Ngũ Hành Sơn" },
-  { area: "danang", location: "beach", stars: "budget", name: "San San Hotel", address: "54 An Thượng 26, Mỹ An, Ngũ Hành Sơn" },
-  // Hoi An center luxury
-  { area: "hoian", location: "center", stars: "luxury", name: "Vĩnh Hưng Riverside Resort", address: "111 Ngô Quyền, Hội An" },
-  { area: "hoian", location: "center", stars: "luxury", name: "Hội An Historic Hotel", address: "10 Trần Hưng Đạo, Hội An" },
-  { area: "hoian", location: "center", stars: "luxury", name: "Hội An Central Hotel", address: "91 Hùng Vương, Hội An" },
-  { area: "hoian", location: "center", stars: "luxury", name: "Hadana Boutique Resort", address: "538 Cửa Đại, Hội An" },
-  // Hoi An beach luxury
-  { area: "hoian", location: "beach", stars: "luxury", name: "Victoria Hội An Resort", address: "Đường Âu Cơ, Cửa Đại, Hội An" },
-  { area: "hoian", location: "beach", stars: "luxury", name: "Mường Thanh Hội An", address: "Khu đô thị Phước Trạch, Âu Cơ, Hội An" },
-  { area: "hoian", location: "beach", stars: "luxury", name: "Legacy Hoi An Resort", address: "Thôn Thanh Đông, phường Hội An Đông" },
-  { area: "hoian", location: "beach", stars: "luxury", name: "Hội An Beach Resort", address: "01 Cửa Đại, phường Hội An Đông" },
-  { area: "hoian", location: "beach", stars: "luxury", name: "The Saga Hotel Hội An", address: "321 Cửa Đại, Hội An" },
-  // Hoi An center budget
-  { area: "hoian", location: "center", stars: "budget", name: "Emerald Hoi An Riverside Resort", address: "An Hội, Phường Minh An, Hội An" },
-  { area: "hoian", location: "center", stars: "budget", name: "The Signature Hoi An", address: "21 La Hối, Hội An" },
-  { area: "hoian", location: "center", stars: "budget", name: "Rivertown Resort & Spa", address: "47 Thoại Ngọc Hầu, Hội An" },
-  // Hoi An beach budget
-  { area: "hoian", location: "beach", stars: "budget", name: "Ally Beach Boutique Hotel & Spa", address: "15 Phan Tình, Cửa Đại, Hội An" },
-  { area: "hoian", location: "beach", stars: "budget", name: "Lasenta Boutique Hotel", address: "57 Lý Thường Kiệt, Hội An" },
-  { area: "hoian", location: "beach", stars: "budget", name: "Ancient House Hotel", address: "377 Cửa Đại, Hội An" },
-  { area: "hoian", location: "beach", stars: "budget", name: "Hotel Aurora (Hừng Đông)", address: "242 Cửa Đại, Hội An" },
-  { area: "hoian", location: "beach", stars: "budget", name: "Silkian Hoian Boutique Hotel & Spa", address: "07 Lê Đình Thám, Cẩm Châu, Hội An" },
-];
-
-
-const PHARMACIES = {
-  danang: [
-    { area: "Khu vực Trần Phú", items: [
-      { name: "Hana Pharmacy", address: "149 Trần Phú, Hải Châu", phone: "0338 891 822" },
-      { name: "Dapharco BLU Pharmacy", address: "110 Trần Phú, Hải Châu", phone: "0918 727 489" },
-      { name: "Blue Pharmacy", address: "07 Trần Quốc Toản, Hải Châu", phone: "0773 252 934" },
-      { name: "Nhà thuốc ABC", address: "47 Trần Quốc Toản, Hải Châu", phone: "0236 3820 015" },
-    ]},
-    { area: "Khu vực Bạch Đằng", items: [
-      { name: "Diệp Tô Đường (Y học cổ truyền)", address: "120 Bạch Đằng, Hải Châu", phone: "0236 3822 828" },
-    ]},
-    { area: "Khu vực Nguyễn Thái Học", items: [
-      { name: "Sông Hàn Pharmacy", address: "53 Nguyễn Thái Học, Hải Châu", phone: "0886 194 499" },
-      { name: "Pharmacity Thái Phiên", address: "37 Thái Phiên, Hải Châu", phone: "1800 6821" },
-      { name: "FPT Long Châu Đống Đa", address: "120–122 Đống Đa, Hải Châu", phone: "1800 6928" },
-    ]},
-  ],
-  hoian: [
-    { name: "Long Châu Pharmacy", address: "105 Nguyễn Thị Minh Khai", phone: "" },
-    { name: "Nhà thuốc Minh An 115", address: "115 Nguyễn Phúc Tầng", phone: "0901 167 317" },
-    { name: "Nhà thuốc Mi Na", address: "119 Phan Chu Trinh", phone: "0774 493 130" },
-    { name: "Nhà thuốc 65 Lê Lợi", address: "65 Lê Lợi", phone: "0913 438 399" },
-  ],
-};
-
-const MONEY_EXCHANGE = {
-  banks: [
-    { name: "Vietcombank (VCB)", addresses: ["142 Lê Lợi, Hải Châu", "325 Hùng Vương, Thanh Khê", "537 Trần Hưng Đạo, Sơn Trà"], phone: "0236 3822 110" },
-    { name: "BIDV", addresses: ["90 Nguyễn Chí Thanh, Hải Châu", "129 Lê Lợi, Hải Châu", "132 Lê Đình Lý, Thanh Khê"], phone: "0236 3822 371" },
-    { name: "VietinBank", addresses: ["36 Trần Quốc Toản, Hải Châu"], phone: "0236 3821 214" },
-    { name: "Agribank", addresses: ["23 Phan Đình Phùng, Hải Châu"], phone: "0236 3752 900" },
-    { name: "Sacombank", addresses: ["130 Bạch Đằng, Hải Châu"], phone: "0236 3891 004" },
-  ],
-  gold: [
-    { name: "Tiệm Vàng Soạn Hà", address: "121 Trần Phú, Hải Châu", phone: "0236 3825 296" },
-    { name: "Hiệu Vàng Kim Yến", address: "122 Bạch Đằng, Hải Châu", phone: "0905 500 333" },
-    { name: "Tiệm Vàng Tâm Thịnh Lợi – CS1", address: "34 Nguyễn Thái Học, Hải Châu", phone: "0236 3539 252" },
-    { name: "Tiệm Vàng Tâm Thịnh Lợi – CS2", address: "15 Nguyễn Văn Linh, Hải Châu", phone: "0236 7109 549" },
-    { name: "Hiệu Vàng Kim Mai", address: "223 Hùng Vương, Hải Châu", phone: "0236 3823 932" },
-    { name: "Khải Hoàn I", address: "19 Phó Đức Chính, Sơn Trà", phone: "0236 3831 318" },
-    { name: "Khải Hoàn II", address: "01 Tôn Quang Phiệt, Sơn Trà", phone: "0236 3918 285" },
-    { name: "Khải Hoàn III", address: "63 Nguyễn Duy Hiệu, Sơn Trà", phone: "0236 3928 289" },
-  ],
-};
-
-// ── COMPONENTS ────────────────────────────────────────────────────────────────
-
-function InfoBadge({ children, color = "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300" }: { children: React.ReactNode; color?: string }) {
+function Chip({ text }: { text: string }) {
   return (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${color}`}>
-      {children}
+    <span className="inline-block text-[10px] px-1.5 py-0.5 rounded-md bg-gray-100 text-gray-500 border border-gray-200 font-medium">
+      {text}
     </span>
   );
 }
 
-function SectionHeader({ icon: Icon, title, subtitle, color }: { icon: React.ElementType; title: string; subtitle?: string; color: string }) {
+function InfoRow({ icon: Icon, children }: { icon: typeof MapPin; children: React.ReactNode }) {
   return (
-    <div className={`flex items-start gap-3 mb-5`}>
-      <div className={`p-2.5 rounded-xl ${color} shrink-0`}>
-        <Icon size={20} />
-      </div>
-      <div>
-        <h2 className="text-lg font-bold text-foreground">{title}</h2>
-        {subtitle && <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>}
+    <div className="flex items-start gap-2 text-sm text-gray-600">
+      <Icon size={13} className="mt-0.5 shrink-0 text-gray-400" />
+      <span className="leading-relaxed">{children}</span>
+    </div>
+  );
+}
+
+function ContactCard({ name, address, phone, badge }: { name: string; address: string; phone?: string; badge?: string }) {
+  return (
+    <div className="flex gap-2.5 bg-white border border-gray-100 rounded-xl p-3 shadow-sm">
+      <div className="w-2 rounded-full shrink-0 bg-gray-200" />
+      <div className="min-w-0">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <p className="text-sm font-semibold text-gray-900">{name}</p>
+          {badge && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">{badge}</span>}
+        </div>
+        <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1"><MapPin size={10} />{address}</p>
+        {phone && <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1"><Phone size={10} />{phone}</p>}
       </div>
     </div>
   );
 }
 
-function Accordion({ title, children, defaultOpen = false, badge }: { title: string; children: React.ReactNode; defaultOpen?: boolean; badge?: React.ReactNode }) {
-  const [open, setOpen] = useState(defaultOpen);
+const FAQS: FaqItem[] = [
+  /* ── Địa điểm & Vé ───────────────────────────────────────────── */
+  {
+    id: "hoi-an-ticket",
+    category: "diadiem",
+    q: "Vé vào phố cổ Hội An giá bao nhiêu?",
+    popular: true,
+    tags: ["Hội An", "vé", "tham quan"],
+    answer: (
+      <div className="space-y-3">
+        <p className="text-sm text-gray-600">Vé tham quan phố cổ gồm 5 phiếu, mỗi phiếu dùng cho 1 điểm tham quan trong danh sách được chỉ định.</p>
+        <div className="grid grid-cols-3 gap-2">
+          {[["Khách Việt Nam", "80.000đ"], ["Khách nước ngoài", "120.000đ"], ["Trẻ em dưới 16", "Miễn phí"]].map(([label, price]) => (
+            <div key={label} className="rounded-xl border border-amber-100 bg-amber-50 p-2.5 text-center">
+              <p className="text-[10px] text-amber-700">{label}</p>
+              <p className="text-sm font-bold text-amber-800 mt-0.5">{price}</p>
+            </div>
+          ))}
+        </div>
+        <div className="space-y-1">
+          <InfoRow icon={MapPin}>Bán vé online tại: 49 Phan Chu Trinh, Hội An</InfoRow>
+          <InfoRow icon={MapPin}>Bán trực tiếp trên: Lê Lợi · Nguyễn Huệ · Hai Bà Trưng · Nguyễn Phúc Chu · Nguyễn Thị Minh Khai</InfoRow>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: "hoi-an-open",
+    category: "diadiem",
+    q: "Phố cổ Hội An mở cửa mấy giờ? Có đi ban đêm được không?",
+    tags: ["Hội An", "giờ mở cửa"],
+    answer: (
+      <div className="space-y-2 text-sm text-gray-600">
+        <p>Phố cổ Hội An không có cổng đóng — bạn có thể đi lại tự do 24/7. Tuy nhiên, vé tham quan chỉ áp dụng cho các điểm di tích trong giờ hành chính.</p>
+        <InfoRow icon={Clock}>Các điểm tham quan thường mở: <strong>08:00 – 17:30</strong></InfoRow>
+        <InfoRow icon={Star}>Ban đêm (sau 18:00): phố đèn lồng, hàng ăn, không cần vé — rất đẹp vào ngày rằm (15 âm lịch)</InfoRow>
+      </div>
+    ),
+  },
+  {
+    id: "villages",
+    category: "diadiem",
+    q: "Các làng nghề truyền thống gần Hội An đáng đi là gì?",
+    tags: ["làng nghề", "Hội An", "vé"],
+    answer: (
+      <div className="space-y-2">
+        {[
+          { name: "Làng mộc Kim Bồng", address: "Các tổ dân phố Phước Trung, Trung Hà, Đông Hà, TP Hội An", adult: "35.000đ", phone: "0901 137 313" },
+          { name: "Làng gốm Thanh Hà", address: "Khối Nam Diêu, phường Hội An Tây", adult: "35.000đ · Trẻ em: 15.000đ", phone: "0937 021 704" },
+          { name: "Làng rau Trà Quế",  address: "Thôn Trà Quế, phường Hội An Tây", adult: "35.000đ", phone: "0937 021 704" },
+        ].map((v) => (
+          <ContactCard key={v.name} name={v.name} address={`${v.address} · Vé: ${v.adult}`} phone={v.phone} />
+        ))}
+      </div>
+    ),
+  },
+  {
+    id: "ba-na-ticket",
+    category: "diadiem",
+    q: "Vé cáp treo Bà Nà Hills giá bao nhiêu?",
+    popular: true,
+    tags: ["Bà Nà", "cáp treo", "vé"],
+    answer: (
+      <div className="space-y-2 text-sm text-gray-600">
+        <p>Vé Bà Nà Hills bao gồm cáp treo khứ hồi + vào tất cả khu vui chơi trong khuôn viên.</p>
+        <div className="grid grid-cols-2 gap-2">
+          {[["Người lớn", "750.000đ"], ["Trẻ em (1–1,4m)", "600.000đ"], ["Trẻ dưới 1m", "Miễn phí"], ["Người cao tuổi (60+)", "600.000đ"]].map(([l, p]) => (
+            <div key={l} className="rounded-xl border border-gray-100 bg-gray-50 p-2.5">
+              <p className="text-[10px] text-gray-500">{l}</p>
+              <p className="text-sm font-bold text-gray-800 mt-0.5">{p}</p>
+            </div>
+          ))}
+        </div>
+        <InfoRow icon={Clock}>Mở cửa: 07:00 – 22:00 hàng ngày</InfoRow>
+        <InfoRow icon={MapPin}>Địa chỉ: Thôn An Sơn, xã Hòa Ninh, huyện Hòa Vang · Cách trung tâm ~35km</InfoRow>
+      </div>
+    ),
+  },
+  {
+    id: "my-son",
+    category: "diadiem",
+    q: "Thánh địa Mỹ Sơn ở đâu? Vé vào cổng bao nhiêu?",
+    tags: ["Mỹ Sơn", "UNESCO", "vé"],
+    answer: (
+      <div className="space-y-2 text-sm text-gray-600">
+        <p>Mỹ Sơn là quần thể đền tháp Chăm Pa, di sản UNESCO, cách Hội An ~40km.</p>
+        <div className="grid grid-cols-2 gap-2">
+          {[["Người lớn", "150.000đ"], ["Trẻ em", "Miễn phí (dưới 1,2m)"]].map(([l, p]) => (
+            <div key={l} className="rounded-xl border border-gray-100 bg-gray-50 p-2.5">
+              <p className="text-[10px] text-gray-500">{l}</p>
+              <p className="text-sm font-bold text-gray-800 mt-0.5">{p}</p>
+            </div>
+          ))}
+        </div>
+        <InfoRow icon={Clock}>Mở cửa: 06:00 – 17:00</InfoRow>
+        <InfoRow icon={Bus}>Đi bằng Bus 01DL từ Hội An: 08:10 hoặc 14:10, về lúc 09:00 và 15:00</InfoRow>
+      </div>
+    ),
+  },
+
+  /* ── Di chuyển ───────────────────────────────────────────────── */
+  {
+    id: "airport-hoian",
+    category: "dichuyên",
+    q: "Từ sân bay Đà Nẵng đi Hội An bằng cách nào rẻ nhất?",
+    popular: true,
+    tags: ["sân bay", "Hội An", "xe buýt", "Grab"],
+    answer: (
+      <div className="space-y-3 text-sm text-gray-600">
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            { label: "Xe buýt 01SB", price: "30.000đ", time: "~60 phút", note: "Ra cổng Arrivals, đi bộ 3 phút đến trạm" },
+            { label: "Grab Car",     price: "250–350K", time: "~35 phút", note: "Tiện nhất nếu nhiều người hoặc có vali lớn" },
+            { label: "Taxi Mai Linh", price: "300–400K", time: "~35 phút", note: "0236 3525 252 — đặt trước tránh chặt chém" },
+            { label: "Xe khách limousine", price: "150–200K", time: "~45 phút", note: "Có dịch vụ đưa đón theo lịch hằng ngày" },
+          ].map((o) => (
+            <div key={o.label} className="rounded-xl border border-gray-100 bg-gray-50 p-2.5">
+              <p className="text-xs font-bold text-gray-900">{o.label}</p>
+              <p className="text-sm font-black text-blue-600">{o.price}</p>
+              <p className="text-[10px] text-gray-400 mt-0.5">{o.time} · {o.note}</p>
+            </div>
+          ))}
+        </div>
+        <div className="rounded-xl bg-blue-50 border border-blue-100 px-3 py-2 flex gap-2">
+          <Zap size={13} className="text-blue-500 shrink-0 mt-0.5" />
+          <p className="text-xs text-blue-700">Bus 01SB rẻ nhất, có khoang hành lý, chạy 05:10–18:00. Mua vé trên xe.</p>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: "airport-center",
+    category: "dichuyên",
+    q: "Từ sân bay vào trung tâm Đà Nẵng mất bao lâu và bao nhiêu tiền?",
+    tags: ["sân bay", "trung tâm", "Grab"],
+    answer: (
+      <div className="space-y-2 text-sm text-gray-600">
+        <p>Sân bay Đà Nẵng cách trung tâm (khu Bạch Đằng – Sông Hàn) chỉ <strong>~3–4km</strong>.</p>
+        <div className="grid grid-cols-3 gap-2">
+          {[["Grab Bike", "20–35K", "10 phút"], ["Grab Car", "50–80K", "12 phút"], ["Taxi", "80–120K", "12 phút"]].map(([m, p, t]) => (
+            <div key={m} className="rounded-xl border border-gray-100 bg-gray-50 p-2.5 text-center">
+              <p className="text-[10px] text-gray-500">{m}</p>
+              <p className="text-sm font-bold text-gray-900">{p}</p>
+              <p className="text-[10px] text-gray-400">{t}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: "bus-bana",
+    category: "dichuyên",
+    q: "Có xe buýt đến Bà Nà Hills không?",
+    tags: ["xe buýt", "Bà Nà", "Bus 03"],
+    answer: (
+      <div className="space-y-2 text-sm text-gray-600">
+        <p>Có — <strong>Bus số 03</strong> chạy thẳng Sân bay Đà Nẵng → Bà Nà Hills.</p>
+        <InfoRow icon={Clock}>Giờ chạy: 07:00 – 18:00 · Tần suất: 15–30 phút/chuyến</InfoRow>
+        <InfoRow icon={Ticket}>Giá vé: 15.000–30.000đ</InfoRow>
+        <InfoRow icon={Bus}>Lộ trình: Sân bay → Điện Biên Phủ → Tôn Đức Thắng → Hoàng Văn Thái → Bà Nà Hills (~75 phút)</InfoRow>
+        <div className="rounded-xl bg-amber-50 border border-amber-100 px-3 py-2 flex gap-2">
+          <Zap size={13} className="text-amber-500 shrink-0 mt-0.5" />
+          <p className="text-xs text-amber-700">Nên đi chuyến sáng trước 8:00. Xuống bãi đỗ xe, mua vé cáp treo riêng lên khu du lịch.</p>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: "bus-hue",
+    category: "dichuyên",
+    q: "Từ Đà Nẵng đi Huế bằng xe buýt được không? Giá bao nhiêu?",
+    popular: true,
+    tags: ["Huế", "xe buýt", "LK01"],
+    answer: (
+      <div className="space-y-2 text-sm text-gray-600">
+        <p>Được — <strong>Bus LK01</strong> (Đà Nẵng – Huế) tần suất rất dày, chạy qua Hầm Hải Vân.</p>
+        <div className="grid grid-cols-3 gap-2">
+          {[["Giá vé", "80.000đ"], ["Thời gian", "~2h30"], ["Tần suất", "14–15 phút"]].map(([l, v]) => (
+            <div key={l} className="rounded-xl border border-gray-100 bg-gray-50 p-2.5 text-center">
+              <p className="text-[10px] text-gray-500">{l}</p>
+              <p className="text-sm font-bold text-gray-900">{v}</p>
+            </div>
+          ))}
+        </div>
+        <InfoRow icon={MapPin}>Điểm xuất phát: Bến xe Trung tâm Đà Nẵng — 33 Điện Biên Phủ</InfoRow>
+        <InfoRow icon={Clock}>Giờ chạy: 05:30 – 19:00</InfoRow>
+        <div className="rounded-xl bg-blue-50 border border-blue-100 px-3 py-2 flex gap-2">
+          <Zap size={13} className="text-blue-500 shrink-0 mt-0.5" />
+          <p className="text-xs text-blue-700">Rẻ hơn 3–4 lần so với taxi. Từ bến xe Huế vào trung tâm cần thêm xe ôm/taxi ~15km.</p>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: "bus-marbles",
+    category: "dichuyên",
+    q: "Xe buýt nào đến Ngũ Hành Sơn (Núi Ngũ Hành Sơn)?",
+    tags: ["Ngũ Hành Sơn", "xe buýt"],
+    answer: (
+      <div className="space-y-2 text-sm text-gray-600">
+        <p><strong>Bus số 02</strong> (Bến xe TT → Cửa Đại) đi qua Ngũ Hành Sơn.</p>
+        <InfoRow icon={Ticket}>Giá: 20.000đ · Giờ: 05:30–17:30 · Tần suất: ~20 phút</InfoRow>
+        <InfoRow icon={MapPin}>Xuống tại điểm dừng <strong>754 Lê Văn Hiến</strong> → đi bộ 2–5 phút vào cổng</InfoRow>
+        <InfoRow icon={Bus}>Từ điểm này có thể đi tiếp Bus 02 đến Hội An (không cần đổi xe)</InfoRow>
+      </div>
+    ),
+  },
+  {
+    id: "grab-available",
+    category: "dichuyên",
+    q: "Grab hoạt động ở Đà Nẵng không? Có an toàn không?",
+    tags: ["Grab", "taxi", "di chuyển"],
+    answer: (
+      <div className="space-y-2 text-sm text-gray-600">
+        <p>Grab hoạt động 24/7 tại Đà Nẵng và rất phổ biến — an toàn, giá hiển thị trước, không mặc cả.</p>
+        <InfoRow icon={Zap}>Grab Bike (xe máy): phù hợp ngắn, giá từ 15K/km</InfoRow>
+        <InfoRow icon={Zap}>GrabCar: phù hợp nhóm hoặc di chuyển xa, giá từ 25K/km</InfoRow>
+        <InfoRow icon={Phone}>Taxi thay thế uy tín: Mai Linh <strong>0236 3525 252</strong> · Tiên Sa <strong>0236 3791 791</strong></InfoRow>
+      </div>
+    ),
+  },
+  {
+    id: "bus-ticket",
+    category: "dichuyên",
+    q: "Mua vé xe buýt ở đâu? Có thẻ tháng không?",
+    tags: ["vé xe buýt", "thẻ tháng"],
+    answer: (
+      <div className="space-y-2 text-sm text-gray-600">
+        <InfoRow icon={Ticket}>Vé lượt: mua trực tiếp trên xe, trả tiền mặt cho nhân viên soát vé</InfoRow>
+        <InfoRow icon={Ticket}>Vé tháng học sinh/SV: <strong>80.000đ/tháng</strong> (xuất trình thẻ)</InfoRow>
+        <InfoRow icon={Ticket}>Vé tháng phổ thông: <strong>120.000đ/tháng</strong> không giới hạn lượt</InfoRow>
+        <InfoRow icon={MapPin}>Mua vé tháng tại: Bến xe Trung tâm — 33 Điện Biên Phủ, hoặc điểm bán Phương Trang</InfoRow>
+        <InfoRow icon={Phone}>Hotline Phương Trang Futabuslines: <strong>1900 6067</strong></InfoRow>
+      </div>
+    ),
+  },
+  {
+    id: "rent-motorbike",
+    category: "dichuyên",
+    q: "Thuê xe máy ở Đà Nẵng giá bao nhiêu? Cần giấy tờ gì?",
+    tags: ["xe máy", "thuê xe"],
+    answer: (
+      <div className="space-y-2 text-sm text-gray-600">
+        <div className="grid grid-cols-2 gap-2">
+          {[["Xe máy số (Wave, Future)", "100–150K/ngày"], ["Xe số tự động (Airblade)", "150–200K/ngày"], ["Xe đạp điện", "80–120K/ngày"], ["Xe đạp thường", "50–80K/ngày"]].map(([l, p]) => (
+            <div key={l} className="rounded-xl border border-gray-100 bg-gray-50 p-2 text-sm">
+              <p className="text-[10px] text-gray-500">{l}</p>
+              <p className="font-bold text-gray-900">{p}</p>
+            </div>
+          ))}
+        </div>
+        <InfoRow icon={Zap}>Yêu cầu: CCCD hoặc Passport gốc (để lại làm cọc)</InfoRow>
+        <InfoRow icon={MapPin}>Nhiều cửa hàng tập trung ở khu An Thượng (gần bãi biển Mỹ Khê)</InfoRow>
+        <InfoRow icon={Zap}>Lưu ý: đường Phạm Văn Đồng (ven biển) cấm xe máy — dùng xe đạp hoặc xe điện</InfoRow>
+      </div>
+    ),
+  },
+
+  /* ── Lưu trú ─────────────────────────────────────────────────── */
+  {
+    id: "hotel-area",
+    category: "luutru",
+    q: "Nên ở khu nào tại Đà Nẵng? Gần biển hay trung tâm?",
+    popular: true,
+    tags: ["khách sạn", "khu ở", "bãi biển"],
+    answer: (
+      <div className="space-y-3 text-sm text-gray-600">
+        <div className="space-y-2">
+          {[
+            { area: "Mỹ Khê / Phạm Văn Đồng", desc: "Ven biển — lý tưởng nếu muốn tắm biển sáng sớm. Nhiều nhà hàng hải sản, khách sạn từ bình dân đến 5 sao.", icon: "🏖️" },
+            { area: "Trung tâm (Hải Châu)", desc: "Gần chợ Hàn, cầu Rồng, bờ sông Hàn. Tiện di chuyển, nhiều lựa chọn ăn uống, phù hợp ở trong ngân sách.", icon: "🏙️" },
+            { area: "Ngũ Hành Sơn / An Thượng", desc: "Cộng đồng khách Tây lớn, nhà nghỉ & hostel giá tốt, gần bãi biển Non Nước. Yên tĩnh hơn.", icon: "🌿" },
+            { area: "Phố cổ Hội An", desc: "Nếu muốn tập trung khám phá Hội An — ở trong phố cổ rất thuận tiện, không khí cổ kính.", icon: "🏮" },
+          ].map((o) => (
+            <div key={o.area} className="rounded-xl border border-gray-100 bg-gray-50 p-3 flex gap-2.5">
+              <span className="text-xl shrink-0">{o.icon}</span>
+              <div>
+                <p className="text-xs font-bold text-gray-900">{o.area}</p>
+                <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{o.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: "hotel-danang-budget",
+    category: "luutru",
+    q: "Gợi ý khách sạn bình dân (dưới 3 sao) tại Đà Nẵng?",
+    tags: ["khách sạn", "bình dân", "Đà Nẵng"],
+    answer: (
+      <div className="space-y-2">
+        <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2">Khu trung tâm</p>
+        {["Sunriver — 132–136 Bạch Đằng, Sơn Trà", "Pariat River Front — 202–204 Bạch Đằng, Hải Châu", "Moonlight Hotel — 136–140 Phan Châu Trinh", "Val Soleil — 186 Trần Phú, Phước Ninh", "Adaline Hotel — 45–47 Võ Văn Kiệt"].map((h) => {
+          const [name, addr] = h.split(" — ");
+          return <ContactCard key={name} name={name} address={addr} />;
+        })}
+        <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mt-3 mb-2">Ven biển Mỹ Khê</p>
+        {["Seafront Hotel — 240 Võ Nguyên Giáp", "Grand Sunrise 3 — 05 Đường Morrison, Sơn Trà", "Titan Hotel — 102–104 Hồ Xuân Hương", "San San Hotel — 54 An Thượng 26, Ngũ Hành Sơn"].map((h) => {
+          const [name, addr] = h.split(" — ");
+          return <ContactCard key={name} name={name} address={addr} />;
+        })}
+      </div>
+    ),
+  },
+  {
+    id: "hotel-hoian",
+    category: "luutru",
+    q: "Gợi ý khách sạn tại Hội An — cả bình dân và cao cấp?",
+    tags: ["khách sạn", "Hội An", "resort"],
+    answer: (
+      <div className="space-y-2">
+        <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2">Cao cấp (4–5 sao)</p>
+        {[
+          ["Vĩnh Hưng Riverside Resort", "111 Ngô Quyền", "Trung tâm"],
+          ["Hội An Historic Hotel", "10 Trần Hưng Đạo", "Trung tâm"],
+          ["Victoria Hội An Resort", "Đường Âu Cơ, Cửa Đại", "Bãi biển"],
+          ["La Siesta Hội An Resort", "Cẩm Kim, Hội An", "Bãi biển"],
+        ].map(([name, addr, badge]) => (
+          <ContactCard key={name} name={name} address={addr} badge={badge} />
+        ))}
+        <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mt-3 mb-2">Bình dân – tầm trung</p>
+        {[
+          ["Emerald Hoi An Riverside", "An Hội, Phường Minh An"],
+          ["The Signature Hoi An", "21 La Hối"],
+          ["Ally Beach Boutique Hotel", "15 Phan Tình, Cửa Đại"],
+          ["Lasenta Boutique Hotel", "57 Lý Thường Kiệt"],
+        ].map(([name, addr]) => (
+          <ContactCard key={name} name={name} address={addr} />
+        ))}
+      </div>
+    ),
+  },
+
+  /* ── Y tế & Khẩn cấp ─────────────────────────────────────────── */
+  {
+    id: "emergency",
+    category: "ytecap",
+    q: "Số điện thoại khẩn cấp tại Đà Nẵng là gì?",
+    popular: true,
+    tags: ["khẩn cấp", "cấp cứu", "cảnh sát"],
+    answer: (
+      <div className="grid grid-cols-2 gap-2">
+        {[
+          { label: "Cấp cứu y tế", no: "115", color: "bg-red-50 border-red-200 text-red-700" },
+          { label: "Cảnh sát (Police)", no: "113", color: "bg-blue-50 border-blue-200 text-blue-700" },
+          { label: "Cứu hỏa", no: "114", color: "bg-orange-50 border-orange-200 text-orange-700" },
+          { label: "Tai nạn giao thông", no: "1800 599 925", color: "bg-gray-50 border-gray-200 text-gray-700" },
+          { label: "BV Đà Nẵng (ĐT)", no: "0236 3821 480", color: "bg-purple-50 border-purple-200 text-purple-700" },
+          { label: "BV C Đà Nẵng", no: "0236 3822 180", color: "bg-purple-50 border-purple-200 text-purple-700" },
+        ].map((s) => (
+          <div key={s.label} className={`rounded-xl border p-3 ${s.color}`}>
+            <p className="text-[10px] opacity-70 mb-0.5">{s.label}</p>
+            <p className="text-base font-black">{s.no}</p>
+          </div>
+        ))}
+      </div>
+    ),
+  },
+  {
+    id: "pharmacy-danang",
+    category: "ytecap",
+    q: "Nhà thuốc nào uy tín gần trung tâm Đà Nẵng?",
+    tags: ["nhà thuốc", "pharmacy", "Đà Nẵng"],
+    answer: (
+      <div className="space-y-2">
+        {[
+          { name: "FPT Long Châu Đống Đa", address: "120–122 Đống Đa, Hải Châu", phone: "1800 6928" },
+          { name: "Pharmacity Thái Phiên", address: "37 Thái Phiên, Hải Châu", phone: "1800 6821" },
+          { name: "Hana Pharmacy", address: "149 Trần Phú, Hải Châu", phone: "0338 891 822" },
+          { name: "Dapharco BLU Pharmacy", address: "110 Trần Phú, Hải Châu", phone: "0918 727 489" },
+          { name: "Sông Hàn Pharmacy", address: "53 Nguyễn Thái Học, Hải Châu", phone: "0886 194 499" },
+        ].map((p) => <ContactCard key={p.name} name={p.name} address={p.address} phone={p.phone} />)}
+      </div>
+    ),
+  },
+  {
+    id: "pharmacy-hoian",
+    category: "ytecap",
+    q: "Nhà thuốc ở Hội An ở đâu?",
+    tags: ["nhà thuốc", "pharmacy", "Hội An"],
+    answer: (
+      <div className="space-y-2">
+        {[
+          { name: "Long Châu Pharmacy", address: "105 Nguyễn Thị Minh Khai" },
+          { name: "Nhà thuốc Minh An 115", address: "115 Nguyễn Phúc Tầng", phone: "0901 167 317" },
+          { name: "Nhà thuốc Mi Na", address: "119 Phan Chu Trinh", phone: "0774 493 130" },
+          { name: "Nhà thuốc 65 Lê Lợi", address: "65 Lê Lợi", phone: "0913 438 399" },
+        ].map((p) => <ContactCard key={p.name} name={p.name} address={p.address} phone={p.phone} />)}
+      </div>
+    ),
+  },
+  {
+    id: "hospital",
+    category: "ytecap",
+    q: "Bệnh viện nào có khoa quốc tế hoặc nói được tiếng Anh tại Đà Nẵng?",
+    tags: ["bệnh viện", "tiếng Anh", "quốc tế"],
+    answer: (
+      <div className="space-y-2 text-sm text-gray-600">
+        {[
+          { name: "Bệnh viện Đà Nẵng", address: "124 Hải Phòng, Hải Châu", phone: "0236 3821 480", badge: "Khoa quốc tế" },
+          { name: "BV C Đà Nẵng", address: "122 Hải Phòng, Hải Châu", phone: "0236 3822 180", badge: "Cấp cứu 24/7" },
+          { name: "BV Phụ sản Nhi Đà Nẵng", address: "402 Lê Văn Hiến, Ngũ Hành Sơn", phone: "0236 3958 005", badge: "Nhi – Sản" },
+          { name: "Phòng khám Quốc tế Đà Nẵng", address: "50 Nguyễn Văn Linh, Hải Châu", phone: "0236 3577 999", badge: "Tiếng Anh" },
+        ].map((h) => <ContactCard key={h.name} name={h.name} address={h.address} phone={h.phone} badge={h.badge} />)}
+      </div>
+    ),
+  },
+
+  /* ── Tiền & Chi phí ──────────────────────────────────────────── */
+  {
+    id: "money-exchange",
+    category: "tien",
+    q: "Đổi tiền ở đâu tốt nhất tại Đà Nẵng?",
+    popular: true,
+    tags: ["đổi tiền", "ngoại tệ", "ngân hàng"],
+    answer: (
+      <div className="space-y-3 text-sm text-gray-600">
+        <p>Nên đổi tại ngân hàng hoặc tiệm vàng uy tín — tỷ giá tốt hơn khách sạn.</p>
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Ngân hàng lớn</p>
+        {[
+          { name: "Vietcombank", address: "142 Lê Lợi · 325 Hùng Vương · 537 Trần Hưng Đạo", phone: "0236 3822 110" },
+          { name: "BIDV", address: "90 Nguyễn Chí Thanh · 129 Lê Lợi · 132 Lê Đình Lý", phone: "0236 3822 371" },
+          { name: "Agribank", address: "23 Phan Đình Phùng, Hải Châu", phone: "0236 3752 900" },
+        ].map((b) => <ContactCard key={b.name} name={b.name} address={b.address} phone={b.phone} />)}
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-2">Tiệm vàng (đổi tỷ giá tốt)</p>
+        {[
+          { name: "Tiệm Vàng Soạn Hà", address: "121 Trần Phú, Hải Châu", phone: "0236 3825 296" },
+          { name: "Hiệu Vàng Kim Yến", address: "122 Bạch Đằng, Hải Châu", phone: "0905 500 333" },
+          { name: "Khải Hoàn I", address: "19 Phó Đức Chính, Sơn Trà", phone: "0236 3831 318" },
+        ].map((g) => <ContactCard key={g.name} name={g.name} address={g.address} phone={g.phone} />)}
+      </div>
+    ),
+  },
+  {
+    id: "budget-daily",
+    category: "tien",
+    q: "Cần chuẩn bị bao nhiêu tiền cho 1 ngày ở Đà Nẵng?",
+    tags: ["ngân sách", "chi phí", "tiết kiệm"],
+    answer: (
+      <div className="space-y-3 text-sm text-gray-600">
+        <div className="space-y-2">
+          {[
+            { type: "Tiết kiệm (phượt)", budget: "400.000–600.000đ/ngày", note: "Hostel: 150K · Bún bò/bánh mì: 30–50K · Xe buýt: 8–30K · Vào biển miễn phí" },
+            { type: "Thoải mái (khách du lịch)", budget: "1.000.000–1.500.000đ/ngày", note: "Khách sạn 3 sao: 500–700K · Nhà hàng: 150–300K · Grab: 100K" },
+            { type: "Cao cấp (resort)", budget: "3.000.000đ+/ngày", note: "Resort 5 sao: 2–5 triệu · Nhà hàng fine dining: 500K–1 triệu" },
+          ].map((b) => (
+            <div key={b.type} className="rounded-xl border border-gray-100 bg-gray-50 p-3">
+              <p className="text-xs font-bold text-gray-900">{b.type}</p>
+              <p className="text-base font-black text-emerald-600">{b.budget}</p>
+              <p className="text-[10px] text-gray-400 mt-1 leading-relaxed">{b.note}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: "atm",
+    category: "tien",
+    q: "ATM ở đâu? Rút tiền nước ngoài có bị phí không?",
+    tags: ["ATM", "rút tiền", "thẻ quốc tế"],
+    answer: (
+      <div className="space-y-2 text-sm text-gray-600">
+        <InfoRow icon={MapPin}>ATM dày đặc trên trục Lê Lợi, Bạch Đằng, Nguyễn Văn Linh, Hùng Vương</InfoRow>
+        <InfoRow icon={DollarSign}>Phí rút ATM bằng thẻ nước ngoài: <strong>55.000–85.000đ/lần</strong> (tùy ngân hàng)</InfoRow>
+        <InfoRow icon={Zap}>Vietcombank và BIDV chấp nhận Visa, MasterCard, UnionPay tốt nhất</InfoRow>
+        <InfoRow icon={Zap}>Hạn mức rút: thường 5.000.000đ/lần — rút nhiều lần nếu cần nhiều hơn</InfoRow>
+        <InfoRow icon={Star}>Mẹo: Dùng thẻ Wise hoặc Revolut để tránh phí chuyển đổi ngoại tệ</InfoRow>
+      </div>
+    ),
+  },
+
+  /* ── Thực tế hữu ích ─────────────────────────────────────────── */
+  {
+    id: "sim-card",
+    category: "thongtin",
+    q: "Mua SIM điện thoại ở đâu? Mạng nào tốt nhất?",
+    tags: ["SIM", "internet", "3G 4G"],
+    answer: (
+      <div className="space-y-2 text-sm text-gray-600">
+        <p>Du khách nước ngoài mua SIM tại sân bay hoặc cửa hàng chính hãng — cần trình Passport.</p>
+        <div className="grid grid-cols-3 gap-2">
+          {[["Viettel", "Phủ sóng rộng nhất", "#e11d48"], ["Mobifone", "Tốt ở đô thị, resort", "#2563eb"], ["Vietnamobile", "Giá rẻ nhất", "#7c3aed"]].map(([n, d, c]) => (
+            <div key={n} className="rounded-xl border border-gray-100 bg-gray-50 p-2 text-center">
+              <p className="text-xs font-bold text-gray-900">{n}</p>
+              <p className="text-[10px] text-gray-500 mt-0.5">{d}</p>
+            </div>
+          ))}
+        </div>
+        <InfoRow icon={Ticket}>SIM du lịch 10 ngày (data không giới hạn): <strong>50.000–100.000đ</strong></InfoRow>
+        <InfoRow icon={MapPin}>Mua tại: Cửa hàng trong sân bay T1/T2 · Hệ thống cửa hàng Viettel/Mobifone trên Điện Biên Phủ, Lê Lợi</InfoRow>
+      </div>
+    ),
+  },
+  {
+    id: "best-time",
+    category: "thongtin",
+    q: "Mùa nào đẹp nhất để đến Đà Nẵng?",
+    popular: true,
+    tags: ["thời tiết", "mùa", "kế hoạch"],
+    answer: (
+      <div className="space-y-3 text-sm text-gray-600">
+        <div className="space-y-2">
+          {[
+            { months: "Tháng 3 – 8", type: "Mùa khô ☀️", desc: "Tốt nhất để đi biển. Nắng ấm, ít mưa. Tháng 6–8 nóng nhất (~33°C) nhưng biển đẹp nhất.", color: "bg-amber-50 border-amber-200" },
+            { months: "Tháng 9 – 11", type: "Mùa mưa 🌧️", desc: "Mưa nhiều và mạnh, có thể lũ lụt ở Hội An. Nên tránh nếu muốn du lịch biển. Vẫn đẹp nếu thích khám phá văn hóa.", color: "bg-blue-50 border-blue-200" },
+            { months: "Tháng 12 – 2", type: "Mùa lạnh 🌬️", desc: "Trời lạnh và ít nắng (~20°C), có thể có mưa phùn. Phù hợp tham quan văn hóa, ít khách du lịch, giá rẻ hơn.", color: "bg-gray-50 border-gray-200" },
+          ].map((m) => (
+            <div key={m.months} className={`rounded-xl border p-3 ${m.color}`}>
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs font-bold text-gray-900">{m.type}</p>
+                <p className="text-[10px] text-gray-500">{m.months}</p>
+              </div>
+              <p className="text-xs text-gray-600 leading-relaxed">{m.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: "useful-apps",
+    category: "thongtin",
+    q: "Những ứng dụng điện thoại nào hữu ích khi đến Đà Nẵng?",
+    tags: ["app", "ứng dụng", "tiện ích"],
+    answer: (
+      <div className="space-y-2">
+        {[
+          { name: "Google Maps", use: "Bản đồ, tìm đường, xe buýt real-time", icon: "🗺️" },
+          { name: "Grab", use: "Đặt xe taxi/xe máy, giao đồ ăn", icon: "🚕" },
+          { name: "Shopee Food / BeFood", use: "Đặt đồ ăn giao tận nơi", icon: "🍱" },
+          { name: "Google Translate", use: "Dịch thực đơn, bảng hiệu (chụp ảnh dịch)", icon: "🌐" },
+          { name: "imdanang (trang này)", use: "Thông tin du lịch Đà Nẵng đầy đủ nhất", icon: "📍" },
+        ].map((a) => (
+          <div key={a.name} className="flex gap-3 items-center bg-gray-50 border border-gray-100 rounded-xl px-3 py-2.5">
+            <span className="text-xl shrink-0">{a.icon}</span>
+            <div>
+              <p className="text-sm font-bold text-gray-900">{a.name}</p>
+              <p className="text-xs text-gray-500">{a.use}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    ),
+  },
+  {
+    id: "internet-cafe",
+    category: "thongtin",
+    q: "Wifi công cộng ở Đà Nẵng có không? Tốt không?",
+    tags: ["wifi", "internet"],
+    answer: (
+      <div className="space-y-2 text-sm text-gray-600">
+        <InfoRow icon={Wifi}>Hầu hết khách sạn, quán cà phê, nhà hàng có Wifi miễn phí — chất lượng tốt</InfoRow>
+        <InfoRow icon={Wifi}>Sân bay Đà Nẵng: Wifi miễn phí phủ toàn nhà ga (DAD_Free_Wifi)</InfoRow>
+        <InfoRow icon={Wifi}>Khu phố đi bộ Bạch Đằng và Trần Phú có Wifi công cộng thành phố</InfoRow>
+        <InfoRow icon={Zap}>Khuyến nghị: mua SIM data (50–100K) để chủ động — 4G Viettel rất mạnh</InfoRow>
+      </div>
+    ),
+  },
+  {
+    id: "dress-code",
+    category: "thongtin",
+    q: "Khi vào chùa, đền ở Đà Nẵng cần ăn mặc thế nào?",
+    tags: ["trang phục", "chùa", "văn hóa"],
+    answer: (
+      <div className="space-y-2 text-sm text-gray-600">
+        <InfoRow icon={Zap}>Che vai và đầu gối — không mặc áo cộc tay, quần short ngắn vào nơi thờ tự</InfoRow>
+        <InfoRow icon={Zap}>Cởi giày trước khi vào chánh điện (có biển nhắc nhở)</InfoRow>
+        <InfoRow icon={Zap}>Ở Ngũ Hành Sơn và các chùa lớn thường có khăn/vải cho thuê nếu ăn mặc không phù hợp</InfoRow>
+        <InfoRow icon={Star}>Phố cổ Hội An: thoải mái hơn, không có yêu cầu nghiêm ngặt ngoài khu thờ tự</InfoRow>
+      </div>
+    ),
+  },
+];
+
+/* ═══════════════════════════════════════════════════════════════════
+   FAQ ITEM COMPONENT
+═══════════════════════════════════════════════════════════════════ */
+
+function FaqRow({ item, index }: { item: FaqItem; index: number }) {
+  const [open, setOpen] = useState(false);
+  const cat = CATEGORIES.find((c) => c.key === item.category)!;
+
   return (
-    <div className="border border-border rounded-xl overflow-hidden mb-3">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.03, duration: 0.3 }}
+      className="rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden"
+    >
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-left hover:bg-muted/50 transition-colors"
+        className="w-full flex items-start gap-3 px-4 py-4 text-left hover:bg-gray-50 transition-colors"
       >
-        <div className="flex items-center gap-2">
-          <span className="font-semibold text-sm text-foreground">{title}</span>
-          {badge}
+        <span className={`shrink-0 w-2 h-2 rounded-full mt-2 ${DOT[item.category]}`} />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-gray-900 leading-snug pr-2">{item.q}</p>
+          <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+            <span className="text-[10px] text-gray-400 uppercase tracking-wider">{cat.label}</span>
+            {item.popular && (
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-rose-50 text-rose-500 border border-rose-100 font-medium">
+                Thường hỏi
+              </span>
+            )}
+          </div>
         </div>
-        <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
-          <ChevronDown size={16} className="text-muted-foreground shrink-0" />
+        <motion.div
+          animate={{ rotate: open ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+          className="shrink-0 mt-1"
+        >
+          <ChevronDown size={16} className="text-gray-300" />
         </motion.div>
       </button>
+
       <AnimatePresence initial={false}>
         {open && (
           <motion.div
@@ -177,587 +706,188 @@ function Accordion({ title, children, defaultOpen = false, badge }: { title: str
             transition={{ duration: 0.22 }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4 border-t border-border bg-muted/20">
-              {children}
+            <div className="px-4 pb-4 pt-1 border-t border-gray-100 bg-gray-50/40">
+              {item.answer}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }
 
-// ── TAB CONTENT ───────────────────────────────────────────────────────────────
-
-function CultureTab() {
-  return (
-    <div className="space-y-8">
-      {/* Hoi An */}
-      <div>
-        <SectionHeader icon={Landmark} title="Phố cổ Hội An" subtitle="Di sản văn hóa thế giới UNESCO" color="text-amber-600 bg-amber-100 dark:bg-amber-900/30" />
-        <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 border border-amber-200 dark:border-amber-800 rounded-2xl p-5 mb-4">
-          <div className="flex flex-wrap gap-2 mb-4">
-            <InfoBadge color="bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">UNESCO 1999</InfoBadge>
-            <InfoBadge color="bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300">Di tích quốc gia đặc biệt</InfoBadge>
-            <InfoBadge color="bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300">1.000+ di tích</InfoBadge>
-          </div>
-          <p className="text-sm text-muted-foreground leading-relaxed mb-5">
-            {HOI_AN_INFO.desc}
-          </p>
-
-          {/* Tickets */}
-          <div className="mb-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Ticket size={15} className="text-amber-600 shrink-0" />
-              <span className="text-sm font-semibold text-foreground">Giá vé tham quan</span>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              {HOI_AN_INFO.tickets.map((t) => (
-                <div key={t.label} className="bg-white dark:bg-card border border-amber-200 dark:border-amber-800/50 rounded-xl px-4 py-3 text-center">
-                  <div className="text-xs text-muted-foreground mb-1">{t.label}</div>
-                  <div className="text-base font-bold text-amber-600">{t.price}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Selling points */}
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <MapPin size={15} className="text-amber-600 shrink-0" />
-              <span className="text-sm font-semibold text-foreground">Điểm bán vé</span>
-            </div>
-            <div className="space-y-2">
-              {HOI_AN_INFO.selling.map((s) => (
-                <div key={s.place} className="flex gap-3 text-sm">
-                  <span className="font-medium text-foreground shrink-0">{s.place}:</span>
-                  <span className="text-muted-foreground">{s.address}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Craft villages */}
-      <div>
-        <SectionHeader icon={TreePine} title="Làng nghề truyền thống" subtitle="Tham quan nửa ngày hoặc cả ngày, gần phố cổ Hội An" color="text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30" />
-        <div className="grid gap-4 sm:grid-cols-3">
-          {VILLAGES.map((v) => (
-            <div key={v.name} className="bg-card border border-border rounded-2xl p-4 hover:shadow-md transition-shadow">
-              <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-3">
-                <TreePine size={18} className="text-emerald-600" />
-              </div>
-              <h3 className="font-bold text-sm text-foreground mb-2">{v.name}</h3>
-              <div className="space-y-1.5 text-xs text-muted-foreground">
-                <div className="flex gap-1.5">
-                  <MapPin size={12} className="shrink-0 mt-0.5" />
-                  <span>{v.address}</span>
-                </div>
-                <div className="flex gap-1.5">
-                  <Ticket size={12} className="shrink-0 mt-0.5" />
-                  <span>Người lớn: <strong className="text-foreground">{v.adult}</strong>{v.child && ` · Trẻ em: ${v.child}`}</span>
-                </div>
-                <div className="flex gap-1.5">
-                  <Phone size={12} className="shrink-0 mt-0.5" />
-                  <span>{v.contact} · {v.phone}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function HotelsTab() {
-  const [area, setArea] = useState<"danang" | "hoian">("danang");
-  const [loc, setLoc] = useState<"all" | "center" | "beach">("all");
-  const [stars, setStars] = useState<"all" | "budget" | "luxury">("all");
-
-  const filtered = HOTELS.filter(
-    (h) =>
-      h.area === area &&
-      (loc === "all" || h.location === loc) &&
-      (stars === "all" || h.stars === stars)
-  );
-
-  return (
-    <div>
-      {/* Area tabs */}
-      <div className="flex gap-2 mb-5">
-        {([["danang", "Đà Nẵng"], ["hoian", "Hội An"]] as const).map(([key, label]) => (
-          <button
-            key={key}
-            onClick={() => setArea(key)}
-            className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${area === key ? "bg-blue-600 text-white shadow-sm" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-wrap gap-2 mb-5">
-        <div className="flex gap-1.5">
-          {([["all", "Tất cả"], ["center", "Trung tâm"], ["beach", "Ven biển"]] as const).map(([key, label]) => (
-            <button
-              key={key}
-              onClick={() => setLoc(key)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${loc === key ? "bg-blue-50 dark:bg-blue-950/30 text-blue-600 border-blue-300 dark:border-blue-700" : "border-border text-muted-foreground hover:border-blue-300"}`}
-            >
-              {key === "center" && <Building2 size={11} />}
-              {key === "beach" && <Waves size={11} />}
-              {label}
-            </button>
-          ))}
-        </div>
-        <div className="flex gap-1.5">
-          {([["all", "Tất cả hạng"], ["budget", "Dưới 3 sao"], ["luxury", "4–5 sao"]] as const).map(([key, label]) => (
-            <button
-              key={key}
-              onClick={() => setStars(key)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${stars === key ? "bg-amber-50 dark:bg-amber-950/30 text-amber-600 border-amber-300 dark:border-amber-700" : "border-border text-muted-foreground hover:border-amber-300"}`}
-            >
-              {key === "luxury" && <Star size={11} />}
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Count */}
-      <p className="text-xs text-muted-foreground mb-3">{filtered.length} khách sạn</p>
-
-      {/* Hotel list */}
-      <div className="grid gap-3 sm:grid-cols-2">
-        <AnimatePresence mode="popLayout">
-          {filtered.map((h) => (
-            <motion.div
-              key={`${h.name}-${h.area}`}
-              layout
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              transition={{ duration: 0.18 }}
-              className="bg-card border border-border rounded-xl px-4 py-3.5 flex gap-3 hover:shadow-sm transition-shadow"
-            >
-              <div className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center ${h.location === "beach" ? "bg-sky-100 dark:bg-sky-900/30 text-sky-600" : "bg-blue-100 dark:bg-blue-900/30 text-blue-600"}`}>
-                {h.location === "beach" ? <Waves size={16} /> : <Building2 size={16} />}
-              </div>
-              <div className="min-w-0">
-                <p className="font-semibold text-sm text-foreground truncate">{h.name}</p>
-                <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{h.address}</p>
-                <div className="flex gap-1.5 mt-2">
-                  <InfoBadge color={h.location === "beach" ? "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300" : "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"}>
-                    {h.location === "beach" ? "Ven biển" : "Trung tâm"}
-                  </InfoBadge>
-                  <InfoBadge color={h.stars === "luxury" ? "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"}>
-                    {h.stars === "luxury" ? "4–5 sao" : "Dưới 3 sao"}
-                  </InfoBadge>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
-
-      {filtered.length === 0 && (
-        <div className="text-center py-12 text-muted-foreground text-sm">
-          Không có kết quả phù hợp. Thử thay đổi bộ lọc.
-        </div>
-      )}
-    </div>
-  );
-}
-
-function JourneyCard({ guide }: { guide: JourneyGuide }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="bg-card border border-border rounded-2xl overflow-hidden hover:shadow-md transition-shadow">
-      <div className="px-5 py-4 bg-emerald-50 dark:bg-emerald-950/20 border-b border-emerald-100 dark:border-emerald-900/30">
-        <div className="flex items-start gap-2 mb-3">
-          <div>
-            <div className="flex items-center gap-2 flex-wrap mb-1">
-              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-600 text-white">Bus {guide.busNo}</span>
-              <InfoBadge color="bg-white dark:bg-card text-emerald-700 dark:text-emerald-300">{guide.price}</InfoBadge>
-              <InfoBadge color="bg-white dark:bg-card text-gray-500 dark:text-gray-400">{guide.duration}</InfoBadge>
-            </div>
-            <div className="flex items-center gap-1.5 text-sm font-bold text-foreground flex-wrap">
-              <span>{guide.from}</span>
-              <ArrowRight size={14} className="text-emerald-600 shrink-0" />
-              <span>{guide.to}</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-          <div className="flex items-center gap-1"><Clock size={12} />{guide.time}</div>
-          <div className="flex items-center gap-1"><Bus size={12} />{guide.freq}</div>
-        </div>
-      </div>
-      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between px-5 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors">
-        <span>Xem hướng dẫn chi tiết</span>
-        <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
-          <ChevronDown size={15} />
-        </motion.div>
-      </button>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} transition={{ duration: 0.22 }} className="overflow-hidden">
-            <div className="px-5 pb-4 space-y-2 border-t border-border">
-              <div className="pt-3 space-y-2">
-                {guide.steps.map((step, i) => (
-                  <div key={i} className="flex gap-3 text-sm">
-                    <div className="shrink-0 w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 flex items-center justify-center text-xs font-bold">{i + 1}</div>
-                    <p className="text-muted-foreground leading-relaxed pt-0.5">{step}</p>
-                  </div>
-                ))}
-              </div>
-              {guide.tip && (
-                <div className="flex gap-2 text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2 mt-3">
-                  <span className="shrink-0 font-bold">Mẹo:</span>
-                  <span>{guide.tip}</span>
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-function BusRouteCard({ route }: { route: BusRoute }) {
-  const [open, setOpen] = useState(false);
-  const badgeClass: Record<string, string> = {
-    subsidized:      "bg-emerald-600 text-white",
-    unsubsidized:    "bg-violet-600 text-white",
-    tourist:         "bg-sky-500 text-white",
-    interprovincial: "bg-orange-500 text-white",
-  };
-  const dotClass: Record<string, string> = {
-    subsidized:      "bg-emerald-500",
-    unsubsidized:    "bg-violet-500",
-    tourist:         "bg-sky-400",
-    interprovincial: "bg-orange-400",
-  };
-  const badge = route.pending ? "bg-gray-400 text-white" : (badgeClass[route.type] ?? "bg-gray-400 text-white");
-  const dot   = route.pending ? "bg-gray-400"             : (dotClass[route.type]   ?? "bg-gray-400");
-  const hasDetail = !route.pending && !!route.keyStops?.length;
-
-  return (
-    <div className={`border border-border rounded-xl overflow-hidden bg-card ${route.pending ? "opacity-60" : ""}`}>
-      <button
-        onClick={() => hasDetail && setOpen(!open)}
-        className={`w-full flex items-center gap-3 px-4 py-3 transition-colors text-left ${hasDetail ? "hover:bg-muted/40 cursor-pointer" : "cursor-default"}`}
-      >
-        <span className={`shrink-0 text-xs font-bold w-14 text-center py-1 rounded-lg ${badge}`}>{route.no}</span>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-foreground truncate">{route.name}</p>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {route.hours !== "–" ? route.hours : "Chờ vận hành"}
-            {route.price !== "–" ? " · " + route.price : ""}
-          </p>
-        </div>
-        {route.touristFriendly && !route.pending && (
-          <span className="shrink-0 text-xs text-sky-600 bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800 px-1.5 py-0.5 rounded-md font-medium">Du lịch</span>
-        )}
-        {route.pending && (
-          <span className="shrink-0 text-xs text-gray-400 bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded-md">Sắp mở</span>
-        )}
-        {hasDetail && (
-          <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
-            <ChevronDown size={14} className="text-muted-foreground shrink-0" />
-          </motion.div>
-        )}
-      </button>
-
-      <AnimatePresence initial={false}>
-        {open && hasDetail && (
-          <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
-            <div className="px-4 pb-3 border-t border-border bg-muted/20">
-              <p className="text-xs text-muted-foreground font-medium mt-2.5 mb-2">Các điểm dừng chính:</p>
-              <div className="flex flex-wrap gap-1.5">
-                {route.keyStops!.map((stop, i) => (
-                  <span key={i} className="flex items-center gap-1 text-xs bg-card border border-border rounded-full px-2 py-0.5 text-muted-foreground">
-                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${i === 0 ? "bg-emerald-500" : i === route.keyStops!.length - 1 ? "bg-rose-400" : dot}`} />
-                    {stop}
-                  </span>
-                ))}
-              </div>
-              <div className="flex flex-wrap gap-4 mt-3 text-xs text-muted-foreground">
-                {route.distance  && <span className="flex items-center gap-1"><Route size={11} />{route.distance}</span>}
-                {route.frequency !== "–" && <span className="flex items-center gap-1"><Clock size={11} />{route.frequency}</span>}
-                {route.operator  && <span className="flex items-center gap-1"><Bus size={11} />{route.operator}</span>}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-function TransportTab() {
-  const [view, setView] = useState<"network" | "journey">("network");
-
-  const activeRoutes  = busRoutes.filter((r) => !r.pending);
-  const pendingRoutes = busRoutes.filter((r) => r.pending);
-
-  const grouped = {
-    subsidized:      activeRoutes.filter((r) => r.type === "subsidized"),
-    tourist:         activeRoutes.filter((r) => r.type === "tourist"),
-    unsubsidized:    activeRoutes.filter((r) => r.type === "unsubsidized"),
-    interprovincial: activeRoutes.filter((r) => r.type === "interprovincial"),
-  };
-
-  const touristUnsubsidized   = grouped.unsubsidized.filter((r) => r.touristFriendly);
-  const regularUnsubsidized   = grouped.unsubsidized.filter((r) => !r.touristFriendly);
-
-  return (
-    <div>
-      {/* Stats row */}
-      <div className="grid grid-cols-3 gap-3 mb-5">
-        {[
-          { value: "18+", label: "Tuyến xe buýt" },
-          { value: "05:30–19:00", label: "Giờ hoạt động" },
-          { value: "Từ 8K", label: "Giá vé/lượt" },
-        ].map((s) => (
-          <div key={s.label} className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 rounded-xl p-3 text-center">
-            <p className="text-sm font-bold text-emerald-700 dark:text-emerald-400">{s.value}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">{s.label}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* View switcher */}
-      <div className="flex gap-2 mb-5">
-        {([["network", "Mạng lưới tuyến"], ["journey", "Hành trình A → B"]] as const).map(([key, label]) => (
-          <button
-            key={key}
-            onClick={() => setView(key)}
-            className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${view === key ? "bg-emerald-600 text-white shadow-sm" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-
-      {/* Network view */}
-      {view === "network" && (
-        <div className="space-y-6">
-          {[
-            { dot: "bg-emerald-500", title: "Tuyến có trợ giá", sub: "5 tuyến · Phương Trang · 8.000đ/lượt", routes: grouped.subsidized },
-            { dot: "bg-sky-400",     title: "Tuyến du lịch",    sub: "Sân bay, Bà Nà Hills, Hội An, Mỹ Sơn", routes: [...grouped.tourist, ...touristUnsubsidized] },
-            { dot: "bg-orange-400",  title: "Tuyến liền kề",    sub: "Đà Nẵng ↔ Huế · 100km · 80.000đ",       routes: grouped.interprovincial },
-            { dot: "bg-violet-500",  title: "Tuyến không trợ giá", sub: "Nội thành & ngoại ô", routes: regularUnsubsidized },
-            { dot: "bg-gray-400",    title: "Đang làm thủ tục vận hành", sub: "Sắp mở · 5 tuyến",             routes: pendingRoutes },
-          ].map(({ dot, title, sub, routes }) => (
-            <div key={title}>
-              <div className="flex items-center gap-2 mb-2.5">
-                <span className={`w-2.5 h-2.5 rounded-full ${dot} shrink-0`} />
-                <h3 className="text-sm font-bold text-foreground">{title}</h3>
-                <span className="text-xs text-muted-foreground hidden sm:inline">· {sub}</span>
-              </div>
-              <div className="space-y-1.5">
-                {routes.map((r) => <BusRouteCard key={r.no} route={r} />)}
-              </div>
-            </div>
-          ))}
-
-          <a
-            href="https://www.danangbus.vn/lo-trinh-tuyen.html"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-emerald-600 transition-colors py-2"
-          >
-            Nguồn: danangbus.vn <ChevronRight size={11} />
-          </a>
-        </div>
-      )}
-
-      {/* Journey guide view */}
-      {view === "journey" && (
-        <div className="space-y-4">
-          {journeyGuides.map((g) => <JourneyCard key={`${g.from}-${g.to}`} guide={g} />)}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ServicesTab() {
-  return (
-    <div className="space-y-8">
-      {/* Pharmacy */}
-      <div>
-        <SectionHeader icon={Pill} title="Nhà thuốc" subtitle="Tìm nhà thuốc gần nhất tại Đà Nẵng và Hội An" color="text-rose-600 bg-rose-100 dark:bg-rose-900/30" />
-        <div className="mb-4">
-          <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
-            <span className="px-2 py-0.5 bg-rose-100 dark:bg-rose-900/30 text-rose-600 rounded-md text-xs">Đà Nẵng</span>
-          </h3>
-          {PHARMACIES.danang.map((group) => (
-            <Accordion key={group.area} title={group.area}>
-              <div className="space-y-3 mt-3">
-                {group.items.map((p) => (
-                  <div key={p.name} className="flex gap-3 text-sm">
-                    <div className="shrink-0 w-7 h-7 rounded-lg bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center">
-                      <Pill size={13} className="text-rose-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground">{p.name}</p>
-                      <p className="text-xs text-muted-foreground">{p.address}</p>
-                      {p.phone && (
-                        <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
-                          <Phone size={11} />{p.phone}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Accordion>
-          ))}
-        </div>
-
-        <div>
-          <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
-            <span className="px-2 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-md text-xs">Hội An</span>
-          </h3>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {PHARMACIES.hoian.map((p) => (
-              <div key={p.name} className="bg-card border border-border rounded-xl p-3.5 flex gap-3">
-                <div className="shrink-0 w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-                  <Pill size={14} className="text-amber-600" />
-                </div>
-                <div>
-                  <p className="font-medium text-sm text-foreground">{p.name}</p>
-                  <p className="text-xs text-muted-foreground">{p.address}</p>
-                  {p.phone && <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5"><Phone size={11} />{p.phone}</p>}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Money exchange */}
-      <div>
-        <SectionHeader icon={DollarSign} title="Đổi tiền" subtitle="Ngân hàng và tiệm vàng uy tín tại Đà Nẵng" color="text-violet-600 bg-violet-100 dark:bg-violet-900/30" />
-
-        <Accordion title="Ngân hàng" defaultOpen>
-          <div className="space-y-4 mt-3">
-            {MONEY_EXCHANGE.banks.map((b) => (
-              <div key={b.name} className="text-sm">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <div className="w-6 h-6 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
-                    <Building2 size={12} className="text-violet-600" />
-                  </div>
-                  <span className="font-bold text-foreground">{b.name}</span>
-                  <span className="text-xs text-muted-foreground">· {b.phone}</span>
-                </div>
-                <div className="pl-8 space-y-0.5">
-                  {b.addresses.map((addr) => (
-                    <div key={addr} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <ChevronRight size={11} className="shrink-0" />{addr}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </Accordion>
-
-        <Accordion title="Tiệm vàng đổi ngoại tệ">
-          <div className="grid gap-3 sm:grid-cols-2 mt-3">
-            {MONEY_EXCHANGE.gold.map((g) => (
-              <div key={g.name} className="flex gap-2.5 text-sm">
-                <div className="shrink-0 w-7 h-7 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
-                  <Star size={12} className="text-yellow-600" />
-                </div>
-                <div>
-                  <p className="font-medium text-foreground">{g.name}</p>
-                  <p className="text-xs text-muted-foreground">{g.address}</p>
-                  <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5"><Phone size={11} />{g.phone}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Accordion>
-      </div>
-    </div>
-  );
-}
-
-// ── PAGE ──────────────────────────────────────────────────────────────────────
+/* ═══════════════════════════════════════════════════════════════════
+   PAGE
+═══════════════════════════════════════════════════════════════════ */
 
 export default function TouristInfo() {
-  const [tab, setTab] = useState("culture");
-  const activeTab = TABS.find((t) => t.id === tab)!;
+  const [search, setSearch] = useState("");
+  const [activeCat, setActiveCat] = useState<FaqCategory | "all">("all");
+
+  const filtered = useMemo(() => {
+    let list = FAQS;
+    if (activeCat !== "all") list = list.filter((f) => f.category === activeCat);
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      list = list.filter((f) =>
+        f.q.toLowerCase().includes(q) ||
+        (f.tags ?? []).some((t) => t.toLowerCase().includes(q))
+      );
+    }
+    return list;
+  }, [search, activeCat]);
+
+  const popular = FAQS.filter((f) => f.popular);
 
   return (
-    <div className="bg-background">
-      {/* Hero */}
-      <div className="relative bg-gradient-to-br from-teal-600 via-teal-500 to-cyan-500 px-4 pt-10 pb-16 overflow-hidden">
+    <div className="bg-[#f5f5f4] min-h-screen">
+
+      {/* ── Hero ── */}
+      <div className="relative bg-gradient-to-br from-teal-600 via-teal-500 to-cyan-500 px-4 pt-12 pb-20 overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_30%_50%,white,transparent_70%)]" />
-        <div className="max-w-4xl mx-auto relative">
+        <div className="max-w-2xl mx-auto relative text-center">
           <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-3 py-1.5 text-white/90 text-xs font-medium mb-4">
-            <BookOpen size={13} />
-            Thông tin hữu ích cho du khách
+            <BookOpen size={12} />
+            {FAQS.length} câu hỏi thường gặp · Cập nhật 2026
           </div>
           <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 leading-tight">
-            Những điều du khách<br className="md:hidden" /> quan tâm tại Đà Nẵng
+            Du khách thường hỏi gì<br />về Đà Nẵng?
           </h1>
-          <p className="text-teal-100 text-sm md:text-base max-w-xl">
-            Thông tin được tổng hợp chính xác từ Trung tâm Thông tin Xúc tiến Du lịch Đà Nẵng — cập nhật 2026.
+          <p className="text-teal-100 text-sm mb-7">
+            Tìm câu trả lời nhanh — vé tham quan, xe buýt, khách sạn, đổi tiền, y tế và nhiều hơn nữa.
           </p>
+
+          {/* Search */}
+          <div className="relative max-w-xl mx-auto">
+            <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Tìm câu hỏi... VD: vé Hội An, xe buýt sân bay, đổi tiền"
+              className="w-full pl-11 pr-10 py-3.5 rounded-2xl text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white/30 bg-white shadow-lg"
+            />
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <X size={15} />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Tab bar */}
-      <div className="sticky top-14 z-30 bg-background/95 backdrop-blur border-b border-border">
-        <div className="max-w-4xl mx-auto px-2 md:px-4 flex overflow-x-auto scrollbar-none">
-          {TABS.map((t) => {
-            const Icon = t.icon;
-            const isActive = t.id === tab;
+      <div className="max-w-3xl mx-auto px-4 -mt-6 pb-20">
+
+        {/* ── Category chips ── */}
+        <div className="flex gap-2 overflow-x-auto pb-1 mb-6" style={{ scrollbarWidth: "none" } as React.CSSProperties}>
+          {CATEGORIES.map((cat) => {
+            const active = activeCat === cat.key;
+            const count = cat.key === "all" ? FAQS.length : FAQS.filter((f) => f.category === cat.key).length;
             return (
               <button
-                key={t.id}
-                onClick={() => setTab(t.id)}
-                className={`relative flex items-center gap-2 px-4 py-3.5 whitespace-nowrap text-sm font-medium transition-colors shrink-0 ${isActive ? "text-teal-600" : "text-muted-foreground hover:text-foreground"}`}
+                key={cat.key}
+                onClick={() => setActiveCat(cat.key as FaqCategory | "all")}
+                className={`shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold transition-all border ${
+                  active
+                    ? "bg-gray-900 text-white border-gray-900 shadow-sm"
+                    : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
+                }`}
               >
-                <Icon size={15} />
-                {t.label}
-                {isActive && (
-                  <motion.div
-                    layoutId="tab-indicator"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal-600 rounded-full"
-                    transition={{ type: "spring", stiffness: 400, damping: 35 }}
-                  />
-                )}
+                <cat.icon size={12} style={{ color: active ? "#fff" : cat.color }} />
+                {cat.label}
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${active ? "bg-white/20 text-white" : "bg-gray-100 text-gray-400"}`}>
+                  {count}
+                </span>
               </button>
             );
           })}
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={tab}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2 }}
-          >
-            {tab === "culture"   && <CultureTab />}
-            {tab === "hotels"    && <HotelsTab />}
-            {tab === "transport" && <TransportTab />}
-            {tab === "services"  && <ServicesTab />}
-          </motion.div>
+        {/* ── Popular section (only when no filter/search) ── */}
+        <AnimatePresence>
+          {!search && activeCat === "all" && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              className="mb-8"
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <Zap size={14} className="text-rose-500" />
+                <h2 className="text-sm font-bold text-gray-900">Câu hỏi hay được hỏi nhất</h2>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-2">
+                {popular.map((f) => {
+                  const cat = CATEGORIES.find((c) => c.key === f.category)!;
+                  return (
+                    <button
+                      key={f.id}
+                      onClick={() => {
+                        setActiveCat(f.category);
+                        setTimeout(() => {
+                          document.getElementById(`faq-${f.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+                        }, 100);
+                      }}
+                      className="flex items-start gap-2.5 text-left bg-white border border-gray-100 rounded-xl px-3.5 py-3 hover:border-gray-200 hover:shadow-sm transition-all group"
+                    >
+                      <span className={`shrink-0 w-2 h-2 rounded-full mt-1.5 ${DOT[f.category]}`} />
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-gray-800 leading-snug group-hover:text-teal-700 transition-colors">{f.q}</p>
+                        <p className="text-[10px] text-gray-400 mt-0.5">{cat.label}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
         </AnimatePresence>
+
+        {/* ── FAQ list ── */}
+        {search || activeCat !== "all" ? (
+          <div className="mb-4 flex items-center gap-2">
+            <h2 className="text-sm font-bold text-gray-900">
+              {filtered.length > 0 ? `${filtered.length} kết quả` : "Không tìm thấy"}
+            </h2>
+            {(search || activeCat !== "all") && (
+              <button
+                onClick={() => { setSearch(""); setActiveCat("all"); }}
+                className="text-xs text-teal-600 hover:text-teal-800 flex items-center gap-0.5"
+              >
+                <X size={11} /> Xóa bộ lọc
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 mb-4">
+            <h2 className="text-sm font-bold text-gray-900">Tất cả câu hỏi</h2>
+            <span className="text-xs text-gray-400">{FAQS.length} câu hỏi</span>
+          </div>
+        )}
+
+        {filtered.length > 0 ? (
+          <div className="space-y-2">
+            {filtered.map((item, i) => (
+              <div key={item.id} id={`faq-${item.id}`}>
+                <FaqRow item={item} index={i} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <Search size={36} className="text-gray-200 mx-auto mb-3" />
+            <p className="text-gray-600 font-medium text-sm">Không tìm thấy câu hỏi phù hợp</p>
+            <p className="text-gray-400 text-xs mt-1">Thử từ khóa khác hoặc chọn danh mục khác</p>
+            <button
+              onClick={() => { setSearch(""); setActiveCat("all"); }}
+              className="mt-4 text-sm text-teal-600 hover:text-teal-800 font-medium"
+            >
+              Xem tất cả câu hỏi
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
