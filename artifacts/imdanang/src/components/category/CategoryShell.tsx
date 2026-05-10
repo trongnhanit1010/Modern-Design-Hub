@@ -1,6 +1,6 @@
 import { useMemo, useRef, type ReactNode } from "react";
 import { motion } from "framer-motion";
-import { Search, ArrowRight, type LucideIcon } from "lucide-react";
+import { Search, ArrowRight, ChevronLeft, ChevronRight, type LucideIcon } from "lucide-react";
 import { type CategoryKey } from "@/lib/categoryThemes";
 
 /* ─── Theme accents ─── */
@@ -228,33 +228,53 @@ export function CategoryShell({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.35 }}
-                ref={filterRowRef}
-                className="flex items-center gap-2 mt-3 overflow-x-auto pb-2 select-none cursor-grab scrollbar-hover"
-                style={{ WebkitOverflowScrolling: "touch" } as React.CSSProperties}
-                onMouseDown={onMouseDown}
-                onMouseLeave={onMouseLeave}
-                onMouseUp={onMouseUp}
-                onMouseMove={onMouseMove}
+                className="relative mt-3 group/filters"
               >
-                <div className="shrink-0 w-4" aria-hidden="true" />
-                {categories.map((c) => {
-                  const active = activeCat === c.key;
-                  return (
-                    <button
-                      key={c.key}
-                      onClick={() => setActiveCat(c.key)}
-                      className="shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all"
-                      style={
-                        active
-                          ? { background: "#fff", color: bd.orbA, boxShadow: "0 2px 8px rgba(0,0,0,0.18)" }
-                          : { background: "rgba(255,255,255,0.18)", color: "#fff", border: "1px solid rgba(255,255,255,0.28)", backdropFilter: "blur(6px)" }
-                      }
-                    >
-                      {c.label}
-                    </button>
-                  );
-                })}
-                <div className="shrink-0 w-4" aria-hidden="true" />
+                {/* Left arrow */}
+                <button
+                  onClick={() => filterRowRef.current?.scrollBy({ left: -160, behavior: "smooth" })}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 flex items-center justify-center rounded-full bg-white/25 backdrop-blur-sm border border-white/30 text-white opacity-0 group-hover/filters:opacity-100 transition-opacity shadow-md"
+                >
+                  <ChevronLeft size={14} />
+                </button>
+
+                <div
+                  ref={filterRowRef}
+                  className="flex items-center gap-2 overflow-x-auto pb-1 select-none cursor-grab"
+                  style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
+                  onMouseDown={onMouseDown}
+                  onMouseLeave={onMouseLeave}
+                  onMouseUp={onMouseUp}
+                  onMouseMove={onMouseMove}
+                >
+                  <div className="shrink-0 w-7" aria-hidden="true" />
+                  {categories.map((c) => {
+                    const active = activeCat === c.key;
+                    return (
+                      <button
+                        key={c.key}
+                        onClick={() => setActiveCat(c.key)}
+                        className="shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all"
+                        style={
+                          active
+                            ? { background: "#fff", color: bd.orbA, boxShadow: "0 2px 8px rgba(0,0,0,0.18)" }
+                            : { background: "rgba(255,255,255,0.18)", color: "#fff", border: "1px solid rgba(255,255,255,0.28)", backdropFilter: "blur(6px)" }
+                        }
+                      >
+                        {c.label}
+                      </button>
+                    );
+                  })}
+                  <div className="shrink-0 w-7" aria-hidden="true" />
+                </div>
+
+                {/* Right arrow */}
+                <button
+                  onClick={() => filterRowRef.current?.scrollBy({ left: 160, behavior: "smooth" })}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 flex items-center justify-center rounded-full bg-white/25 backdrop-blur-sm border border-white/30 text-white opacity-0 group-hover/filters:opacity-100 transition-opacity shadow-md"
+                >
+                  <ChevronRight size={14} />
+                </button>
               </motion.div>
             )}
           </motion.div>

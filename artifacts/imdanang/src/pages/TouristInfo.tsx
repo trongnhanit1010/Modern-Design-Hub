@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Search, ChevronDown, MapPin, Phone, Bus, Hotel, Pill,
+  Search, ChevronDown, ChevronLeft, ChevronRight, MapPin, Phone, Bus, Hotel, Pill,
   DollarSign, Landmark, Wifi, Thermometer, Star, X,
   Clock, Ticket, BookOpen, Zap, Shield,
 } from "lucide-react";
@@ -794,38 +794,56 @@ export default function TouristInfo() {
       <div className="max-w-3xl mx-auto px-4 pt-8 pb-20">
 
         {/* ── Category chips ── */}
-        <div
-          ref={chipRowRef}
-          className="flex gap-2 overflow-x-auto pb-2 mb-6 cursor-grab select-none scrollbar-hover"
-          style={{} as React.CSSProperties}
-          onMouseDown={onChipMouseDown}
-          onMouseUp={onChipMouseUp}
-          onMouseLeave={onChipMouseUp}
-          onMouseMove={onChipMouseMove}
-        >
-          <div className="shrink-0 w-0.5" aria-hidden="true" />
-          {CATEGORIES.map((cat) => {
-            const active = activeCat === cat.key;
-            const count = cat.key === "all" ? FAQS.length : FAQS.filter((f) => f.category === cat.key).length;
-            return (
-              <button
-                key={cat.key}
-                onClick={() => setActiveCat(cat.key as FaqCategory | "all")}
-                className={`shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold transition-all border ${
-                  active
-                    ? "bg-gray-900 text-white border-gray-900 shadow-sm"
-                    : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
-                }`}
-              >
-                <cat.icon size={12} style={{ color: active ? "#fff" : cat.color }} />
-                {cat.label}
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${active ? "bg-white/20 text-white" : "bg-gray-100 text-gray-400"}`}>
-                  {count}
-                </span>
-              </button>
-            );
-          })}
-          <div className="shrink-0 w-0.5" aria-hidden="true" />
+        <div className="relative mb-6 group/chips">
+          {/* Left arrow */}
+          <button
+            onClick={() => chipRowRef.current?.scrollBy({ left: -180, behavior: "smooth" })}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-500 shadow-md opacity-0 group-hover/chips:opacity-100 transition-opacity"
+          >
+            <ChevronLeft size={14} />
+          </button>
+
+          <div
+            ref={chipRowRef}
+            className="flex gap-2 overflow-x-auto pb-1 cursor-grab select-none"
+            style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
+            onMouseDown={onChipMouseDown}
+            onMouseUp={onChipMouseUp}
+            onMouseLeave={onChipMouseUp}
+            onMouseMove={onChipMouseMove}
+          >
+            <div className="shrink-0 w-7" aria-hidden="true" />
+            {CATEGORIES.map((cat) => {
+              const active = activeCat === cat.key;
+              const count = cat.key === "all" ? FAQS.length : FAQS.filter((f) => f.category === cat.key).length;
+              return (
+                <button
+                  key={cat.key}
+                  onClick={() => setActiveCat(cat.key as FaqCategory | "all")}
+                  className={`shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold transition-all border ${
+                    active
+                      ? "bg-gray-900 text-white border-gray-900 shadow-sm"
+                      : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <cat.icon size={12} style={{ color: active ? "#fff" : cat.color }} />
+                  {cat.label}
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${active ? "bg-white/20 text-white" : "bg-gray-100 text-gray-400"}`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+            <div className="shrink-0 w-7" aria-hidden="true" />
+          </div>
+
+          {/* Right arrow */}
+          <button
+            onClick={() => chipRowRef.current?.scrollBy({ left: 180, behavior: "smooth" })}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-500 shadow-md opacity-0 group-hover/chips:opacity-100 transition-opacity"
+          >
+            <ChevronRight size={14} />
+          </button>
         </div>
 
         {/* ── Popular section (only when no filter/search) ── */}
