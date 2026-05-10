@@ -12,6 +12,7 @@ import {
   Bike,
   Map,
   Bot,
+  BookOpen,
 } from "lucide-react";
 
 export type CategoryKey =
@@ -26,7 +27,8 @@ export type CategoryKey =
   | "entertainment"
   | "cyclo"
   | "map"
-  | "ai";
+  | "ai"
+  | "tourist-info";
 
 export type CategoryTheme = {
   key: CategoryKey;
@@ -56,6 +58,7 @@ export const categoryThemes: Record<CategoryKey, CategoryTheme> = {
   cyclo:         { key: "cyclo",         label: "Xích lô du lịch",      href: "/xich-lo-du-lich",     icon: Bike,            iconColor: "text-yellow-700",  activeBg: "bg-yellow-50",      hex: "#a16207", gradient: "from-yellow-700 via-amber-600 to-orange-600" },
   map:           { key: "map",           label: "Bản đồ",               href: "/ban-do",              icon: Map,             iconColor: "text-cyan-600",    activeBg: "bg-cyan-50",        hex: "#0891b2", gradient: "from-cyan-500 to-teal-500" },
   ai:            { key: "ai",            label: "AI Trợ lý",            href: "/ai",                  icon: Bot,             iconColor: "text-indigo-500",  activeBg: "bg-indigo-50",      hex: "#6366f1", gradient: "from-indigo-500 to-blue-500" },
+  "tourist-info": { key: "tourist-info", label: "Thông tin hữu ích",   href: "/thong-tin-du-khach",  icon: BookOpen,        iconColor: "text-teal-600",    activeBg: "bg-teal-50",        hex: "#0d9488", gradient: "from-teal-500 to-cyan-500" },
 };
 
 export const navOrder: CategoryKey[] = [
@@ -71,4 +74,5 @@ export const navOrder: CategoryKey[] = [
   "cyclo",
   "map",
   "ai",
+  "tourist-info",
 ];
