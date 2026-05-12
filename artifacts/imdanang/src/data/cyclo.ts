@@ -57,8 +57,8 @@ export const cycloTours: CycloTour[] = [
       { id: 4, name: "Nhà thờ Chính tòa Đà Nẵng", description: "Công trình kiến trúc Pháp hơn 100 năm tuổi · Tham quan 15 phút" },
       { id: 5, name: "Trả khách tại Bảo tàng Chăm", description: "Kết thúc hành trình" },
     ],
-    color: "from-teal-700 to-teal-500",
-    accentHex: "#0f766e",
+    color: "from-blue-700 to-blue-500",
+    accentHex: "#2563eb",
   },
   {
     id: 2,
@@ -91,8 +91,8 @@ export const cycloTours: CycloTour[] = [
       { id: 5, name: "Nhà thờ Chính tòa", description: "Tham quan 15 phút · Kiến trúc Pháp cổ điển" },
       { id: 6, name: "Trả khách tại Bảo tàng Chăm", description: "Kết thúc hành trình" },
     ],
-    color: "from-teal-800 to-teal-600",
-    accentHex: "#0f766e",
+    color: "from-blue-800 to-blue-600",
+    accentHex: "#1d4ed8",
   },
   {
     id: 3,
@@ -124,8 +124,8 @@ export const cycloTours: CycloTour[] = [
       { id: 4, name: "Trình Café", description: "Trải nghiệm pha chế & thưởng thức cà phê: 40 phút" },
       { id: 5, name: "Trả khách tại Bảo tàng Chăm", description: "Kết thúc hành trình" },
     ],
-    color: "from-teal-600 to-emerald-500",
-    accentHex: "#0f766e",
+    color: "from-blue-600 to-indigo-500",
+    accentHex: "#2563eb",
   },
 ];
 

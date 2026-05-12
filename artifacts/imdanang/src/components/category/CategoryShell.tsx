@@ -19,7 +19,7 @@ const themeBackdrops: Record<
   events:        BLUE,
   shopping:      BLUE,
   entertainment: BLUE,
-  cyclo:         { orbA: "#d97706", orbB: "#b45309", orbC: "#d97706" },
+  cyclo:         { orbA: "#2563eb", orbB: "#1d4ed8", orbC: "#3b82f6" },
   map:           BLUE,
   ai:            BLUE,
 };
