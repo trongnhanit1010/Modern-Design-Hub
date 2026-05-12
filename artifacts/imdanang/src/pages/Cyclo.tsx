@@ -307,63 +307,96 @@ export default function Cyclo() {
               </div>
             </div>
 
-            {/* RIGHT: Audio device mockup — desktop only */}
-            <motion.div initial={{ opacity: 0, scale: 0.95, rotate: 2 }} animate={{ opacity: 1, scale: 1, rotate: 0 }}
-              transition={{ delay: 0.3, type: "spring" }} className="relative hidden lg:block">
-              <div className="relative rounded-3xl p-6 border border-blue-200 bg-white shadow-xl"
-                style={{ boxShadow: "0 24px 60px rgba(37,99,235,0.12), 0 4px 16px rgba(0,0,0,0.06)" }}>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Radio size={16} className="text-blue-600" />
-                    <span className="text-blue-700 font-bold tracking-widest text-xs">IMDANANG · AUDIO</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-blue-600/80 text-[10px] font-mono">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    PHÁT TRỰC TIẾP
-                  </div>
+            {/* RIGHT: Photo gallery collage — desktop only */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              className="relative hidden lg:flex items-center justify-center h-[460px]"
+            >
+              {/* Main large image — bottom-left */}
+              <motion.div
+                whileHover={{ scale: 1.025, zIndex: 10 }}
+                transition={{ duration: 0.3 }}
+                className="absolute left-0 top-8 w-[57%] h-[86%] rounded-2xl overflow-hidden shadow-2xl"
+                style={{ rotate: "-2.5deg", zIndex: 2 }}
+              >
+                <img
+                  src={cycloTours[0].image}
+                  alt={cycloTours[0].name}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                <div className="absolute bottom-3 left-3 right-3">
+                  <p className="text-white/90 text-[10px] font-bold uppercase tracking-widest mb-0.5">City Tour</p>
+                  <p className="text-white font-bold text-sm leading-tight" style={{ fontFamily: "Georgia, serif" }}>
+                    Dạo Ven Sông Hàn
+                  </p>
                 </div>
-                <div className="rounded-2xl p-4 mb-4 border border-blue-100 bg-blue-50">
-                  <div className="text-blue-500 text-[10px] uppercase tracking-widest mb-1">Điểm dừng 02 / 05</div>
-                  <div className="text-gray-900 font-bold text-lg leading-tight" style={{ fontFamily: "Georgia, serif" }}>
-                    Công viên APEC
-                  </div>
-                  <div className="text-gray-500 text-xs mt-1 mb-3">
-                    "Biểu tượng hội nhập quốc tế của Đà Nẵng, nơi từng là điểm tổ chức Hội nghị APEC 2017…"
-                  </div>
-                  <Waveform playing={heroPlaying} bars={36} color="#2563eb" />
-                  <div className="mt-3 space-y-1">
-                    <div className="h-1 rounded-full bg-blue-100 overflow-hidden">
-                      <motion.div className="h-full bg-gradient-to-r from-blue-500 to-blue-400"
-                        animate={{ width: `${progress}%` }} transition={{ duration: 0.1, ease: "linear" }} />
-                    </div>
-                    <div className="flex justify-between text-blue-400 text-[10px] font-mono">
-                      <span>{Math.floor((progress / 100) * 180).toString().padStart(2, "0")}:00</span>
-                      <span>03:00</span>
-                    </div>
-                  </div>
+              </motion.div>
+
+              {/* Top-right image */}
+              <motion.div
+                whileHover={{ scale: 1.03, zIndex: 10 }}
+                transition={{ duration: 0.3 }}
+                className="absolute right-0 top-0 w-[42%] h-[49%] rounded-2xl overflow-hidden shadow-xl"
+                style={{ rotate: "2deg", zIndex: 3 }}
+              >
+                <img
+                  src={cycloTours[1].image}
+                  alt={cycloTours[1].name}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
+                <div className="absolute bottom-2.5 left-3">
+                  <p className="text-white font-bold text-xs leading-tight" style={{ fontFamily: "Georgia, serif" }}>
+                    Dấu Ấn Thời Gian
+                  </p>
                 </div>
-                <div className="flex items-center justify-center gap-4">
-                  <button className="w-10 h-10 rounded-full bg-blue-50 border border-blue-200 text-blue-500 flex items-center justify-center hover:bg-blue-100 transition-colors">
-                    <ChevronRight size={16} className="rotate-180" />
-                  </button>
-                  <button onClick={() => setHeroPlaying((p) => !p)}
-                    className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center shadow-lg hover:scale-105 transition-transform"
-                    style={{ boxShadow: "0 8px 20px rgba(37,99,235,0.35)" }}>
-                    {heroPlaying ? <Pause size={20} /> : <Play size={20} className="ml-0.5" />}
-                  </button>
-                  <button className="w-10 h-10 rounded-full bg-blue-50 border border-blue-200 text-blue-500 flex items-center justify-center hover:bg-blue-100 transition-colors">
-                    <ChevronRight size={16} />
-                  </button>
+              </motion.div>
+
+              {/* Bottom-right image */}
+              <motion.div
+                whileHover={{ scale: 1.03, zIndex: 10 }}
+                transition={{ duration: 0.3 }}
+                className="absolute right-[3%] bottom-0 w-[40%] h-[47%] rounded-2xl overflow-hidden shadow-xl"
+                style={{ rotate: "-1.5deg", zIndex: 3 }}
+              >
+                <img
+                  src={cycloTours[2].image}
+                  alt={cycloTours[2].name}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
+                <div className="absolute bottom-2.5 left-3">
+                  <p className="text-white font-bold text-xs leading-tight" style={{ fontFamily: "Georgia, serif" }}>
+                    Hương Vị Việt
+                  </p>
                 </div>
-                <div className="flex items-center gap-2 mt-4 text-blue-500">
-                  <Volume2 size={12} />
-                  <div className="flex-1 h-1 rounded-full bg-blue-100 overflow-hidden">
-                    <div className="h-full w-3/4 bg-blue-400" />
-                  </div>
-                  <Languages size={12} />
-                  <span className="text-[10px] font-mono text-blue-600">VI</span>
-                </div>
-              </div>
+              </motion.div>
+
+              {/* Floating badge */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8, duration: 0.4 }}
+                className="absolute top-4 left-[52%] z-10 bg-white rounded-xl px-3 py-2 shadow-lg border border-gray-100"
+              >
+                <div className="text-[10px] text-gray-400 uppercase tracking-widest">Hành trình</div>
+                <div className="text-blue-700 font-bold text-sm">{cycloTours.length} tour · Đà Nẵng</div>
+              </motion.div>
+
+              {/* Stars badge */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1, duration: 0.4 }}
+                className="absolute bottom-[52%] right-[42%] z-10 bg-white rounded-xl px-3 py-2 shadow-lg border border-gray-100 flex items-center gap-1.5"
+              >
+                <Star size={13} className="fill-amber-400 text-amber-400" />
+                <span className="text-gray-900 font-bold text-sm">4.8</span>
+                <span className="text-gray-400 text-xs">/ 5</span>
+              </motion.div>
             </motion.div>
           </div>
         </div>
