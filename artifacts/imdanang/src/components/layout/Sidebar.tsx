@@ -76,7 +76,7 @@ export default function Sidebar() {
         className="hidden md:flex fixed left-0 top-14 bottom-0 z-40 bg-background border-r border-border flex-col overflow-hidden"
         data-testid="sidebar"
       >
-        <nav className="flex-1 py-4 overflow-hidden">
+        <nav className="flex-1 py-4 overflow-y-auto scrollbar-hide">
           {navItems.map((item, i) => {
             const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
             const Icon = item.icon;
